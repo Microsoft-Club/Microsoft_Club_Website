@@ -16,7 +16,7 @@ const App = () => {
   return (
     <div className="min-h-screen retro-app-bg font-body text-black flex flex-col">
       <Navbar />
-      <main className="flex-1 px-4 py-6 md:px-8 md:py-10 max-w-6xl mx-auto w-full">
+      <main className="flex-1 px-3 py-5 sm:px-4 sm:py-6 md:px-8 md:py-10 max-w-6xl mx-auto w-full">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />

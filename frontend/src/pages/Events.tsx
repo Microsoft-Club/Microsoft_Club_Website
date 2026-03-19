@@ -35,21 +35,21 @@ const Events = () => {
   return (
     <div className="space-y-4">
       <h1 className="font-heading text-sm md:text-base mb-2">Events</h1>
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <PixelButton
           label="All"
           onClick={() => setFilter('all')}
-          className={filter === 'all' ? 'bg-primary text-white' : ''}
+          className={`${filter === 'all' ? 'bg-primary text-white' : ''} min-w-[88px]`}
         />
         <PixelButton
           label="Upcoming"
           onClick={() => setFilter('upcoming')}
-          className={filter === 'upcoming' ? 'bg-primary text-white' : ''}
+          className={`${filter === 'upcoming' ? 'bg-primary text-white' : ''} min-w-[88px]`}
         />
         <PixelButton
           label="Past"
           onClick={() => setFilter('past')}
-          className={filter === 'past' ? 'bg-primary text-white' : ''}
+          className={`${filter === 'past' ? 'bg-primary text-white' : ''} min-w-[88px]`}
         />
       </div>
       {loading && <p className="text-sm">Loading events...</p>}
