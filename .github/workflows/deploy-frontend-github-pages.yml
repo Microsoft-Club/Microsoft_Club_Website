@@ -34,7 +34,8 @@ jobs:
         env:
           # Set this secret in your GitHub repo settings.
           # Example: https://your-backend.onrender.com
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_API_URL: ${{https://microsoft-club-website.onrender.com/}}
+          
         run: |
           cd frontend
           npm ci
