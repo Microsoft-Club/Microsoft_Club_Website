@@ -3,6 +3,24 @@ import WindowCard from '../components/WindowCard';
 import type { Member } from '../services/api';
 import { api } from '../services/api';
 
+const resolveMemberImageUrl = (rawUrl?: string): string => {
+  if (!rawUrl) return '';
+
+  // Handle accidental quotes/backslashes from copied Windows-style paths.
+  const cleaned = rawUrl.trim().replace(/^['"]+|['"]+$/g, '').replace(/\\/g, '/');
+  if (!cleaned) return '';
+
+  if (/^https?:\/\//i.test(cleaned)) {
+    return cleaned;
+  }
+
+  // Normalize paths users may paste from local project structure.
+  const withoutPublicPrefix = cleaned.replace(/^\/?(frontend\/)?public\//i, '');
+  const normalizedPath = withoutPublicPrefix.replace(/^\/+/, '');
+
+  return `${import.meta.env.BASE_URL}${normalizedPath}`.replace(/([^:]\/)\/+/g, '$1');
+};
+
 const Members = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +65,7 @@ const Members = () => {
                 <div className="flex items-start gap-3">
                   {member.image ? (
                     <img
-                      src={member.image}
+                      src={resolveMemberImageUrl(member.image)}
                       alt={member.name}
                       className="w-10 h-10 rounded object-cover border border-black"
                     />
@@ -84,7 +102,7 @@ const Members = () => {
                 <div className="flex items-start gap-3">
                   {member.image ? (
                     <img
-                      src={member.image}
+                      src={resolveMemberImageUrl(member.image)}
                       alt={member.name}
                       className="w-10 h-10 rounded object-cover border border-black"
                     />
