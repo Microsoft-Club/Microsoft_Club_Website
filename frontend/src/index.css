@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.retro-app-bg {
+  background-color: #60a5fa; /* bright Windows-like blue */
+  background-image: radial-gradient(
+      rgba(0, 0, 0, 0.08) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.08),
+      rgba(0, 0, 0, 0.06)
+    );
+  background-size: 18px 18px, auto;
+  background-position: 0 0, 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-app-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.12),
+    rgba(0, 0, 0, 0.12) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.35;
+}
+
+.retro-app-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+body {
+  @apply text-black font-body;
+}
+
+.retro-window {
+  @apply bg-white border-retro border-black rounded-retro shadow-retro overflow-hidden;
+}
+
+.retro-window-header {
+  @apply flex items-center justify-between px-3 py-2 bg-primaryDark text-white border-b-retro border-black;
+}
+
+.retro-window-title {
+  @apply font-heading text-xs md:text-sm;
+}
+
+.retro-window-controls {
+  @apply flex gap-1;
+}
+
+.retro-dot {
+  @apply w-3 h-3 border border-black bg-lightBg;
+}
+
+.retro-window-controls .retro-dot:nth-child(1) {
+  background: #ef4444;
+}
+.retro-window-controls .retro-dot:nth-child(2) {
+  background: #f59e0b;
+}
+.retro-window-controls .retro-dot:nth-child(3) {
+  background: #10b981;
+}
+
+.pixel-button {
+  @apply inline-flex items-center justify-center px-4 py-2 border-retro border-black rounded-none bg-purpleAccent text-white font-heading text-[10px] md:text-xs shadow-retro active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-transform;
+}
+
+.grid-layout {
+  @apply grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+}
+

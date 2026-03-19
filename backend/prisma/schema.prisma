@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+}
+
+model Event {
+  id               Int      @id @default(autoincrement())
+  title            String
+  description      String
+  date             DateTime
+  type             String
+  images           String[] @default([])
+  speakers         String[] @default([])
+  registrationLink String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Member {
+  id       Int      @id @default(autoincrement())
+  name     String
+  role     String
+  tenure   String
+  image    String?
+  linkedin String?
+  isCurrent Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  techStack   String[] @default([])
+  githubLink  String?
+  demoLink    String?
+  contributors String[] @default([])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Podcast {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  youtubeLink String
+  guest       String
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Blog {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  author    String
+  tags      String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

@@ -1,0 +1,10 @@
+-- AlterTable
+ALTER TABLE "Blog" ALTER COLUMN "tags" SET DEFAULT ARRAY[]::TEXT[];
+
+-- AlterTable
+ALTER TABLE "Event" ALTER COLUMN "images" SET DEFAULT ARRAY[]::TEXT[],
+ALTER COLUMN "speakers" SET DEFAULT ARRAY[]::TEXT[];
+
+-- AlterTable
+ALTER TABLE "Project" ALTER COLUMN "techStack" SET DEFAULT ARRAY[]::TEXT[],
+ALTER COLUMN "contributors" SET DEFAULT ARRAY[]::TEXT[];
