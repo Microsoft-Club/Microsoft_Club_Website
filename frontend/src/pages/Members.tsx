@@ -11,7 +11,16 @@ const resolveMemberImageUrl = (rawUrl?: string): string => {
   if (!cleaned) return '';
 
   if (/^https?:\/\//i.test(cleaned)) {
-    return cleaned;
+    try {
+      const url = new URL(cleaned);
+      // Fix mistakenly pasted filesystem-like paths in absolute URLs.
+      url.pathname = url.pathname
+        .replace(/\/(frontend\/)?public\//i, '/')
+        .replace(/\/{2,}/g, '/');
+      return url.toString();
+    } catch {
+      return cleaned;
+    }
   }
 
   // Normalize paths users may paste from local project structure.
