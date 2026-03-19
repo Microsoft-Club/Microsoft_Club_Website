@@ -17,25 +17,33 @@ const Footer = () => {
         </div>
         <div className="flex gap-4 flex-wrap justify-center md:justify-end">
           <a
-            href="#"
+            href="https://www.instagram.com/microsoftclubgiki/?hl=en"
+            target="_blank"
+            rel="noreferrer"
             className="underline underline-offset-2 hover:text-purpleAccent"
           >
             Instagram
           </a>
           <a
-            href="#"
+            href="https://www.linkedin.com/company/microsoft-club-giki/?viewAsMember=true"
+            target="_blank"
+            rel="noreferrer"
             className="underline underline-offset-2 hover:text-purpleAccent"
           >
             LinkedIn
           </a>
           <a
-            href="#"
+            href="https://www.youtube.com/@LOGIKALGIKI"
+            target="_blank"
+            rel="noreferrer"
             className="underline underline-offset-2 hover:text-purpleAccent"
           >
             YouTube
           </a>
           <a
-            href="#"
+            href="https://chat.whatsapp.com/IGUY9fBM2SRC5baqV5DvoH"
+            target="_blank"
+            rel="noreferrer"
             className="underline underline-offset-2 hover:text-purpleAccent"
           >
             WhatsApp Community
