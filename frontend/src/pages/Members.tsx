@@ -76,10 +76,10 @@ const Members = () => {
                     <img
                       src={resolveMemberImageUrl(member.image)}
                       alt={member.name}
-                      className="w-10 h-10 rounded object-cover border border-black"
+                      className="w-16 h-16 rounded object-cover border border-black"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded bg-lightBg border border-black" />
+                    <div className="w-16 h-16 rounded bg-lightBg border border-black" />
                   )}
                   <div>
                     <p className="text-sm font-semibold">{member.name}</p>
@@ -113,10 +113,10 @@ const Members = () => {
                     <img
                       src={resolveMemberImageUrl(member.image)}
                       alt={member.name}
-                      className="w-10 h-10 rounded object-cover border border-black"
+                      className="w-16 h-16 rounded object-cover border border-black"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded bg-lightBg border border-black" />
+                    <div className="w-16 h-16 rounded bg-lightBg border border-black" />
                   )}
                   <div>
                     <p className="text-sm font-semibold">{member.name}</p>
