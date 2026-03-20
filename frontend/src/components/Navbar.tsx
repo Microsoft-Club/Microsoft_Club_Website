@@ -23,14 +23,14 @@ const Navbar = () => {
     <header className="sticky top-0 z-30 bg-primaryDark text-white border-b-4 border-black shadow-retro">
       <nav className="max-w-6xl mx-auto px-3 py-3 md:px-6">
         <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="flex items-center gap-2 min-w-0">
+          <Link to="/" className="flex items-center gap-1 min-w-0">
             <img
               src={clubLogo}
               alt="Microsoft Club GIKI logo"
               className="w-9 h-9 md:w-10 md:h-10 object-contain bg-white border-2 border-black shadow-retro shrink-0"
             />
-            <span className="font-heading text-[10px] sm:text-xs md:text-sm leading-tight tracking-tight flex items-baseline gap-1 min-w-0">
-              <span className="truncate min-w-0">Microsoft Club</span>
+            <span className="font-heading text-[10px] sm:text-xs md:text-sm leading-tight tracking-tight flex items-baseline min-w-0">
+              <span className="truncate min-w-0">Microsoft Club </span>
               <span className="shrink-0">GIKI</span>
             </span>
           </Link>
