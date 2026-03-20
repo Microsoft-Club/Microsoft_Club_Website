@@ -1,0 +1,20 @@
+name: Keep Backend Awake
+
+on:
+  schedule:
+    # Every 13 minutes (UTC): 0, 13, 26, 39, 52
+    - cron: "0,13,26,39,52 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render backend (best-effort)
+        continue-on-error: true
+        run: |
+          # Try the lightweight root endpoint first.
+          curl -sS --max-time 10 https://microsoft-club-website.onrender.com/ -o /dev/null || true
+          # Fallback: hit a real API route too (helps wake up if root is cached).
+          curl -sS --max-time 10 https://microsoft-club-website.onrender.com/api/members -o /dev/null || true
+
