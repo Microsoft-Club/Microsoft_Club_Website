@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import WindowCard from '../components/WindowCard';
+import PixelButton from '../components/PixelButton';
 import { api } from '../services/api';
 import type { Podcast } from '../services/api';
 
@@ -48,6 +49,23 @@ const Podcasts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<
+    Record<string, boolean>
+  >({});
+
+  const MAX_DESCRIPTION_CHARS = 160;
+
+  const toggleDescription = (episodeId: string) => {
+    setExpandedDescriptions((prev) => ({
+      ...prev,
+      [episodeId]: !prev[episodeId],
+    }));
+  };
+
+  const getDescriptionPreview = (description: string) => {
+    if (description.length <= MAX_DESCRIPTION_CHARS) return description;
+    return `${description.slice(0, MAX_DESCRIPTION_CHARS).trimEnd()}...`;
+  };
 
   useEffect(() => {
     const fetchPodcasts = async () => {
@@ -125,7 +143,30 @@ const Podcasts = () => {
               <p className="text-xs text-gray-700 mb-1">
                 Date: {new Date(episode.date).toLocaleDateString()}
               </p>
-              <p className="text-sm">{episode.description}</p>
+              {(() => {
+                const description = episode.description ?? '';
+                const isExpanded = expandedDescriptions[episode.id] ?? false;
+                const shouldTruncate = description.length > MAX_DESCRIPTION_CHARS;
+                const text = shouldTruncate
+                  ? isExpanded
+                    ? description
+                    : getDescriptionPreview(description)
+                  : description;
+
+                return (
+                  <>
+                    <p className="text-sm">{text}</p>
+                    {shouldTruncate && (
+                      <PixelButton
+                        type="button"
+                        label={isExpanded ? 'Read less' : 'Read more'}
+                        onClick={() => toggleDescription(episode.id)}
+                        className="mt-2"
+                      />
+                    )}
+                  </>
+                );
+              })()}
             </WindowCard>
           ))}
           {!podcasts.length && (
