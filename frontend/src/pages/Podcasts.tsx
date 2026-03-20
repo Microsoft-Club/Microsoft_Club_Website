@@ -53,7 +53,8 @@ const Podcasts = () => {
     Record<string, boolean>
   >({});
 
-  const MAX_DESCRIPTION_CHARS = 160;
+  // Keep episode cards compact; 120 chars still reads well at `text-sm`.
+  const MAX_DESCRIPTION_CHARS = 120;
 
   const toggleDescription = (episodeId: string) => {
     setExpandedDescriptions((prev) => ({
@@ -161,7 +162,7 @@ const Podcasts = () => {
                         type="button"
                         label={isExpanded ? 'Read less' : 'Read more'}
                         onClick={() => toggleDescription(episode.id)}
-                        className="mt-2"
+                        className="mt-2 self-start"
                       />
                     )}
                   </>
