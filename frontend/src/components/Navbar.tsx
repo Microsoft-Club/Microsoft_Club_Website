@@ -29,9 +29,8 @@ const Navbar = () => {
               alt="Microsoft Club GIKI logo"
               className="w-9 h-9 md:w-10 md:h-10 object-contain bg-white border-2 border-black shadow-retro shrink-0"
             />
-            <span className="font-heading text-[10px] sm:text-xs md:text-sm leading-tight tracking-tight flex items-baseline min-w-0">
-              <span className="truncate min-w-0">Microsoft Club </span>
-              <span className="shrink-0">GIKI</span>
+            <span className="font-heading text-[10px] sm:text-xs md:text-sm leading-tight tracking-tight min-w-0 whitespace-nowrap">
+              Microsoft Club GIKI
             </span>
           </Link>
 
