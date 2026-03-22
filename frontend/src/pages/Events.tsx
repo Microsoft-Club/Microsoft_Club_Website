@@ -45,11 +45,28 @@ const resolveImageUrl = (rawUrl?: string): string => {
 
 type Filter = 'all' | 'upcoming' | 'past';
 
+const MAX_DESCRIPTION_CHARS = 120;
+
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [filter, setFilter] = useState<Filter>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<
+    Record<string, boolean>
+  >({});
+
+  const toggleDescription = (eventId: string) => {
+    setExpandedDescriptions((prev) => ({
+      ...prev,
+      [eventId]: !prev[eventId],
+    }));
+  };
+
+  const getDescriptionPreview = (description: string) => {
+    if (description.length <= MAX_DESCRIPTION_CHARS) return description;
+    return `${description.slice(0, MAX_DESCRIPTION_CHARS).trimEnd()}...`;
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -100,7 +117,31 @@ const Events = () => {
               <p className="text-sm mb-1">
                 Date: {new Date(event.date).toLocaleDateString()}
               </p>
-              <p className="text-sm mb-3">{event.description}</p>
+              {(() => {
+                const description = event.description ?? '';
+                const isExpanded = expandedDescriptions[event.id] ?? false;
+                const shouldTruncate =
+                  description.length > MAX_DESCRIPTION_CHARS;
+                const text = shouldTruncate
+                  ? isExpanded
+                    ? description
+                    : getDescriptionPreview(description)
+                  : description;
+
+                return (
+                  <div className="mb-3">
+                    <p className="text-sm">{text}</p>
+                    {shouldTruncate && (
+                      <PixelButton
+                        type="button"
+                        label={isExpanded ? 'Read less' : 'Read more'}
+                        onClick={() => toggleDescription(event.id)}
+                        className="mt-2 self-start"
+                      />
+                    )}
+                  </div>
+                );
+              })()}
               {event.images && event.images.length > 0 && (
                 <div className="mb-3">
                   <div className="grid grid-cols-3 gap-2">
