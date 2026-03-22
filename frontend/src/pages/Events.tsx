@@ -216,7 +216,9 @@ const Events = () => {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <PixelButton label="Register" />
+                  <PixelButton
+                    label={event.type === 'upcoming' ? 'Register' : 'Link'}
+                  />
                 </a>
               )}
             </WindowCard>
