@@ -268,7 +268,7 @@ const Events = () => {
                 >
                   <PixelButton
                     label={
-                      String(event.type).toLowerCase() === 'upcoming'
+                      new Date(event.date) >= new Date(new Date().setHours(0, 0, 0, 0))
                         ? 'Register'
                         : 'Link'
                     }
