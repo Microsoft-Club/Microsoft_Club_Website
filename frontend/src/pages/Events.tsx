@@ -4,6 +4,45 @@ import PixelButton from '../components/PixelButton';
 import { api } from '../services/api';
 import type { Event } from '../services/api';
 
+const EventImage = ({ src, alt }: { src: string; alt: string }) => {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-16 object-cover border border-black"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+};
+
+const resolveImageUrl = (rawUrl?: string): string => {
+  if (!rawUrl) return '';
+  const cleaned = rawUrl.trim().replace(/^['"]+|['"]+$/g, '').replace(/\\/g, '/');
+  if (!cleaned) return '';
+  if (/^https?:\/\//i.test(cleaned)) {
+    try {
+      const url = new URL(cleaned);
+      url.pathname = url.pathname
+        .replace(/\/(frontend\/)?public\//i, '/')
+        .replace(/\/{2,}/g, '/');
+      // Rewrite GitHub Pages URLs to current origin so images load on custom domain
+      const ghPagesMatch = url.hostname.match(/^[\w-]+\.github\.io$/i);
+      if (ghPagesMatch && typeof window !== 'undefined') {
+        return `${window.location.origin}${url.pathname.replace(/^\/[^/]+\//, '/')}`;
+      }
+      return url.toString();
+    } catch {
+      return cleaned;
+    }
+  }
+  const withoutPublicPrefix = cleaned.replace(/^\/?(frontend\/)?public\//i, '');
+  const normalizedPath = withoutPublicPrefix.replace(/^\/+/, '');
+  return `${import.meta.env.BASE_URL}${normalizedPath}`.replace(/([^:]\/)\/+/g, '$1');
+};
+
 type Filter = 'all' | 'upcoming' | 'past';
 
 const Events = () => {
@@ -65,15 +104,17 @@ const Events = () => {
               {event.images && event.images.length > 0 && (
                 <div className="mb-3">
                   <div className="grid grid-cols-3 gap-2">
-                    {event.images.slice(0, 3).map((src, idx) => (
-                      <img
-                        key={`${src}-${idx}`}
-                        src={src}
-                        alt={`${event.title} photo ${idx + 1}`}
-                        className="w-full h-16 object-cover border border-black"
-                        loading="lazy"
-                      />
-                    ))}
+                    {event.images.slice(0, 3).map((rawSrc, idx) => {
+                      const src = resolveImageUrl(rawSrc);
+                      if (!src) return null;
+                      return (
+                        <EventImage
+                          key={`${rawSrc}-${idx}`}
+                          src={src}
+                          alt={`${event.title} photo ${idx + 1}`}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               )}
