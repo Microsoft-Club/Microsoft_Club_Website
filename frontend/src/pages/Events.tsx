@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
 import { api } from '../services/api';
@@ -42,6 +42,8 @@ const EventImage = ({ src, alt }: { src: string; alt: string }) => {
   );
 };
 
+const AUTO_SWIPE_INTERVAL_MS = 4000;
+
 const EventImageCarousel = ({
   images,
   eventTitle,
@@ -49,19 +51,56 @@ const EventImageCarousel = ({
   images: string[];
   eventTitle: string;
 }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   const validImages = images
     .map((raw) => resolveImageUrl(raw))
     .filter((src): src is string => !!src);
   if (validImages.length === 0) return null;
 
   const isMulti = validImages.length > 1;
+  const count = validImages.length;
+
+  useEffect(() => {
+    if (!isMulti || !scrollRef.current) return;
+    const el = scrollRef.current;
+    const scrollToIndex = (idx: number) => {
+      const next = idx % count;
+      setCurrentIndex(next);
+      el.scrollTo({ left: el.clientWidth * next, behavior: 'smooth' });
+    };
+    const interval = setInterval(
+      () => scrollToIndex(currentIndex + 1),
+      AUTO_SWIPE_INTERVAL_MS
+    );
+    return () => clearInterval(interval);
+  }, [isMulti, count, currentIndex]);
+
+  const handleScroll = () => {
+    if (!scrollRef.current || !isMulti) return;
+    const el = scrollRef.current;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    setCurrentIndex(Math.min(idx, count - 1));
+  };
+
+  const goToSlide = (idx: number) => {
+    if (!scrollRef.current) return;
+    setCurrentIndex(idx);
+    scrollRef.current.scrollTo({
+      left: scrollRef.current.clientWidth * idx,
+      behavior: 'smooth',
+    });
+  };
 
   return (
     <div className="relative aspect-video bg-black">
       <div
+        ref={scrollRef}
         className={`flex h-full w-full ${
           isMulti ? 'overflow-x-auto scroll-snap-swipe' : ''
         }`}
+        onScroll={handleScroll}
       >
         {validImages.map((src, idx) => (
           <div
@@ -77,15 +116,26 @@ const EventImageCarousel = ({
         ))}
       </div>
       {isMulti && (
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
-          {validImages.map((_, idx) => (
-            <span
-              key={idx}
-              className="h-1.5 w-1.5 rounded-full bg-white/70 border border-black/30"
-              aria-hidden
-            />
-          ))}
-        </div>
+        <>
+          <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 text-white text-[10px] font-medium">
+            {currentIndex + 1} / {count}
+          </div>
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2">
+            {validImages.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => goToSlide(idx)}
+                className={`h-2 w-2 rounded-full border border-white/50 transition-all ${
+                  idx === currentIndex
+                    ? 'bg-white scale-125'
+                    : 'bg-white/50 hover:bg-white/70'
+                }`}
+                aria-label={`Go to image ${idx + 1}`}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
@@ -217,7 +267,11 @@ const Events = () => {
                   rel="noreferrer"
                 >
                   <PixelButton
-                    label={event.type === 'upcoming' ? 'Register' : 'Link'}
+                    label={
+                      String(event.type).toLowerCase() === 'upcoming'
+                        ? 'Register'
+                        : 'Link'
+                    }
                   />
                 </a>
               )}
