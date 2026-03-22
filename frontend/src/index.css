@@ -82,3 +82,13 @@ body {
   @apply grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
 }
 
+/* Swipeable carousel scrollbar hide */
+.scroll-snap-swipe {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.scroll-snap-swipe::-webkit-scrollbar {
+  display: none;
+}
+

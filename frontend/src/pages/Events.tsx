@@ -4,20 +4,6 @@ import PixelButton from '../components/PixelButton';
 import { api } from '../services/api';
 import type { Event } from '../services/api';
 
-const EventImage = ({ src, alt }: { src: string; alt: string }) => {
-  const [failed, setFailed] = useState(false);
-  if (failed) return null;
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="w-full h-16 object-cover border border-black"
-      loading="lazy"
-      onError={() => setFailed(true)}
-    />
-  );
-};
-
 const resolveImageUrl = (rawUrl?: string): string => {
   if (!rawUrl) return '';
   const cleaned = rawUrl.trim().replace(/^['"]+|['"]+$/g, '').replace(/\\/g, '/');
@@ -28,7 +14,6 @@ const resolveImageUrl = (rawUrl?: string): string => {
       url.pathname = url.pathname
         .replace(/\/(frontend\/)?public\//i, '/')
         .replace(/\/{2,}/g, '/');
-      // Rewrite GitHub Pages URLs to current origin so images load on custom domain
       const ghPagesMatch = url.hostname.match(/^[\w-]+\.github\.io$/i);
       if (ghPagesMatch && typeof window !== 'undefined') {
         return `${window.location.origin}${url.pathname.replace(/^\/[^/]+\//, '/')}`;
@@ -41,6 +26,69 @@ const resolveImageUrl = (rawUrl?: string): string => {
   const withoutPublicPrefix = cleaned.replace(/^\/?(frontend\/)?public\//i, '');
   const normalizedPath = withoutPublicPrefix.replace(/^\/+/, '');
   return `${import.meta.env.BASE_URL}${normalizedPath}`.replace(/([^:]\/)\/+/g, '$1');
+};
+
+const EventImage = ({ src, alt }: { src: string; alt: string }) => {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full min-h-[10rem] object-cover"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+};
+
+const EventImageCarousel = ({
+  images,
+  eventTitle,
+}: {
+  images: string[];
+  eventTitle: string;
+}) => {
+  const validImages = images
+    .map((raw) => resolveImageUrl(raw))
+    .filter((src): src is string => !!src);
+  if (validImages.length === 0) return null;
+
+  const isMulti = validImages.length > 1;
+
+  return (
+    <div className="relative aspect-video bg-black">
+      <div
+        className={`flex h-full w-full ${
+          isMulti ? 'overflow-x-auto scroll-snap-swipe' : ''
+        }`}
+      >
+        {validImages.map((src, idx) => (
+          <div
+            key={`${src}-${idx}`}
+            className="h-full w-full flex-shrink-0"
+            style={isMulti ? { scrollSnapAlign: 'start' } : undefined}
+          >
+            <EventImage
+              src={src}
+              alt={`${eventTitle} photo ${idx + 1}`}
+            />
+          </div>
+        ))}
+      </div>
+      {isMulti && (
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
+          {validImages.map((_, idx) => (
+            <span
+              key={idx}
+              className="h-1.5 w-1.5 rounded-full bg-white/70 border border-black/30"
+              aria-hidden
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 type Filter = 'all' | 'upcoming' | 'past';
@@ -113,7 +161,18 @@ const Events = () => {
       {!loading && !error && (
         <div className="grid-layout">
           {filteredEvents.map((event) => (
-            <WindowCard key={event.id} title={event.title}>
+            <WindowCard
+              key={event.id}
+              title={event.title}
+              imageSlot={
+                event.images?.length ? (
+                  <EventImageCarousel
+                    images={event.images}
+                    eventTitle={event.title}
+                  />
+                ) : undefined
+              }
+            >
               <p className="text-sm mb-1">
                 Date: {new Date(event.date).toLocaleDateString()}
               </p>
@@ -142,23 +201,6 @@ const Events = () => {
                   </div>
                 );
               })()}
-              {event.images && event.images.length > 0 && (
-                <div className="mb-3">
-                  <div className="grid grid-cols-3 gap-2">
-                    {event.images.slice(0, 3).map((rawSrc, idx) => {
-                      const src = resolveImageUrl(rawSrc);
-                      if (!src) return null;
-                      return (
-                        <EventImage
-                          key={`${rawSrc}-${idx}`}
-                          src={src}
-                          alt={`${event.title} photo ${idx + 1}`}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
               {event.registrationLink && (
                 <a
                   href={event.registrationLink}

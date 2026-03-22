@@ -4,10 +4,16 @@ import { motion } from 'framer-motion';
 type WindowCardProps = {
   title: string;
   children: ReactNode;
+  imageSlot?: ReactNode;
   className?: string;
 };
 
-const WindowCard = ({ title, children, className = '' }: WindowCardProps) => {
+const WindowCard = ({
+  title,
+  children,
+  imageSlot,
+  className = '',
+}: WindowCardProps) => {
   return (
     <motion.div
       className={`retro-window ${className}`}
@@ -22,7 +28,14 @@ const WindowCard = ({ title, children, className = '' }: WindowCardProps) => {
           <span className="retro-dot" />
         </div>
       </div>
-      <div className="p-4 md:p-5 bg-white border-t-retro border-black">
+      {imageSlot && (
+        <div className="w-full overflow-hidden border-b border-black">
+          {imageSlot}
+        </div>
+      )}
+      <div
+        className={`p-4 md:p-5 bg-white ${imageSlot ? '' : 'border-t-retro'} border-black`}
+      >
         {children}
       </div>
     </motion.div>
