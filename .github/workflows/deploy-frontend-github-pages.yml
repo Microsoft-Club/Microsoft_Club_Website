@@ -32,15 +32,17 @@ jobs:
 
       - name: Install + Build
         env:
-          # Set this secret in your GitHub repo settings.
-          # Example: https://your-backend.onrender.com
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          # For project pages: https://<user>.github.io/<repo>/
-          VITE_BASE_URL: /Microsoft_Club_Website/
+          # Changed from /Microsoft_Club_Website/ to / for custom domain
+          VITE_BASE_URL: /
         run: |
           cd frontend
           npm ci
           npm run build
+
+      - name: Create CNAME
+        # This ensures GitHub Pages knows to use your custom domain
+        run: echo "mlsaclubgiki.tech" > frontend/dist/CNAME
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
