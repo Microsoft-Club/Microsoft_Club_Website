@@ -170,7 +170,16 @@ const Events = () => {
                     images={event.images}
                     eventTitle={event.title}
                   />
-                ) : undefined
+                ) : (
+                  <div
+                    className="aspect-video bg-gray-100 border-b border-black flex items-center justify-center"
+                    aria-hidden
+                  >
+                    <span className="text-xs text-gray-400">
+                      No event image
+                    </span>
+                  </div>
+                )
               }
             >
               <p className="text-sm mb-1">
