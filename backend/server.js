@@ -26,6 +26,14 @@ app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/podcasts', require('./routes/podcastRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.get('/', (req, res) => {
   res.json({ message: 'Microsoft Club GIKI API is running' });
 });
