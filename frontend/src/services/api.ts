@@ -47,6 +47,7 @@ export type Project = {
   githubLink?: string;
   demoLink?: string;
   contributors: string[];
+  images?: string[];
 };
 
 export type Podcast = {

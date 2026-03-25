@@ -62,6 +62,7 @@ const Dashboard = () => {
     githubLink: string;
     demoLink: string;
     contributorsText: string;
+    imagesText: string;
   }>({
     title: '',
     description: '',
@@ -69,6 +70,7 @@ const Dashboard = () => {
     githubLink: '',
     demoLink: '',
     contributorsText: '',
+    imagesText: '',
   });
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [savingProject, setSavingProject] = useState(false);
@@ -204,6 +206,7 @@ const Dashboard = () => {
       githubLink: '',
       demoLink: '',
       contributorsText: '',
+      imagesText: '',
     });
     setEditingProjectId(null);
   };
@@ -330,6 +333,10 @@ const Dashboard = () => {
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean);
+      const images = projectForm.imagesText
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
 
       const payload = {
         title: projectForm.title || '',
@@ -338,6 +345,7 @@ const Dashboard = () => {
         githubLink: projectForm.githubLink || '',
         demoLink: projectForm.demoLink || '',
         contributors,
+        images,
       };
 
       if (editingProjectId !== null) {
@@ -408,6 +416,7 @@ const Dashboard = () => {
       githubLink: project.githubLink || '',
       demoLink: project.demoLink || '',
       contributorsText: (project.contributors || []).join(', '),
+      imagesText: (project.images || []).join(', '),
     });
   };
 
@@ -1094,6 +1103,21 @@ const Dashboard = () => {
                 onChange={(e) =>
                   setProjectForm((s) => ({ ...s, demoLink: e.target.value }))
                 }
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1">
+                Project Photos (optional, comma-separated URLs)
+              </label>
+              <input
+                type="text"
+                value={projectForm.imagesText}
+                onChange={(e) =>
+                  setProjectForm((s) => ({ ...s, imagesText: e.target.value }))
+                }
+                placeholder="https://..., https://..."
                 className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
               />
             </div>

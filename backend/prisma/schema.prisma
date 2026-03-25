@@ -46,6 +46,7 @@ model Project {
   techStack   String[] @default([])
   githubLink  String?
   demoLink    String?
+  images      String[] @default([])
   contributors String[] @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

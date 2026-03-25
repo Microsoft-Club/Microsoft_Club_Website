@@ -21,6 +21,7 @@ const createProject = async (req, res) => {
       githubLink,
       demoLink,
       contributors,
+      images,
     } = req.body || {};
 
     const techStackArr = Array.isArray(techStack)
@@ -35,6 +36,12 @@ const createProject = async (req, res) => {
       ? contributors.split(',').map((s) => s.trim()).filter(Boolean)
       : [];
 
+    const imagesArr = Array.isArray(images)
+      ? images
+      : typeof images === 'string'
+      ? images.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
+
     const project = await prisma.project.create({
       data: {
         title,
@@ -43,6 +50,7 @@ const createProject = async (req, res) => {
         githubLink: githubLink || null,
         demoLink: demoLink || null,
         contributors: contributorsArr,
+        images: imagesArr,
       },
     });
     res.status(201).json(project);
@@ -62,6 +70,7 @@ const updateProject = async (req, res) => {
       githubLink,
       demoLink,
       contributors,
+      images,
     } = req.body || {};
 
     const techStackArr = Array.isArray(techStack)
@@ -76,6 +85,12 @@ const updateProject = async (req, res) => {
       ? contributors.split(',').map((s) => s.trim()).filter(Boolean)
       : [];
 
+    const imagesArr = Array.isArray(images)
+      ? images
+      : typeof images === 'string'
+      ? images.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
+
     const project = await prisma.project.update({
       where: { id: Number(id) },
       data: {
@@ -87,6 +102,7 @@ const updateProject = async (req, res) => {
         ...(contributors !== undefined
           ? { contributors: contributorsArr }
           : {}),
+        ...(images !== undefined ? { images: imagesArr } : {}),
       },
     });
     res.json(project);
