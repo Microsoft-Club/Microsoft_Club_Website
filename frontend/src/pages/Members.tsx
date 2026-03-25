@@ -51,7 +51,16 @@ const Members = () => {
   }, []);
 
   const currentMembers = useMemo(
-    () => members.filter((m) => m.isCurrent),
+    () =>
+      members
+        .filter((m) => m.isCurrent)
+        .slice()
+        .sort((a, b) => {
+          const ao = a.displayOrder ?? Number.POSITIVE_INFINITY;
+          const bo = b.displayOrder ?? Number.POSITIVE_INFINITY;
+          if (ao !== bo) return ao - bo;
+          return b.id - a.id;
+        }),
     [members]
   );
   const alumniMembers = useMemo(

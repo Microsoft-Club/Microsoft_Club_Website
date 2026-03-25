@@ -48,6 +48,7 @@ const Dashboard = () => {
     image: '',
     linkedin: '',
     isCurrent: true,
+    displayOrder: null,
   });
   const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
   const [savingMember, setSavingMember] = useState(false);
@@ -194,6 +195,7 @@ const Dashboard = () => {
       image: '',
       linkedin: '',
       isCurrent: true,
+      displayOrder: null,
     });
     setEditingMemberId(null);
   };
@@ -302,6 +304,7 @@ const Dashboard = () => {
         image: memberForm.image || '',
         linkedin: memberForm.linkedin || '',
         isCurrent: memberForm.isCurrent ?? true,
+        displayOrder: memberForm.displayOrder ?? null,
       };
 
       if (editingMemberId !== null) {
@@ -394,6 +397,7 @@ const Dashboard = () => {
       image: member.image || '',
       linkedin: member.linkedin || '',
       isCurrent: member.isCurrent,
+      displayOrder: member.displayOrder ?? null,
     });
   };
 
@@ -896,6 +900,27 @@ const Dashboard = () => {
 
             <div>
               <label className="block text-xs font-medium mb-1">
+                Display Order (optional, smaller = higher)
+              </label>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={memberForm.displayOrder ?? ''}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  setMemberForm((s) => ({
+                    ...s,
+                    displayOrder: raw === '' ? null : Number(raw),
+                  }));
+                }}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                placeholder="1"
+                min={0}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1">
                 Image URL (optional)
               </label>
               <input
@@ -981,6 +1006,9 @@ const Dashboard = () => {
                         <p className="font-semibold">{member.name}</p>
                         <p className="text-gray-600">
                           {member.role} • {member.tenure}
+                        </p>
+                        <p className="text-[10px] mt-1 text-gray-600">
+                          Order: {member.displayOrder ?? '—'}
                         </p>
                         <p className="text-[10px] mt-1">
                           {member.isCurrent ? 'Current' : 'Alumni'}

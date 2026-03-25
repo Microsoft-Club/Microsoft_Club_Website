@@ -1,9 +1,16 @@
 const prisma = require('../prisma/client');
 
+const toOptionalInt = (value) => {
+  if (value === undefined || value === null || value === '') return null;
+  const n = Number(value);
+  if (!Number.isFinite(n)) return null;
+  return Math.trunc(n);
+};
+
 const getMembers = async (req, res) => {
   try {
     const members = await prisma.member.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }],
     });
     res.json(members);
   } catch (error) {
@@ -21,6 +28,7 @@ const createMember = async (req, res) => {
       image,
       linkedin,
       isCurrent,
+      displayOrder,
     } = req.body || {};
 
     const member = await prisma.member.create({
@@ -30,6 +38,7 @@ const createMember = async (req, res) => {
         tenure,
         image: image || null,
         linkedin: linkedin || null,
+        displayOrder: toOptionalInt(displayOrder),
         isCurrent:
           isCurrent === true ||
           isCurrent === 'true' ||
@@ -54,6 +63,7 @@ const updateMember = async (req, res) => {
       image,
       linkedin,
       isCurrent,
+      displayOrder,
     } = req.body || {};
 
     const member = await prisma.member.update({
@@ -64,6 +74,9 @@ const updateMember = async (req, res) => {
         ...(tenure !== undefined ? { tenure } : {}),
         ...(image !== undefined ? { image: image || null } : {}),
         ...(linkedin !== undefined ? { linkedin: linkedin || null } : {}),
+        ...(displayOrder !== undefined
+          ? { displayOrder: toOptionalInt(displayOrder) }
+          : {}),
         ...(isCurrent !== undefined
           ? {
               isCurrent:

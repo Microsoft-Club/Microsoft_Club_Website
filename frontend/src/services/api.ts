@@ -37,6 +37,7 @@ export type Member = {
   image?: string;
   linkedin?: string;
   isCurrent: boolean;
+  displayOrder?: number | null;
 };
 
 export type Project = {
