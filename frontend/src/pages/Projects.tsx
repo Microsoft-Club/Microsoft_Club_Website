@@ -214,15 +214,14 @@ const Projects = () => {
                     <p className="text-sm mb-1">
                       Contributors: {project.contributors?.join(', ') || '—'}
                     </p>
-                    <p className="text-sm mb-2">{displayedDescription}</p>
+                    <p className="text-sm">{displayedDescription}</p>
                     {hasLongDescription && (
-                      <button
+                      <PixelButton
                         type="button"
-                        className="text-xs mb-3 underline hover:opacity-80"
+                        label={isExpanded ? 'Read less' : 'Read more'}
+                        className="mt-2 mb-3 self-start"
                         onClick={() => toggleProjectDescription(project.id)}
-                      >
-                        {isExpanded ? 'Read Less' : 'Read More'}
-                      </button>
+                      />
                     )}
                     {!hasLongDescription && <div className="mb-3" />}
                   </>
