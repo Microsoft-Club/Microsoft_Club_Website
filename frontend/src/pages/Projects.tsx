@@ -145,6 +145,10 @@ const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedProjectIds, setExpandedProjectIds] = useState<Set<number>>(
+    new Set()
+  );
+  const DESCRIPTION_PREVIEW_LIMIT = 140;
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -160,6 +164,18 @@ const Projects = () => {
 
     fetchProjects();
   }, []);
+
+  const toggleProjectDescription = (projectId: number) => {
+    setExpandedProjectIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(projectId)) {
+        next.delete(projectId);
+      } else {
+        next.add(projectId);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -181,13 +197,37 @@ const Projects = () => {
                 ) : undefined
               }
             >
-              <p className="text-sm mb-1">
-                Tech: {project.techStack?.join(', ') || '—'}
-              </p>
-              <p className="text-sm mb-1">
-                Contributors: {project.contributors?.join(', ') || '—'}
-              </p>
-              <p className="text-sm mb-3">{project.description}</p>
+              {(() => {
+                const isExpanded = expandedProjectIds.has(project.id);
+                const hasLongDescription =
+                  project.description.length > DESCRIPTION_PREVIEW_LIMIT;
+                const displayedDescription =
+                  hasLongDescription && !isExpanded
+                    ? `${project.description.slice(0, DESCRIPTION_PREVIEW_LIMIT).trim()}...`
+                    : project.description;
+
+                return (
+                  <>
+                    <p className="text-sm mb-1">
+                      Tech: {project.techStack?.join(', ') || '—'}
+                    </p>
+                    <p className="text-sm mb-1">
+                      Contributors: {project.contributors?.join(', ') || '—'}
+                    </p>
+                    <p className="text-sm mb-2">{displayedDescription}</p>
+                    {hasLongDescription && (
+                      <button
+                        type="button"
+                        className="text-xs mb-3 underline hover:opacity-80"
+                        onClick={() => toggleProjectDescription(project.id)}
+                      >
+                        {isExpanded ? 'Read Less' : 'Read More'}
+                      </button>
+                    )}
+                    {!hasLongDescription && <div className="mb-3" />}
+                  </>
+                );
+              })()}
               <div className="flex gap-2 flex-wrap">
                 {!!project.githubLink?.trim() && (
                   <a
