@@ -1,0 +1,46 @@
+name: Backend PR Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: backend-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Install, Prisma, and syntax
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
+      DIRECT_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Syntax-check JavaScript
+        run: |
+          find . -name '*.js' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n1 node --check
