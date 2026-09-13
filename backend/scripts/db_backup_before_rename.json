@@ -1,0 +1,685 @@
+{
+  "events": [
+    {
+      "id": 3,
+      "title": "Learning and Development Session: Deploying Static Web Pages through Github Pages",
+      "description": "Harnessing the Power of GitHub Pages. In this engaging session, the talented Hammad Anwer from Batch 31 instructed the audience in hosting static web pages on GitHub Pages to showcase one's presence on the World Wide Web using this powerful feature of GitHub that provides a seamless hosting service, exploring the capabilities of the service to exhibit one's work to the world.",
+      "date": "2022-12-04T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/3_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/3_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/3_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR7bl3I2Z-/?img_index=1",
+      "createdAt": "2026-03-20T14:34:11.398Z",
+      "updatedAt": "2026-03-22T16:56:35.883Z"
+    },
+    {
+      "id": 1,
+      "title": "Learning and Development Session: Intro to Animation Through Coding",
+      "description": "The first official LnD session hosted by MS Club GIKI: embarking on a coding adventure. This session was delivered by Maaz Saeed, a passionate programmer from Batch 31. Together, with the engaged audience, we crafted a mini pong game from scratch in Processing using JavaScript covering fundamentals of animations and programming.",
+      "date": "2022-11-21T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/1_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/1_2.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR39XNoOdN/?img_index=1",
+      "createdAt": "2026-03-20T14:29:12.639Z",
+      "updatedAt": "2026-03-22T15:58:57.334Z"
+    },
+    {
+      "id": 2,
+      "title": "Learning and Development Session: Intro to Data Science ",
+      "description": "Data Science is a rapidly growing field that integrates a wide range of techniques and tools to extract insights from raw data. In this session led by Abdullah Habib, an aspiring Data Scientist from Batch 31, participants embarked on a hands-on learning experience, delving into the realm of Data Science. The session focused on the significance of Data Science and fundamental concepts. Additionally, a comprehensive introduction to Jupyter was provided, equipping the audience with essential skills in basic Data Parsing techniques.\n",
+      "date": "2022-11-28T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/2_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/2_2.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR4-IdIEsk/?img_index=1",
+      "createdAt": "2026-03-20T14:32:18.682Z",
+      "updatedAt": "2026-03-22T16:55:32.990Z"
+    },
+    {
+      "id": 5,
+      "title": "Learning and Development Session: Fundamentals of Python",
+      "description": "From data analysis, task automation, web development, machine learning, AI and a lot more, Python is recognized as one of the most popular and powerful programming languages. In a comprehensive session, Ahabb Sheraz from Batch 31 provided hands-on teaching of the Python language, accompanied by a brief introduction to AI and machine learning using Python.",
+      "date": "2023-01-30T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/5_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR78wkI4af/",
+      "createdAt": "2026-03-20T14:36:39.523Z",
+      "updatedAt": "2026-03-22T16:57:40.263Z"
+    },
+    {
+      "id": 6,
+      "title": "Learning and Development Session: Android Development with Kotlin",
+      "description": "At LnD we are about handcrafted goods. In this free of cost session led by the talented Haider Irfan from Batch 31, along with the enthusiastic audience, we created a mini app in Android Studio using the powerful programming language Kotlin.\n",
+      "date": "2023-02-13T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/6_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/6_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/6_4.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR9AXJoTyK/?img_index=1",
+      "createdAt": "2026-03-20T14:37:53.797Z",
+      "updatedAt": "2026-03-22T16:58:34.555Z"
+    },
+    {
+      "id": 7,
+      "title": "Learning and Development Session: Basics of Github",
+      "description": "GitHub plays a pivotal role in Software Development, allowing for a seamless development route. This session was conducted by Maaz Saeed and Hammad Anwer from Batch 31, where the keen audience was taught the basics of Git and GitHub, creating repositories, merging, branching and other fundamentals.",
+      "date": "2023-02-20T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/7_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/7_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/7_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR9v3qIEcs/?img_index=1",
+      "createdAt": "2026-03-20T14:39:21.099Z",
+      "updatedAt": "2026-03-22T17:19:25.555Z"
+    },
+    {
+      "id": 8,
+      "title": "Learning and Development Session: Face Detection with Python",
+      "description": "Face Detection is a fascinating technology, and you don't need to have the knowledge of complicated aspects used to build up such a basic face detection algorithm from scratch. In this session, Ali Mehmood from Batch 31 created a face detection algorithm in Python with the audience that could accurately locate faces.",
+      "date": "2023-02-27T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/8_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR-scgo5ct/",
+      "createdAt": "2026-03-20T14:40:23.299Z",
+      "updatedAt": "2026-03-22T17:19:55.627Z"
+    },
+    {
+      "id": 10,
+      "title": "Emerse: Cutting Through Distractions",
+      "description": "First session of Emerse hosted by Hanzla Javaid.\n\nHanzla is a GIKI alumnus who led the brilliant Team Omega in Microsoft's Imagine Cup Competition 2022. The team won the national finals and was runner up in the EMEA region. Upon his achievement, along with his team members, he founded Microsoft Club GIKI and was its first club lead.\n\nHe is currently working at Alibaba International Digital Commerce (AIDC) as a data scientist, where his work involves creating and improving recommendation systems for Daraz.\n\nThe session:\nIn this session, Hanzla explained how to focus on what matters in a world of distractions.",
+      "date": "2023-07-08T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/10_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuUDi4XofQL/",
+      "createdAt": "2026-03-20T14:47:00.221Z",
+      "updatedAt": "2026-03-22T17:20:50.385Z"
+    },
+    {
+      "id": 12,
+      "title": "Emserse: Choosing Your Career Path: College and Beyond",
+      "description": "Obed Ahmad is a recent graduate from the GIK Institute’s 29th batch. He majored in electrical engineering and has since then, worked in numerous domains of the field. In addition to this, he has prior work experience at a leading MnC in the energy sector: Schlumberger (SLB). Obed served as the Regional Head (Local Committee Vice President) in Marketing & PR for AIESEC in GIKI. He was also a part of the founding team of Microsoft Learn Student Ambassadors’ GIKI Chapter, where he served as the Marketing, Branding, and Outreach Manager while laying the foundation of the club at GIKI.\n\nIn the session, Obed talked about the steps of launching your career before graduating and tips for choosing the right pathway before and after college!",
+      "date": "2023-07-16T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/12_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CurPjPjIcRr/",
+      "createdAt": "2026-03-20T16:09:13.390Z",
+      "updatedAt": "2026-03-22T17:21:54.496Z"
+    },
+    {
+      "id": 4,
+      "title": "Learning and Development Session: Intro to Blogging",
+      "description": "One of the key skills that is often overlooked by technical individuals is clear writing capabilities. Without proper written and spoken skills, it is challenging to work effectively in a team. Ali Hasan Khan, an enthusiastic blogger from Batch 31, held a session on blogging in which he emphasized on the importance of blogging and provided a step-by-step tutorial on writing and posting your first blog.",
+      "date": "2022-12-12T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/4_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/4_2.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR7r2Bo1-m/?img_index=1",
+      "createdAt": "2026-03-20T14:35:18.270Z",
+      "updatedAt": "2026-03-22T16:57:07.719Z"
+    },
+    {
+      "id": 9,
+      "title": "Learning and Development Session: Creating GUIs with Python",
+      "description": "Humans are inherently visual creatures; a good user interface (UI) is crucial for marketing purposes as well as enhancing software usability and ease of navigation. In this session led by Salman Yousafzai from Batch 31, attendees were given a hands-on learning experience centred on GUI development in Python. The eager audience gained practical skills in crafting visually captivating and intuitive GUI, leveraging capabilities of Python.",
+      "date": "2023-03-06T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/9_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CuR-0KIosxc/",
+      "createdAt": "2026-03-20T14:41:38.108Z",
+      "updatedAt": "2026-03-22T17:20:24.143Z"
+    },
+    {
+      "id": 11,
+      "title": "Emerse: A Way Out",
+      "description": "Abdul Rafay is a GIKI alumnus who was part of the brilliant Team Omega in Imagine Cup 2022, which won the national finals and was runner up in the EMEA region. He played a vital role in the founding of Microsoft Club GIKI.\n\nHe is currently working at a mid-sized US based company in Islamabad called AlphaSquad, as a Backend Developer.\n\nThe session:\nIn this session, Abdul Rafay showed the way to get off a sinking ship and give a wake-up call on reality of our IT industry and the average corporate job that students dream of.\n\nEmerse:\nEmerse aimed to not only connect current Microsoft Club members with successful industry professionals, but also to create a venue of learning new soft skills and exploring concepts aiming to contribute to the personal and professional growth of individuals.",
+      "date": "2023-07-09T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/11_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CubfQQ2IXOj/",
+      "createdAt": "2026-03-20T16:00:40.173Z",
+      "updatedAt": "2026-03-22T17:21:09.436Z"
+    },
+    {
+      "id": 13,
+      "title": "Emerse: SOP/LOM Development ",
+      "description": "Omar Farooq completed his bachelor's degree in computer engineering from GIKI.\n\nBeyond academics, Omar served as the member and later as a pilot for team Foxtrot where he served in multiple domains including automation, fabrication, design and documentation. Later he cofounded the MLSA GIKI Chapter where he served as head of the Data Science team. Another highlight of his academic journey is his role in knowledge dissemination through his personal passion of teaching, where Omar had the opportunity to extend his impact beyond the confines of the institution.\n\nOmar is currently working as a software engineer for a well-established IT firm. He reads often and yearns to travel around the world one day; hopefully that day isn't too far away!\n\nIn the session, Omar showed us how to develop a good statement of purpose/letter of motivation!",
+      "date": "2023-07-23T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/13_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/Cu6sSHVILoE/",
+      "createdAt": "2026-03-20T16:20:20.560Z",
+      "updatedAt": "2026-03-22T17:22:16.944Z"
+    },
+    {
+      "id": 14,
+      "title": "Emserse: Using LLMs To Guide Your Personal Development",
+      "description": "Hamza Mawaz Khan graduated from the GIK Institute in 2022 (Batch 28), he majored in computer science and since graduation has been working in the field of AI & Data Science in the Middle East. He is also one of the Co-Founders of the Microsoft Learn Student Ambassadors Club GIKI where he served as the Club Manager and played a role in building out the initial team and structure of the club. \n\nIn the session, Hamza talked about how you can help yourself get the right guidance and information for your personal development using LLMs such as ChatGPT. The session taught how to craft your prompts (prompt engineering) in the correct way to get your desired output.",
+      "date": "2023-08-06T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/14_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/members/14_2.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/Cvjq87hollB/",
+      "createdAt": "2026-03-20T16:24:26.728Z",
+      "updatedAt": "2026-03-22T17:22:37.979Z"
+    },
+    {
+      "id": 15,
+      "title": "Web Dev: Code & Host with Azure Challenge",
+      "description": "Unlocked the skills of weaving the fabrics of the web and learned how to host apps using Azure. Participants completed the challenge and earned a chance to win exciting incentives.\n\nIncentives included:\n- LinkedIn Premium voucher\n- Xbox gift card\n- E-certificate",
+      "date": "2023-10-06T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/members/15_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CyDiZvHIqpE/",
+      "createdAt": "2026-03-20T16:29:06.548Z",
+      "updatedAt": "2026-03-22T17:22:58.771Z"
+    },
+    {
+      "id": 16,
+      "title": "Our First Session!",
+      "description": "We ave our very first info session regarding who we are, what we do, and how can you everyone else can join us as well. The session was also attended by the rector of GIKI and our club advisor which made it a memorable night.",
+      "date": "2022-02-25T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/1_1.png",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/1_2.png",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/1_3.png",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/1_4.png"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CaZyuBgPkQJ/?igsh=aGNtN2E2cnFoZWt5&img_index=3",
+      "createdAt": "2026-03-23T03:46:39.348Z",
+      "updatedAt": "2026-03-25T07:39:42.964Z"
+    },
+    {
+      "id": 19,
+      "title": "Info Session",
+      "description": "In the info session, details about our purpose, future prospects in GIKI, the Imagine Cup, and what exciting opportunities the club holds for everyone were shared!",
+      "date": "2022-10-17T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/3_1.png"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/Cju6c31sQdW/?igsh=MXA0ajA5MjVzcDFjNg%3D%3D",
+      "createdAt": "2026-03-23T05:43:08.054Z",
+      "updatedAt": "2026-03-25T07:40:36.396Z"
+    },
+    {
+      "id": 18,
+      "title": "Session: Microsoft Learn Student Ambassadors Program",
+      "description": "With the deadline for the Microsoft Learn Student Ambassador (MLSA) applications quickly approaching, we decided to host a session to assist students through the process, so that their applications could stand out from the rest.\n\nIf you wanted to improve your chances of becoming a Microsoft Learn Student Ambassador, this session was one to attend, as it was full of tips and tricks for success!",
+      "date": "2022-11-24T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/4_1.png"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/ClTgBC1NCLx/?igsh=MTBoaTQ4dnA1b3M5YQ%3D%3D",
+      "createdAt": "2026-03-23T04:01:27.043Z",
+      "updatedAt": "2026-03-25T07:40:58.057Z"
+    },
+    {
+      "id": 17,
+      "title": "Online Workshop: Build a Machine Learning Model using Custom Vision",
+      "description": "Microsoft Learn Student Ambassadors, Shams Ghani and Ahmed Aftab, hosted a session on how to build a basic classification model using Microsoft Azure Custom Vision services. The workshop was intended for students interested in Machine Learning or those looking to expand their skill set.\n\nNo prior experience was required, and a certificate of participation was awarded. LinkedIn Premium vouchers were also given away.",
+      "date": "2022-10-09T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/2_1.png"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/CjdRNJrMXXk/?igsh=ZnFuY3pzNTBqanlv",
+      "createdAt": "2026-03-23T03:50:43.430Z",
+      "updatedAt": "2026-03-25T07:40:09.388Z"
+    },
+    {
+      "id": 27,
+      "title": "Learning with Linux : Navigating the Command Line Terminal",
+      "description": "Microsoft Club GIKI hosted a Learning & Development session focused on mastering the command line. Participants learned how to navigate and utilize the terminal effectively, improving debugging speed and overall development workflow. The session helped attendees become more confident with command-line tools and better prepared for real-world development tasks.",
+      "date": "2025-11-27T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/12_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/12_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/12_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DRf3gCKjHY3/?hl=en",
+      "createdAt": "2026-03-26T19:41:52.178Z",
+      "updatedAt": "2026-04-06T17:06:29.964Z"
+    },
+    {
+      "id": 30,
+      "title": " Society Fair 2024",
+      "description": "Ready to turn your tech ideas into reality? At Microsoft Club GIKI, we're all about innovation, creativity, and having fun! From AI to coding challenges, we’ve got it all. Whether you're looking to learn, collaborate, or just geek out, this is the place for you!\n\n👉 Join us at the Society Fair on September 16 and be part of the next big thing in tech!",
+      "date": "2024-09-16T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/6_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/6_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/6_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/C_8jIhEMD8M/?hl=en&img_index=1",
+      "createdAt": "2026-04-06T15:22:46.372Z",
+      "updatedAt": "2026-04-06T16:56:14.029Z"
+    },
+    {
+      "id": 32,
+      "title": "Micathon 2024",
+      "description": "Calling all coding wizards from GIKI and beyond! 🌟 Join us for Event Micathon, where talent knows no borders. Mark your calendars for April 19-21 and let's redefine innovation, online! 🚀 #EventMicathon #Hackathon #GIKI #PakistanTech",
+      "date": "2024-04-19T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/4_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/C57pHVfNl31/?hl=en",
+      "createdAt": "2026-04-06T15:25:18.224Z",
+      "updatedAt": "2026-04-06T16:22:34.833Z"
+    },
+    {
+      "id": 31,
+      "title": "Gateway to the Industry : Navigating the path to Success",
+      "description": "🚀 Unlock Your Future: Join us for 'Gateway to the Industry: Navigating Path to Success'! 🌟 GIKI students, get ready to blaze your trail to success in the industry! 🎓🔥 Few seats remaining! Swipe up to register and secure your spot!\nRegister Now, LINK IN BIO!",
+      "date": "2024-05-10T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/5_1.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/C6vMpQ5NbKg/?hl=en",
+      "createdAt": "2026-04-06T15:24:17.071Z",
+      "updatedAt": "2026-04-06T16:54:33.171Z"
+    },
+    {
+      "id": 28,
+      "title": "Kubernetes: The Bigger Picture!",
+      "description": "The Microsoft Club at GIKI is pleased to partner with CarbonTeq to present an exclusive workshop on Kubernetes: The Bigger Picture!\n\nJoin us on Wednesday, 13th November 2024 as CarbonTeq’s industry experts guide us through the essentials and advanced concepts of Kubernetes, unveiling its potential in modern technology.\n\nThis is a fantastic opportunity to expand your knowledge, connect with professionals, and even enjoy some exciting freebies. Don’t miss out on this valuable experience—see you there!",
+      "date": "2024-11-13T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/9_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/9_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/9_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DCMj-t4MUph/?hl=en",
+      "createdAt": "2026-04-06T15:20:59.794Z",
+      "updatedAt": "2026-04-06T17:01:11.491Z"
+    },
+    {
+      "id": 24,
+      "title": "MLSC GIKI Info Session",
+      "description": "The Microsoft Learn Student Chapter GIKI hosted an introductory info session to kick off its activities. Attendees connected with the community and gained insights from guest speakers, who shared their experiences, opportunities, and the impact of being part of the Microsoft student ecosystem. The session introduced pathways for skill development, collaboration, and global engagement.",
+      "date": "2025-09-30T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/10_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/10_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/10_3.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/10_4.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DPJsTkNjD3L/?hl=en&img_index=1",
+      "createdAt": "2026-03-26T19:35:21.128Z",
+      "updatedAt": "2026-04-06T17:03:36.115Z"
+    },
+    {
+      "id": 23,
+      "title": "Git & GitHub Workshop",
+      "description": "Microsoft Club GIKI hosted a 2-day beginner-friendly Git & GitHub workshop focused on version control and collaborative development. Participants learned how to manage code efficiently, track changes, and work in teams using industry-standard tools. The session provided step-by-step guidance, helping attendees move beyond ad-hoc file versioning to structured workflows.",
+      "date": "2025-12-03T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/13_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/13_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/13_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DRxslkdDGsL/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "createdAt": "2026-03-26T19:30:54.784Z",
+      "updatedAt": "2026-04-06T17:07:20.206Z"
+    },
+    {
+      "id": 22,
+      "title": "Power BI Workshop",
+      "description": "Microsoft Club GIKI hosted a hands-on Power BI workshop where participants learned to clean raw datasets, write DAX queries, and build interactive business dashboards from scratch. The session focused on transforming data into actionable insights rather than just visualizations, helping attendees develop practical data analytics skills.",
+      "date": "2026-02-25T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/14_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/14_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/14_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DU59r4bjFSv/?hl=en",
+      "createdAt": "2026-03-26T19:29:35.162Z",
+      "updatedAt": "2026-04-06T17:12:36.990Z"
+    },
+    {
+      "id": 20,
+      "title": "GSoC Guidance Session",
+      "description": "Microsoft Club GIKI hosted an exclusive guidance session on mastering Google Summer of Code (GSoC). Muhammad Rafay shared proven strategies for getting open-source projects accepted by Google and successfully securing the stipend. The session covered practical insights into the application process and tips for standing out.",
+      "date": "2026-03-06T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/16_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/16_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/16_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DVekQbijBJf/?hl=en",
+      "createdAt": "2026-03-26T19:26:02.174Z",
+      "updatedAt": "2026-04-06T17:15:30.123Z"
+    },
+    {
+      "id": 34,
+      "title": "Introduction to python",
+      "description": "Are you interested in learning Python, one of the most popular and powerful programming languages in the world? Do you want to explore the exciting field of artificial intelligence and data science? If yes, then join us for the first workshop of our Introduction to AI series, hosted by Azhar Afif, a Python expert and instructor. In this workshop, you will learn the basics of Python syntax, data types, functions, and packages, and how to use them for various applications. You will also get to practice your skills with interactive exercises and challenges. Don't miss this opportunity to start your journey with Python and AI. See you this Thursday at 7 pm in Academic Block!",
+      "date": "2024-01-20T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/1_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/1_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/1_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/C3lGC3mtB-x/?hl=en",
+      "createdAt": "2026-04-06T15:27:20.627Z",
+      "updatedAt": "2026-04-06T16:10:46.958Z"
+    },
+    {
+      "id": 35,
+      "title": "Introduction to Competitive Programming",
+      "description": "After a long-awaited return, our Learning and Development workshops are back! 🎉 Join us for an insightful journey into competitive programming with esteemed instructors Mujtaba Omar and Basim Mehmood, both distinguished winners of ICPC Pakistan region and World Finalists. 🏆✨ Whether you're a coding enthusiast or a beginner, this workshop is your chance to dive into the world of algorithms and problem-solving. Don't miss this golden opportunity to enhance your skills and connect with fellow coding enthusiasts! Secure your spot now at https://forms.office.com/r/MT2vSdN3kA?origin=QRCode Let's code together and make this workshop a memorable experience! 💻🚀 #CodingWorkshop #ICPCChamps #CompetitiveProgramming",
+      "date": "2024-01-31T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/2_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/2_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/2_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/C2pcaZDtn7C/?hl=en",
+      "createdAt": "2026-04-06T15:28:30.239Z",
+      "updatedAt": "2026-04-06T16:12:03.404Z"
+    },
+    {
+      "id": 33,
+      "title": "How to build a Chatbot application",
+      "description": "Embark on an exciting journey into the realm of AI with us! Join our upcoming workshop where we'll guide you through creating your very own chatbot application. Led by the knowledgeable Muhammad Ahmed, this hands-on experience with Microsoft Club GIKI promises to ignite your passion for technology and coding. Get ready to unleash your inner tech wizard! Let's dive in together! 🤖✨",
+      "date": "2024-03-02T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/3_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/3_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/3_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/C4BL0g3MafU/?hl=en",
+      "createdAt": "2026-04-06T15:26:27.909Z",
+      "updatedAt": "2026-04-06T16:20:35.926Z"
+    },
+    {
+      "id": 29,
+      "title": "Devcon 2024",
+      "description": "Get ready for Devcon 2024!\n\nOn 19th October 2024 at the AHA Auditorium, we're bringing together some of Pakistan's top tech minds to share their experiences, insights, and what’s next in the world of innovation. This is your chance to hear from industry leaders, network with like-minded people, and get inspired to push your own boundaries.\n\nWhether you're a developer, founder, or just passionate about tech, this event is where you need to be.\n\nSpots are limited, so don't wait. Registration link in bio.",
+      "date": "2024-10-19T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/7_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/7_2.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DA_OkHzM61I/?hl=en&img_index=1",
+      "createdAt": "2026-04-06T15:21:55.311Z",
+      "updatedAt": "2026-04-06T16:58:10.007Z"
+    },
+    {
+      "id": 25,
+      "title": "MICATHON ",
+      "description": "Microsoft Club GIKI hosted MICATHON, a 30-hour coding marathon where participants transformed their ideas into functional projects. The event featured prizes worth up to PKR 60,000, along with networking opportunities and e-certificates for all participants. The hackathon fostered innovation, collaboration, and hands-on development in an intensive team-based environment.",
+      "date": "2025-02-21T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/8_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/8_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/8_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/microsoftclubgiki/?hl=en",
+      "createdAt": "2026-03-26T19:36:15.350Z",
+      "updatedAt": "2026-04-06T17:00:28.339Z"
+    },
+    {
+      "id": 26,
+      "title": "Cursor @ GIKI",
+      "description": "Microsoft Club GIKI hosted Cursor @ GIKI, the first Learning & Development session of the tenure in collaboration with Cursor Pakistan. The session introduced participants to AI-powered coding workflows, demonstrating how tools like Cursor can enhance productivity and problem-solving. Attendees also received exclusive Cursor credits, along with refreshments and event goodies.",
+      "date": "2025-11-13T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/11_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/11_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/11_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DQtWcstDP5D/?hl=en&img_index=1",
+      "createdAt": "2026-03-26T19:38:41.717Z",
+      "updatedAt": "2026-04-06T17:05:28.699Z"
+    },
+    {
+      "id": 21,
+      "title": "Code Till Sehri",
+      "description": "Microsoft Club GIKI hosted Code Till Sehri, a relaxed late-night coding session focused on collaboration over competition. Participants worked on their projects in focused sprints, shared early-stage prototypes, and exchanged constructive feedback. The session encouraged a pressure-free environment where attendees refined their ideas and improved their work collectively.",
+      "date": "2026-02-26T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/15_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/15_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/15_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DVD4jFjDPgD/?hl=en",
+      "createdAt": "2026-03-26T19:27:20.823Z",
+      "updatedAt": "2026-04-06T17:13:37.931Z"
+    },
+    {
+      "id": 36,
+      "title": "datacamp X Microsoft GIKI",
+      "description": "We’ve officially partnered with DataCamp Donates for the 2026 season! We’re bringing $399+ of premium data science education to the GIKI community—for FREE.",
+      "date": "2026-04-03T00:00:00.000Z",
+      "type": "past",
+      "images": [
+        "https://mak030504.github.io/Microsoft_Club_Website/event/17_1.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/17_2.jpeg",
+        "https://mak030504.github.io/Microsoft_Club_Website/event/17_3.jpeg"
+      ],
+      "speakers": [],
+      "registrationLink": "https://www.instagram.com/p/DWqoAeUDE9j/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "createdAt": "2026-04-06T17:19:39.704Z",
+      "updatedAt": "2026-04-06T17:34:34.953Z"
+    },
+    {
+      "id": 37,
+      "title": "MICATHON",
+      "description": "Micathon is the annual flagship hackathon organized by the Microsoft Club at GIKI, and it stands as one of the most anticipated events of the year for students. It offers a unique stage for participants to showcase their creativity, test their ideas, and bring their innovations to life.",
+      "date": "2026-04-17T00:00:00.000Z",
+      "type": "upcoming",
+      "images": [],
+      "speakers": [],
+      "registrationLink": "https://forms.gle/9fNnLWuiq4nFybuSA",
+      "createdAt": "2026-04-12T11:01:31.933Z",
+      "updatedAt": "2026-04-12T11:01:31.933Z"
+    }
+  ],
+  "members": [
+    {
+      "id": 10,
+      "name": "Muhammad Ahmed",
+      "role": "Finance Manager",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/mo.jpeg",
+      "linkedin": "https://www.linkedin.com/in/mhmdahmed5307/",
+      "isCurrent": false,
+      "displayOrder": null,
+      "createdAt": "2026-03-25T08:34:47.800Z",
+      "updatedAt": "2026-03-25T08:34:47.800Z"
+    },
+    {
+      "id": 9,
+      "name": "Wardah Haya",
+      "role": "Program Manager",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/wardha.jpeg",
+      "linkedin": "https://www.linkedin.com/in/wardahhaya/",
+      "isCurrent": false,
+      "displayOrder": null,
+      "createdAt": "2026-03-25T08:33:17.608Z",
+      "updatedAt": "2026-03-25T08:37:56.393Z"
+    },
+    {
+      "id": 8,
+      "name": "Lamia Asad",
+      "role": "EC Member",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/lamia.jpeg",
+      "linkedin": "https://www.linkedin.com/in/lamia-asad-khan-69b199249/",
+      "isCurrent": true,
+      "displayOrder": null,
+      "createdAt": "2026-03-25T08:32:47.612Z",
+      "updatedAt": "2026-03-25T08:38:26.038Z"
+    },
+    {
+      "id": 7,
+      "name": "Ubaid Ur Rehman",
+      "role": "EC Member",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/ubaid.jpeg",
+      "linkedin": "https://www.linkedin.com/in/ubaidrehman7077/",
+      "isCurrent": true,
+      "displayOrder": null,
+      "createdAt": "2026-03-25T08:32:06.278Z",
+      "updatedAt": "2026-03-25T08:39:08.706Z"
+    },
+    {
+      "id": 6,
+      "name": "Qasim Ali",
+      "role": "EC Member",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/qasim.jpeg",
+      "linkedin": "https://www.linkedin.com/in/muhammad-qasim-ali/",
+      "isCurrent": true,
+      "displayOrder": null,
+      "createdAt": "2026-03-25T08:31:26.074Z",
+      "updatedAt": "2026-03-25T08:39:36.595Z"
+    },
+    {
+      "id": 5,
+      "name": "Abdur Rahman Goraya",
+      "role": "EC member",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/arg.jpeg",
+      "linkedin": "https://www.linkedin.com/in/abdur-rahman-goraya/",
+      "isCurrent": true,
+      "displayOrder": null,
+      "createdAt": "2026-03-25T08:30:38.957Z",
+      "updatedAt": "2026-03-25T08:40:19.683Z"
+    },
+    {
+      "id": 1,
+      "name": "Hamza Faraz",
+      "role": "President",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/hamza.jpeg",
+      "linkedin": "https://www.linkedin.com/in/hamzaxfaraz/",
+      "isCurrent": true,
+      "displayOrder": 1,
+      "createdAt": "2026-03-19T20:16:15.565Z",
+      "updatedAt": "2026-03-25T13:52:39.898Z"
+    },
+    {
+      "id": 2,
+      "name": "Azhar Afif",
+      "role": "Vice President",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/azhar.jpeg",
+      "linkedin": "https://www.linkedin.com/in/azhar-afif-real/",
+      "isCurrent": true,
+      "displayOrder": 2,
+      "createdAt": "2026-03-20T09:57:24.071Z",
+      "updatedAt": "2026-03-25T13:52:49.463Z"
+    },
+    {
+      "id": 3,
+      "name": "Mian Ali Ahmed",
+      "role": "Finance Manager ",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/mian.jpeg",
+      "linkedin": "https://www.linkedin.com/in/mian-ali-ahmed/",
+      "isCurrent": true,
+      "displayOrder": 3,
+      "createdAt": "2026-03-20T10:01:34.305Z",
+      "updatedAt": "2026-03-25T13:52:59.173Z"
+    },
+    {
+      "id": 4,
+      "name": "Ayesha Faheem",
+      "role": "Director Marketing",
+      "tenure": "25-26",
+      "image": "https://mak030504.github.io/Microsoft_Club_Website/members/ayesha.jpeg",
+      "linkedin": "https://www.linkedin.com/in/ayesha-faheem-a10182218/",
+      "isCurrent": true,
+      "displayOrder": 4,
+      "createdAt": "2026-03-20T10:08:54.929Z",
+      "updatedAt": "2026-03-25T13:53:10.954Z"
+    }
+  ]
+}
