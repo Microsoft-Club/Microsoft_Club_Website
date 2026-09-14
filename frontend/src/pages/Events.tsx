@@ -3,30 +3,7 @@ import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
 import { api } from '../services/api';
 import type { Event } from '../services/api';
-
-const resolveImageUrl = (rawUrl?: string): string => {
-  if (!rawUrl) return '';
-  const cleaned = rawUrl.trim().replace(/^['"]+|['"]+$/g, '').replace(/\\/g, '/');
-  if (!cleaned) return '';
-  if (/^https?:\/\//i.test(cleaned)) {
-    try {
-      const url = new URL(cleaned);
-      url.pathname = url.pathname
-        .replace(/\/(frontend\/)?public\//i, '/')
-        .replace(/\/{2,}/g, '/');
-      const ghPagesMatch = url.hostname.match(/^[\w-]+\.github\.io$/i);
-      if (ghPagesMatch && typeof window !== 'undefined') {
-        return `${window.location.origin}${url.pathname.replace(/^\/[^/]+\//, '/')}`;
-      }
-      return url.toString();
-    } catch {
-      return cleaned;
-    }
-  }
-  const withoutPublicPrefix = cleaned.replace(/^\/?(frontend\/)?public\//i, '');
-  const normalizedPath = withoutPublicPrefix.replace(/^\/+/, '');
-  return `${import.meta.env.BASE_URL}${normalizedPath}`.replace(/([^:]\/)\/+/g, '$1');
-};
+import { resolveImageUrl } from '../utils/image';
 
 const EventImage = ({ src, alt }: { src: string; alt: string }) => {
   const [failed, setFailed] = useState(false);

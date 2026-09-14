@@ -2,33 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import WindowCard from '../components/WindowCard';
 import type { Member } from '../services/api';
 import { api } from '../services/api';
-
-const resolveMemberImageUrl = (rawUrl?: string): string => {
-  if (!rawUrl) return '';
-
-  // Handle accidental quotes/backslashes from copied Windows-style paths.
-  const cleaned = rawUrl.trim().replace(/^['"]+|['"]+$/g, '').replace(/\\/g, '/');
-  if (!cleaned) return '';
-
-  if (/^https?:\/\//i.test(cleaned)) {
-    try {
-      const url = new URL(cleaned);
-      // Fix mistakenly pasted filesystem-like paths in absolute URLs.
-      url.pathname = url.pathname
-        .replace(/\/(frontend\/)?public\//i, '/')
-        .replace(/\/{2,}/g, '/');
-      return url.toString();
-    } catch {
-      return cleaned;
-    }
-  }
-
-  // Normalize paths users may paste from local project structure.
-  const withoutPublicPrefix = cleaned.replace(/^\/?(frontend\/)?public\//i, '');
-  const normalizedPath = withoutPublicPrefix.replace(/^\/+/, '');
-
-  return `${import.meta.env.BASE_URL}${normalizedPath}`.replace(/([^:]\/)\/+/g, '$1');
-};
+import { resolveImageUrl } from '../utils/image';
 
 const Members = () => {
   const [members, setMembers] = useState<Member[]>([]);
@@ -83,7 +57,7 @@ const Members = () => {
                 <div className="flex items-start gap-3">
                   {member.image ? (
                     <img
-                      src={resolveMemberImageUrl(member.image)}
+                      src={resolveImageUrl(member.image)}
                       alt={member.name}
                       className="w-16 h-16 rounded object-cover border border-black"
                     />
@@ -120,7 +94,7 @@ const Members = () => {
                 <div className="flex items-start gap-3">
                   {member.image ? (
                     <img
-                      src={resolveMemberImageUrl(member.image)}
+                      src={resolveImageUrl(member.image)}
                       alt={member.name}
                       className="w-16 h-16 rounded object-cover border border-black"
                     />
