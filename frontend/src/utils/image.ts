@@ -40,8 +40,8 @@ export const resolveImageUrl = (rawUrl?: string): string => {
   const withoutPublicPrefix = cleaned.replace(/^\/?(frontend\/)?public\//i, '');
   const normalizedPath = withoutPublicPrefix.replace(/^\/+/, '');
 
-  // If path starts with event/ or members/ or projects/, route to R2 CDN
-  if (/^(event|members|projects)\//i.test(normalizedPath)) {
+  // If path starts with event/, events/, members/, or projects/, route to R2 CDN
+  if (/^(events?|members|projects)\//i.test(normalizedPath)) {
     return `${R2_BASE_URL}/${normalizedPath}`;
   }
 

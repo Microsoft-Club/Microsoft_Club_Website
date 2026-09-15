@@ -122,13 +122,14 @@ async function uploadFile(localPath, objectKey) {
   return false;
 }
 
-async function uploadFolder(relFolder, prefix) {
+async function uploadFolder(relFolder, prefixes) {
   const absDir = path.join(ROOT_DIR, relFolder);
   if (!fs.existsSync(absDir)) {
     console.log(`[SKIP] Directory "${relFolder}" does not exist.`);
     return { total: 0, ok: 0 };
   }
 
+  const prefixList = Array.isArray(prefixes) ? prefixes : [prefixes];
   const files = fs.readdirSync(absDir);
   let ok = 0;
   let total = 0;
@@ -136,9 +137,11 @@ async function uploadFolder(relFolder, prefix) {
   for (const file of files) {
     const fullPath = path.join(absDir, file);
     if (fs.statSync(fullPath).isDirectory()) continue;
-    total++;
-    const success = await uploadFile(fullPath, `${prefix}/${file}`);
-    if (success) ok++;
+    for (const prefix of prefixList) {
+      total++;
+      const success = await uploadFile(fullPath, `${prefix}/${file}`);
+      if (success) ok++;
+    }
   }
   return { total, ok };
 }
@@ -152,20 +155,32 @@ async function main() {
   console.log('--- Uploading Member Images (frontend/public/members) ---');
   const memberRes = await uploadFolder('frontend/public/members', 'members');
 
+  let eventRes = { total: 0, ok: 0 };
   if (fs.existsSync(path.join(ROOT_DIR, 'frontend/public/event'))) {
-    console.log('\n--- Uploading Event Images (frontend/public/event) ---');
-    const eventRes = await uploadFolder('frontend/public/event', 'event');
-    console.log(`Events: ${eventRes.ok}/${eventRes.total} uploaded.`);
+    console.log('\n--- Uploading Event Images (frontend/public/event -> event/ and events/) ---');
+    eventRes = await uploadFolder('frontend/public/event', ['event', 'events']);
   }
 
   console.log('\n=== Summary ===');
   console.log(`Members: ${memberRes.ok}/${memberRes.total} uploaded.`);
+  if (eventRes.total > 0) {
+    console.log(`Events: ${eventRes.ok}/${eventRes.total} uploaded.`);
+  }
 
   if (memberRes.ok > 0) {
-    console.log('\nUploaded URLs:');
+    console.log('\nMember URLs:');
     const absDir = path.join(ROOT_DIR, 'frontend/public/members');
     fs.readdirSync(absDir).forEach((f) => {
       console.log(` - ${R2_PUBLIC_DOMAIN}/members/${f}`);
+    });
+  }
+
+  if (eventRes.ok > 0) {
+    console.log('\nEvent URLs:');
+    const absDir = path.join(ROOT_DIR, 'frontend/public/event');
+    fs.readdirSync(absDir).forEach((f) => {
+      console.log(` - ${R2_PUBLIC_DOMAIN}/event/${f}`);
+      console.log(` - ${R2_PUBLIC_DOMAIN}/events/${f}`);
     });
   }
 }
