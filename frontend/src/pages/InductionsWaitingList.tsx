@@ -70,6 +70,49 @@ const FieldMessage = ({
   return <p className="text-[10px] text-gray-500 mb-1">{hint}</p>;
 };
 
+const InstagramIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-7 h-7" aria-hidden="true">
+    <rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="currentColor" strokeWidth="2" />
+    <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" strokeWidth="2" />
+    <circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" />
+  </svg>
+);
+
+const LinkedInIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-7 h-7" aria-hidden="true">
+    <rect x="2" y="2" width="20" height="20" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
+    <path
+      fill="currentColor"
+      d="M7.2 10.2h2.1v7.1H7.2zm1.05-3.4a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM11 10.2h2v1h.03c.28-.53.97-1.09 2-1.09 2.14 0 2.54 1.41 2.54 3.24v3.95h-2.1v-3.5c0-.84-.02-1.91-1.17-1.91-1.17 0-1.35.91-1.35 1.85v3.56H11z"
+    />
+  </svg>
+);
+
+const YouTubeIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-7 h-7" aria-hidden="true">
+    <rect x="1.5" y="5.5" width="21" height="13" rx="3.5" fill="none" stroke="currentColor" strokeWidth="2" />
+    <path fill="currentColor" d="M10.2 9.2v5.6l5.2-2.8z" />
+  </svg>
+);
+
+const followLinks = [
+  {
+    label: 'Instagram',
+    href: 'https://www.instagram.com/microsoftclubgiki/?hl=en',
+    icon: <InstagramIcon />,
+  },
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/microsoft-club-giki/',
+    icon: <LinkedInIcon />,
+  },
+  {
+    label: 'YouTube',
+    href: 'https://www.youtube.com/@LOGIKALGIKI',
+    icon: <YouTubeIcon />,
+  },
+];
+
 const InductionsWaitingList = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -211,19 +254,6 @@ const InductionsWaitingList = () => {
     }
   };
 
-  const handleReset = () => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      batch: 'Batch 36',
-      faculty: '',
-    });
-    setSubmittedEntry(null);
-    setSubmitError(null);
-    setFieldErrors(emptyFieldErrors);
-  };
-
   return (
     <div className="max-w-2xl mx-auto py-2">
       <motion.div
@@ -270,15 +300,27 @@ const InductionsWaitingList = () => {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
-                <Link to="/" className="pixel-button bg-gray-800">
-                  Return to Home
-                </Link>
-                <PixelButton
-                  label="Submit Another Response"
-                  onClick={handleReset}
-                  className="bg-primary"
-                />
+              <div className="pt-4 space-y-3">
+                <p className="font-heading text-xs text-gray-900">Follow us</p>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  {followLinks.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Follow us on ${item.label}`}
+                      className="inline-flex items-center justify-center w-12 h-12 border-2 border-black bg-white shadow-retro hover:bg-gray-50"
+                    >
+                      {item.icon}
+                    </a>
+                  ))}
+                </div>
+                <div className="flex justify-center pt-2">
+                  <Link to="/" className="pixel-button bg-gray-800">
+                    Return to Home
+                  </Link>
+                </div>
               </div>
             </div>
           </WindowCard>

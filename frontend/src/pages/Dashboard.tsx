@@ -5,6 +5,7 @@ import PixelButton from '../components/PixelButton';
 import WindowCard from '../components/WindowCard';
 import { api } from '../services/api';
 import type { Event, Podcast, Member, Project, Blog, WaitingListEntry } from '../services/api';
+import { resolveImageUrl } from '../utils/image';
 import ReactQuill from 'react-quill';
 
 import 'react-quill/dist/quill.snow.css';
@@ -67,6 +68,12 @@ const Dashboard = () => {
   const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
   const [savingMember, setSavingMember] = useState(false);
   const [memberError, setMemberError] = useState<string | null>(null);
+  const [memberFilter, setMemberFilter] = useState<'all' | 'current' | 'alumni'>('all');
+  const [memberSearchQuery, setMemberSearchQuery] = useState('');
+  const [updatingMemberId, setUpdatingMemberId] = useState<number | null>(null);
+  const [uploadingMemberImage, setUploadingMemberImage] = useState(false);
+  const [memberImageUploadError, setMemberImageUploadError] = useState<string | null>(null);
+  const [memberImagePreview, setMemberImagePreview] = useState<string | null>(null);
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
@@ -302,6 +309,8 @@ const Dashboard = () => {
       displayOrder: null,
     });
     setEditingMemberId(null);
+    setMemberImagePreview(null);
+    setMemberImageUploadError(null);
   };
 
   const resetProjectForm = () => {
@@ -503,6 +512,53 @@ const Dashboard = () => {
       isCurrent: member.isCurrent,
       displayOrder: member.displayOrder ?? null,
     });
+    setMemberImagePreview(member.image ? resolveImageUrl(member.image) : null);
+    setMemberImageUploadError(null);
+  };
+
+  const handleMemberImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setMemberImageUploadError('Image size exceeds 10MB limit.');
+      return;
+    }
+
+    const localUrl = URL.createObjectURL(file);
+    setMemberImagePreview(localUrl);
+    setMemberImageUploadError(null);
+    setUploadingMemberImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      if (memberForm.name) {
+        formData.append('name', memberForm.name);
+      }
+
+      const res = await api.post<{ success: boolean; url: string }>(
+        '/api/members/upload-image',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (res.data?.url) {
+        setMemberForm((s) => ({ ...s, image: res.data.url }));
+      }
+    } catch (err: any) {
+      console.error('Member picture upload failed:', err);
+      setMemberImageUploadError(
+        err.response?.data?.message || 'Failed to upload image to R2 bucket.'
+      );
+    } finally {
+      setUploadingMemberImage(false);
+      e.target.value = '';
+    }
   };
 
   const handleDeleteMember = async (id: number) => {
@@ -512,6 +568,70 @@ const Dashboard = () => {
       await loadMembers();
     } catch {
       setMemberError('Failed to delete member.');
+    }
+  };
+
+  // Quick toggle single member status
+  const handleToggleMemberStatus = async (member: Member) => {
+    const nextIsCurrent = !member.isCurrent;
+    let nextTenure = member.tenure;
+
+    if (!nextIsCurrent) {
+      const batchInput = window.prompt(
+        `Move "${member.name}" to Alumni.\nEnter Batch/Tenure:`,
+        member.tenure?.includes('Batch') ? member.tenure : 'Batch 32'
+      );
+      if (batchInput === null) return; // cancelled
+      nextTenure = batchInput.trim() || 'Batch 32';
+    }
+
+    try {
+      setUpdatingMemberId(member.id);
+      await api.put(`/api/members/${member.id}`, {
+        isCurrent: nextIsCurrent,
+        tenure: nextTenure,
+      });
+      await loadMembers();
+    } catch {
+      setMemberError('Failed to update member status.');
+    } finally {
+      setUpdatingMemberId(null);
+    }
+  };
+
+  // Bulk move all current members to Alumni
+  const handleBulkMoveToAlumni = async () => {
+    const activeMembers = members.filter((m) => m.isCurrent);
+    if (!activeMembers.length) {
+      alert('No current EC members found.');
+      return;
+    }
+
+    const batch = window.prompt(
+      `Transition all ${activeMembers.length} current EC members to Alumni?\nEnter Alumni Batch:`,
+      'Batch 32'
+    );
+    if (!batch) return;
+
+    if (!confirm(`Are you sure you want to move ${activeMembers.length} members to Alumni (${batch.trim()})?`)) {
+      return;
+    }
+
+    try {
+      setSavingMember(true);
+      await Promise.all(
+        activeMembers.map((m) =>
+          api.put(`/api/members/${m.id}`, {
+            isCurrent: false,
+            tenure: batch.trim(),
+          })
+        )
+      );
+      await loadMembers();
+    } catch {
+      setMemberError('Failed to transition members to Alumni.');
+    } finally {
+      setSavingMember(false);
     }
   };
 
@@ -1207,18 +1327,97 @@ const Dashboard = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium mb-1">
-                Image URL (optional)
+            {/* Member Picture Upload (R2 Cloudflare) & Preview */}
+            <div className="border border-gray-300 p-2.5 rounded bg-gray-50 space-y-2">
+              <label className="block text-xs font-semibold text-gray-800">
+                Member Picture (Cloudflare R2)
               </label>
-              <input
-                type="url"
-                value={memberForm.image || ''}
-                onChange={(e) =>
-                  setMemberForm((s) => ({ ...s, image: e.target.value }))
-                }
-                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
-              />
+
+              {/* Preview & Upload Controls */}
+              <div className="flex items-center gap-3">
+                {memberImagePreview || memberForm.image ? (
+                  <div className="relative group flex-shrink-0">
+                    <img
+                      src={memberImagePreview || resolveImageUrl(memberForm.image)}
+                      alt="Member Preview"
+                      className="w-16 h-16 rounded object-cover border border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-white"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                    {uploadingMemberImage && (
+                      <div className="absolute inset-0 bg-black/60 rounded flex items-center justify-center text-[10px] text-white font-medium">
+                        Uploading...
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded border border-dashed border-gray-400 bg-white flex flex-col items-center justify-center text-gray-400 text-[10px] flex-shrink-0">
+                    <span>No Photo</span>
+                  </div>
+                )}
+
+                <div className="flex-1 space-y-1.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <label className="cursor-pointer inline-flex items-center gap-1 text-xs bg-white hover:bg-gray-100 border border-black px-2.5 py-1 shadow-[1px_1px_0px_rgba(0,0,0,1)] font-medium">
+                      <span>📁 {uploadingMemberImage ? 'Uploading to R2...' : 'Upload Picture'}</span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        disabled={uploadingMemberImage}
+                        onChange={handleMemberImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+
+                    {(memberImagePreview || memberForm.image) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMemberForm((s) => ({ ...s, image: '' }));
+                          setMemberImagePreview(null);
+                        }}
+                        className="text-[11px] text-red-600 hover:underline"
+                        disabled={uploadingMemberImage}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+
+                  {memberForm.image && memberForm.image.includes('r2.dev') && (
+                    <p className="text-[10px] text-emerald-700 font-medium">
+                      ✓ Uploaded to R2 Bucket
+                    </p>
+                  )}
+
+                  {memberImageUploadError && (
+                    <p className="text-[10px] text-red-600">{memberImageUploadError}</p>
+                  )}
+                  <p className="text-[10px] text-gray-500">
+                    PNG, JPG, WEBP up to 10MB. Automatically uploaded to Cloudflare R2.
+                  </p>
+                </div>
+              </div>
+
+              {/* Collapsible custom URL option */}
+              <div className="pt-1 border-t border-gray-200">
+                <details className="text-[11px] text-gray-600 cursor-pointer">
+                  <summary className="hover:text-black">Or specify custom Image URL directly</summary>
+                  <div className="mt-1.5">
+                    <input
+                      type="url"
+                      value={memberForm.image || ''}
+                      onChange={(e) => {
+                        setMemberForm((s) => ({ ...s, image: e.target.value }));
+                        setMemberImagePreview(e.target.value ? resolveImageUrl(e.target.value) : null);
+                      }}
+                      placeholder="https://..."
+                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white"
+                    />
+                  </div>
+                </details>
+              </div>
             </div>
 
             <div>
@@ -1235,15 +1434,51 @@ const Dashboard = () => {
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={memberForm.isCurrent ?? false}
-                onChange={(e) =>
-                  setMemberForm((s) => ({ ...s, isCurrent: e.target.checked }))
-                }
-              />
-              <label className="text-xs font-medium">Current EC</label>
+            {/* Status Selection: Current EC vs Alumni */}
+            <div className="border border-gray-300 p-2 rounded bg-gray-50 space-y-2">
+              <label className="block text-xs font-semibold">Council Status</label>
+              <div className="flex items-center gap-4 text-xs">
+                <label className="flex items-center gap-1 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="memberStatus"
+                    checked={memberForm.isCurrent === true}
+                    onChange={() => setMemberForm((s) => ({ ...s, isCurrent: true }))}
+                  />
+                  <span>Current EC</span>
+                </label>
+                <label className="flex items-center gap-1 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="memberStatus"
+                    checked={memberForm.isCurrent === false}
+                    onChange={() =>
+                      setMemberForm((s) => ({
+                        ...s,
+                        isCurrent: false,
+                        tenure: s.tenure || 'Batch 32',
+                      }))
+                    }
+                  />
+                  <span>Alumni</span>
+                </label>
+              </div>
+
+              {!memberForm.isCurrent && (
+                <div className="flex items-center gap-1 mt-1 text-[11px] text-gray-600">
+                  <span>Quick Batch:</span>
+                  {['Batch 32', 'Batch 31', 'Batch 30'].map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => setMemberForm((s) => ({ ...s, tenure: b }))}
+                      className="px-1.5 py-0.5 border border-gray-400 rounded bg-white hover:bg-gray-100 text-[10px]"
+                    >
+                      {b}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex gap-2">
@@ -1265,61 +1500,185 @@ const Dashboard = () => {
           </form>
 
           <div className="space-y-2">
-            <button
-              type="button"
-              className="w-full flex items-center justify-between text-xs font-semibold bg-lightBg border border-black px-2 py-1"
-              onClick={() => setMembersListOpen((v) => !v)}
-            >
-              <span>Existing Members</span>
-              <span className="text-[10px]">
-                {membersListOpen ? 'Hide' : 'Show'}
-              </span>
-            </button>
+            <div className="flex items-center justify-between gap-2">
+              <button
+                type="button"
+                className="flex-1 flex items-center justify-between text-xs font-semibold bg-lightBg border border-black px-2 py-1"
+                onClick={() => setMembersListOpen((v) => !v)}
+              >
+                <span>Existing Members ({members.length})</span>
+                <span className="text-[10px]">{membersListOpen ? 'Hide' : 'Show'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkMoveToAlumni}
+                disabled={savingMember || !members.some((m) => m.isCurrent)}
+                className="text-[11px] px-2 py-1 bg-amber-100 border border-black hover:bg-amber-200 disabled:opacity-50 whitespace-nowrap"
+                title="Transition all current active members to Alumni"
+              >
+                Batch Transition to Alumni
+              </button>
+            </div>
 
             {membersListOpen && (
-              <div className="space-y-2 max-h-80 overflow-y-auto">
-                {loadingMembers && (
-                  <p className="text-xs">Loading members...</p>
-                )}
-                {!loadingMembers && !members.length && (
-                  <p className="text-xs text-gray-600">No members yet.</p>
-                )}
-                {!loadingMembers &&
-                  members.map((member) => (
-                    <div
-                      key={member.id}
-                      className="flex items-start justify-between gap-2 border border-gray-300 rounded px-2 py-1 text-xs bg-white"
+              <div className="space-y-2">
+                {/* Search Member */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={memberSearchQuery}
+                    onChange={(e) => setMemberSearchQuery(e.target.value)}
+                    placeholder="Search member by name, role, batch..."
+                    className="w-full pl-6 pr-6 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-black"
+                  />
+                  <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]">
+                    🔍
+                  </span>
+                  {memberSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setMemberSearchQuery('')}
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black text-xs"
+                      aria-label="Clear member search"
                     >
-                      <div>
-                        <p className="font-semibold">{member.name}</p>
-                        <p className="text-gray-600">
-                          {member.role} • {member.tenure}
-                        </p>
-                        <p className="text-[10px] mt-1 text-gray-600">
-                          Order: {member.displayOrder ?? '—'}
-                        </p>
-                        <p className="text-[10px] mt-1">
-                          {member.isCurrent ? 'Current' : 'Alumni'}
-                        </p>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <button
-                          type="button"
-                          className="underline text-blue-600"
-                          onClick={() => handleEditMember(member)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="underline text-red-600"
-                          onClick={() => handleDeleteMember(member.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter Tabs */}
+                <div className="flex items-center gap-1 text-[11px]">
+                  <span className="text-gray-600">Filter:</span>
+                  {(['all', 'current', 'alumni'] as const).map((filter) => (
+                    <button
+                      key={filter}
+                      type="button"
+                      onClick={() => setMemberFilter(filter)}
+                      className={`px-2 py-0.5 border text-xs capitalize ${
+                        memberFilter === filter
+                          ? 'bg-black text-white border-black font-semibold'
+                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                      }`}
+                    >
+                      {filter === 'all'
+                        ? `All (${members.length})`
+                        : filter === 'current'
+                        ? `Current EC (${members.filter((m) => m.isCurrent).length})`
+                        : `Alumni (${members.filter((m) => !m.isCurrent).length})`}
+                    </button>
                   ))}
+                </div>
+
+                <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+                  {loadingMembers && <p className="text-xs">Loading members...</p>}
+                  {!loadingMembers && !members.length && (
+                    <p className="text-xs text-gray-600">No members yet.</p>
+                  )}
+                  {!loadingMembers &&
+                    (() => {
+                      const filtered = members.filter((member) => {
+                        if (memberFilter === 'current' && !member.isCurrent) return false;
+                        if (memberFilter === 'alumni' && member.isCurrent) return false;
+                        if (memberSearchQuery.trim()) {
+                          const q = memberSearchQuery.trim().toLowerCase();
+                          const matches =
+                            member.name.toLowerCase().includes(q) ||
+                            member.role.toLowerCase().includes(q) ||
+                            (member.tenure ? member.tenure.toLowerCase().includes(q) : false);
+                          if (!matches) return false;
+                        }
+                        return true;
+                      });
+
+                      if (members.length > 0 && filtered.length === 0) {
+                        return (
+                          <p className="text-xs text-gray-500 py-3 text-center">
+                            No members match &quot;{memberSearchQuery.trim()}&quot;.
+                          </p>
+                        );
+                      }
+
+                      return filtered.map((member) => (
+                        <div
+                          key={member.id}
+                          className="flex items-start justify-between gap-2 border border-gray-300 rounded px-2 py-1.5 text-xs bg-white hover:bg-gray-50"
+                        >
+                          <div className="flex items-start gap-2.5">
+                            {member.image ? (
+                              <img
+                                src={resolveImageUrl(member.image)}
+                                alt={member.name}
+                                className="w-10 h-10 rounded object-cover border border-gray-400 bg-gray-100 flex-shrink-0"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center text-[9px] text-gray-400 flex-shrink-0">
+                                No pic
+                              </div>
+                            )}
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-semibold">{member.name}</p>
+                                <span
+                                  className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${
+                                    member.isCurrent
+                                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                      : 'bg-purple-100 text-purple-800 border border-purple-300'
+                                  }`}
+                                >
+                                  {member.isCurrent ? 'Current EC' : 'Alumni'}
+                                </span>
+                              </div>
+                              <p className="text-gray-600 text-[11px]">
+                                {member.role} • {member.tenure}
+                              </p>
+                              <p className="text-[10px] text-gray-400">
+                                Order: {member.displayOrder ?? '—'}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-end gap-1">
+                            <button
+                              type="button"
+                              disabled={updatingMemberId === member.id}
+                              onClick={() => handleToggleMemberStatus(member)}
+                              className={`text-[11px] px-1.5 py-0.5 border rounded ${
+                                member.isCurrent
+                                  ? 'border-purple-600 text-purple-700 bg-purple-50 hover:bg-purple-100'
+                                  : 'border-emerald-600 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
+                              }`}
+                            >
+                              {updatingMemberId === member.id
+                                ? 'Updating...'
+                                : member.isCurrent
+                                ? 'Move to Alumni →'
+                                : 'Make Current EC'}
+                            </button>
+
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                className="underline text-blue-600 text-[11px]"
+                                onClick={() => handleEditMember(member)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                className="underline text-red-600 text-[11px]"
+                                onClick={() => handleDeleteMember(member.id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                </div>
               </div>
             )}
           </div>

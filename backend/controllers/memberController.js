@@ -1,4 +1,5 @@
 const prisma = require('../prisma/client');
+const { uploadBufferToR2 } = require('../services/r2Service');
 
 const toOptionalInt = (value) => {
   if (value === undefined || value === null || value === '') return null;
@@ -19,6 +20,36 @@ const getMembers = async (req, res) => {
   }
 };
 
+const uploadMemberImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file uploaded' });
+    }
+
+    const { buffer, originalname, mimetype } = req.file;
+    const memberName = req.body?.name || '';
+
+    const result = await uploadBufferToR2(
+      buffer,
+      originalname,
+      mimetype,
+      'members',
+      memberName
+    );
+
+    res.status(200).json({
+      success: true,
+      url: result.url,
+      key: result.key,
+      size: result.size,
+      storage: result.storage,
+    });
+  } catch (error) {
+    console.error('Upload member image error:', error);
+    res.status(500).json({ message: 'Failed to upload image', error: error.message });
+  }
+};
+
 const createMember = async (req, res) => {
   try {
     const {
@@ -31,12 +62,24 @@ const createMember = async (req, res) => {
       displayOrder,
     } = req.body || {};
 
+    let finalImageUrl = image || null;
+    if (req.file) {
+      const uploadRes = await uploadBufferToR2(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        'members',
+        name
+      );
+      finalImageUrl = uploadRes.url;
+    }
+
     const member = await prisma.member.create({
       data: {
         name,
         role,
         tenure,
-        image: image || null,
+        image: finalImageUrl,
         linkedin: linkedin || null,
         displayOrder: toOptionalInt(displayOrder),
         isCurrent:
@@ -66,13 +109,25 @@ const updateMember = async (req, res) => {
       displayOrder,
     } = req.body || {};
 
+    let finalImageUrl = image !== undefined ? (image || null) : undefined;
+    if (req.file) {
+      const uploadRes = await uploadBufferToR2(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        'members',
+        name
+      );
+      finalImageUrl = uploadRes.url;
+    }
+
     const member = await prisma.member.update({
       where: { id: Number(id) },
       data: {
         ...(name !== undefined ? { name } : {}),
         ...(role !== undefined ? { role } : {}),
         ...(tenure !== undefined ? { tenure } : {}),
-        ...(image !== undefined ? { image: image || null } : {}),
+        ...(finalImageUrl !== undefined ? { image: finalImageUrl } : {}),
         ...(linkedin !== undefined ? { linkedin: linkedin || null } : {}),
         ...(displayOrder !== undefined
           ? { displayOrder: toOptionalInt(displayOrder) }
@@ -110,8 +165,8 @@ const deleteMember = async (req, res) => {
 
 module.exports = {
   getMembers,
+  uploadMemberImage,
   createMember,
   updateMember,
   deleteMember,
 };
-
