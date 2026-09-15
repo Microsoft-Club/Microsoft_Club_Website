@@ -49,6 +49,11 @@ The official full-stack web platform for Microsoft Club GIKI, serving as a centr
    ```
    > Backend runs on `http://localhost:5000`.
 
+For a deployment/startup environment, use `npm start`. It synchronizes the
+Prisma schema with the configured PostgreSQL database before starting the API,
+so additive schema changes such as the inductions waiting list are available
+without a separate manual `db push` step.
+
 ---
 
 ### 2. Frontend Setup

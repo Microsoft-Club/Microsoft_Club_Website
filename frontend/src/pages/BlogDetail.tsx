@@ -4,6 +4,56 @@ import WindowCard from '../components/WindowCard';
 import { api } from '../services/api';
 import type { Blog } from '../services/api';
 
+const ALLOWED_BLOG_TAGS = new Set([
+  'p',
+  'br',
+  'strong',
+  'em',
+  'u',
+  's',
+  'ol',
+  'ul',
+  'li',
+  'h1',
+  'h2',
+  'h3',
+  'blockquote',
+  'a',
+]);
+
+const sanitizeBlogHtml = (html: string) => {
+  const parsed = new DOMParser().parseFromString(html, 'text/html');
+
+  parsed.body.querySelectorAll('*').forEach((element) => {
+    const tagName = element.tagName.toLowerCase();
+
+    if (!ALLOWED_BLOG_TAGS.has(tagName)) {
+      element.replaceWith(...Array.from(element.childNodes));
+      return;
+    }
+
+    Array.from(element.attributes).forEach((attribute) => {
+      const isSafeLink =
+        tagName === 'a' &&
+        attribute.name === 'href' &&
+        (() => {
+          try {
+            const protocol = new URL(attribute.value, window.location.origin).protocol;
+            return ['http:', 'https:', 'mailto:'].includes(protocol);
+          } catch {
+            return false;
+          }
+        })();
+
+      if (!isSafeLink) {
+        element.removeAttribute(attribute.name);
+      }
+    });
+  });
+
+  return parsed.body.innerHTML;
+};
+
 const BlogDetail = () => {
   const params = useParams();
   const id = params.id ? Number(params.id) : null;
@@ -57,15 +107,8 @@ const BlogDetail = () => {
 
               <div
                 className="text-sm leading-6 text-black [&_p]:mb-3 [&_ul]:list-disc [&_li]:ml-5 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_blockquote]:border-l-4 [&_blockquote]:border-black [&_blockquote]:pl-3 [&_a]:underline [&_a]:underline-offset-2"
-                // Admin-created content is HTML from the rich text editor.
-                // Basic protection: remove script tags.
                 dangerouslySetInnerHTML={{
-                  __html: blog.content
-                    ? blog.content.replace(
-                        /<script[\s\S]*?>[\s\S]*?<\/script>/gi,
-                        ''
-                      )
-                    : '',
+                  __html: blog.content ? sanitizeBlogHtml(blog.content) : '',
                 }}
               />
             </div>

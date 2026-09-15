@@ -25,6 +25,8 @@ app.use('/api/members', require('./routes/memberRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/podcasts', require('./routes/podcastRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
+app.use('/api/waiting-list', require('./routes/waitingListRoutes'));
+
 
 app.get('/health', (req, res) => {
   res.status(200).json({

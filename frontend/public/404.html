@@ -4,9 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Page Not Found</title>
-    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      (function () {
+        var repositoryBase = '/Microsoft_Club_Website/';
+        var basePath = window.location.pathname.indexOf(repositoryBase) === 0
+          ? repositoryBase
+          : '/';
+
+        try {
+          sessionStorage.setItem(
+            'mcg-spa-redirect',
+            window.location.pathname + window.location.search + window.location.hash
+          );
+        } catch (error) {
+          console.warn('Unable to preserve SPA route:', error);
+        }
+        window.location.replace(basePath);
+      })();
+    </script>
   </head>
   <body>
-    <p>Redirecting...</p>
+    <p>Loading Microsoft Club GIKI...</p>
   </body>
 </html>

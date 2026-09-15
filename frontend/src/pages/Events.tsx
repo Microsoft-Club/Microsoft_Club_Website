@@ -131,7 +131,7 @@ const Events = () => {
     Record<string, boolean>
   >({});
 
-  const toggleDescription = (eventId: string) => {
+  const toggleDescription = (eventId: number) => {
     setExpandedDescriptions((prev) => ({
       ...prev,
       [eventId]: !prev[eventId],
@@ -242,14 +242,11 @@ const Events = () => {
                   href={event.registrationLink}
                   target="_blank"
                   rel="noreferrer"
+                  className="pixel-button"
                 >
-                  <PixelButton
-                    label={
-                      new Date(event.date) >= new Date(new Date().setHours(0, 0, 0, 0))
-                        ? 'Register'
-                        : 'Link'
-                    }
-                  />
+                  {new Date(event.date) >= new Date(new Date().setHours(0, 0, 0, 0))
+                    ? 'Register'
+                    : 'Link'}
                 </a>
               )}
             </WindowCard>

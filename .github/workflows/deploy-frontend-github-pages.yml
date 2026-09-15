@@ -32,7 +32,9 @@ jobs:
 
       - name: Install + Build
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          # Keep production builds usable even when the optional secret is
+          # missing; local development still uses frontend/.env.
+          VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://microsoft-club-website.onrender.com' }}
           # Changed from /Microsoft_Club_Website/ to / for custom domain
           VITE_BASE_URL: /
         run: |

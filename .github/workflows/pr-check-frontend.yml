@@ -36,3 +36,6 @@ jobs:
           VITE_API_URL: http://localhost:5000
           VITE_BASE_URL: /
         run: npm run build
+
+      - name: Type-check
+        run: npm run typecheck

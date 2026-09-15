@@ -4,9 +4,23 @@ import { useNavigate } from 'react-router-dom';
 import PixelButton from '../components/PixelButton';
 import WindowCard from '../components/WindowCard';
 import { api } from '../services/api';
-import type { Event, Podcast, Member, Project, Blog } from '../services/api';
+import type { Event, Podcast, Member, Project, Blog, WaitingListEntry } from '../services/api';
 import ReactQuill from 'react-quill';
+
 import 'react-quill/dist/quill.snow.css';
+
+const toWhatsAppNumber = (phone: string) => {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.startsWith('00')) return digits.slice(2);
+  if (digits.startsWith('0')) return `92${digits.slice(1)}`;
+  return digits;
+};
+
+const csvCell = (value: string | number) => {
+  const text = String(value ?? '');
+  const safeText = /^[=+\-@]/.test(text) ? `'${text}` : text;
+  return `"${safeText.replace(/"/g, '""')}"`;
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -95,17 +109,105 @@ const Dashboard = () => {
   const [blogError, setBlogError] = useState<string | null>(null);
 
   // Accordion toggles to keep the dashboard usable as lists grow.
+  const [waitingListOpen, setWaitingListOpen] = useState(true);
   const [eventsListOpen, setEventsListOpen] = useState(true);
   const [episodesListOpen, setEpisodesListOpen] = useState(true);
   const [membersListOpen, setMembersListOpen] = useState(true);
   const [projectsListOpen, setProjectsListOpen] = useState(true);
   const [blogsListOpen, setBlogsListOpen] = useState(true);
 
+  // Inductions Waiting List state
+  const [waitingList, setWaitingList] = useState<WaitingListEntry[]>([]);
+  const [loadingWaitingList, setLoadingWaitingList] = useState(false);
+  const [waitingListError, setWaitingListError] = useState<string | null>(null);
+  const [waitingListSearch, setWaitingListSearch] = useState('');
+  const [waitingListBatchFilter, setWaitingListBatchFilter] = useState<
+    'all' | 'Batch 35' | 'Batch 36'
+  >('all');
+
   const handleLogout = () => {
     localStorage.removeItem('mcg_admin_token');
     localStorage.removeItem('mcg_admin_email');
     navigate('/admin/login');
   };
+
+  const loadWaitingList = async () => {
+    setLoadingWaitingList(true);
+    setWaitingListError(null);
+    try {
+      const res = await api.get<WaitingListEntry[]>('/api/waiting-list');
+      setWaitingList(res.data);
+    } catch (err: any) {
+      console.error('Failed to load waiting list entries:', err);
+      const status = err?.response?.status;
+      const serverMsg = err?.response?.data?.message;
+      if (status === 404) {
+        setWaitingListError(
+          'Waiting list API endpoint not found (404). Please ensure the latest backend with waiting-list routes is deployed and running.'
+        );
+      } else if (status === 401) {
+        setWaitingListError('Your session has expired or is unauthorized. Please sign in again.');
+      } else {
+        setWaitingListError(serverMsg || 'Failed to load waiting list entries.');
+      }
+    } finally {
+      setLoadingWaitingList(false);
+    }
+  };
+
+  const handleDeleteWaitingListEntry = async (id: number) => {
+    if (!confirm('Are you sure you want to remove this applicant from the waiting list?')) return;
+    try {
+      await api.delete(`/api/waiting-list/${id}`);
+      await loadWaitingList();
+    } catch (err: any) {
+      console.error('Failed to delete waiting list entry:', err);
+      const serverMsg = err?.response?.data?.message;
+      setWaitingListError(serverMsg || 'Failed to delete waiting list entry.');
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (!filteredWaitingList.length) return;
+    const headers = ['ID', 'Name', 'GIKI Email', 'Phone', 'Batch', 'Faculty', 'Submitted At'];
+    const rows = filteredWaitingList.map((entry) =>
+      [
+        entry.id,
+        entry.name || '',
+        entry.email || '',
+        entry.phone || '',
+        entry.batch || '',
+        entry.faculty || '',
+        new Date(entry.createdAt).toLocaleString(),
+      ]
+        .map(csvCell)
+        .join(',')
+    );
+    const csvContent = `\uFEFF${[headers.join(','), ...rows].join('\r\n')}`;
+    const url = URL.createObjectURL(
+      new Blob([csvContent], { type: 'text/csv;charset=utf-8' })
+    );
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `mcg_inductions_waiting_list_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const filteredWaitingList = waitingList.filter((item) => {
+    const matchesBatch =
+      waitingListBatchFilter === 'all' || item.batch === waitingListBatchFilter;
+    const q = waitingListSearch.toLowerCase().trim();
+    const matchesSearch =
+      !q ||
+      item.name.toLowerCase().includes(q) ||
+      item.email.toLowerCase().includes(q) ||
+      item.phone.toLowerCase().includes(q) ||
+      item.faculty.toLowerCase().includes(q);
+    return matchesBatch && matchesSearch;
+  });
 
   const loadEvents = async () => {
     setLoadingEvents(true);
@@ -120,12 +222,14 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    loadWaitingList();
     loadEvents();
     loadPodcasts();
     loadMembers();
     loadProjects();
     loadBlogs();
   }, []);
+
 
   const loadPodcasts = async () => {
     setLoadingPodcasts(true);
@@ -466,7 +570,191 @@ const Dashboard = () => {
         </div>
       </div>
 
+      <WindowCard title="Inductions Waiting List">
+
+        <div className="space-y-4">
+          {/* Header Bar with Accordion & Quick Stats */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-lightBg border border-black p-3">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="font-heading font-bold text-gray-800">
+                Applicants:
+              </span>
+              <span className="bg-primaryDark text-white px-2 py-0.5 rounded font-mono font-semibold">
+                Total: {waitingList.length}
+              </span>
+              <span className="bg-purple-600 text-white px-2 py-0.5 rounded font-mono">
+                Batch 35: {waitingList.filter((w) => w.batch === 'Batch 35').length}
+              </span>
+              <span className="bg-emerald-600 text-white px-2 py-0.5 rounded font-mono">
+                Batch 36: {waitingList.filter((w) => w.batch === 'Batch 36').length}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <PixelButton
+                type="button"
+                label="Export CSV"
+                onClick={handleExportCSV}
+                disabled={!filteredWaitingList.length}
+                className="bg-green-700 text-white text-[10px] py-1 px-2"
+              />
+              <button
+                type="button"
+                onClick={loadWaitingList}
+                disabled={loadingWaitingList}
+                className="text-xs px-2 py-1 border border-black bg-white hover:bg-gray-100 font-semibold"
+              >
+                {loadingWaitingList ? 'Refreshing...' : 'Refresh'}
+              </button>
+              <button
+                type="button"
+                className="text-xs font-semibold px-2 py-1 border border-black bg-white"
+                onClick={() => setWaitingListOpen((v) => !v)}
+              >
+                {waitingListOpen ? 'Hide' : 'Show'}
+              </button>
+            </div>
+          </div>
+
+          {waitingListError && (
+            <div className="p-2 bg-red-100 border border-red-400 text-red-700 text-xs rounded">
+              {waitingListError}
+            </div>
+          )}
+
+          {waitingListOpen && (
+            <div className="space-y-3">
+              {/* Search and Filters */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={waitingListSearch}
+                    onChange={(e) => setWaitingListSearch(e.target.value)}
+                    placeholder="Search by name, email, phone, or faculty..."
+                    className="w-full border border-gray-400 rounded px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-black"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="batch-filter" className="text-xs font-semibold whitespace-nowrap">
+                    Batch:
+                  </label>
+                  <select
+                    id="batch-filter"
+                    value={waitingListBatchFilter}
+                    onChange={(e) =>
+                      setWaitingListBatchFilter(
+                        e.target.value as 'all' | 'Batch 35' | 'Batch 36'
+                      )
+                    }
+                    className="border border-gray-400 rounded px-2 py-1.5 text-xs bg-white"
+                  >
+                    <option value="all">All Batches</option>
+                    <option value="Batch 35">Batch 35</option>
+                    <option value="Batch 36">Batch 36</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Table / List View */}
+              {loadingWaitingList ? (
+                <p className="text-xs py-4 text-center text-gray-600">
+                  Loading waiting list entries...
+                </p>
+              ) : filteredWaitingList.length === 0 ? (
+                <div className="text-center py-6 border border-dashed border-gray-300 rounded bg-gray-50 text-xs text-gray-600">
+                  {waitingList.length === 0
+                    ? 'No applicants have joined the waiting list yet.'
+                    : 'No matching applicants found for the current search or filter.'}
+                </div>
+              ) : (
+                <div className="overflow-x-auto border border-black shadow-sm">
+                  <table className="w-full text-left text-xs border-collapse bg-white">
+                    <thead>
+                      <tr className="bg-primaryDark text-white border-b border-black text-[11px]">
+                        <th className="p-2 border-r border-gray-600 font-heading">#</th>
+                        <th className="p-2 border-r border-gray-600 font-heading">Name</th>
+                        <th className="p-2 border-r border-gray-600 font-heading">GIKI Email</th>
+                        <th className="p-2 border-r border-gray-600 font-heading">Phone / WhatsApp</th>
+                        <th className="p-2 border-r border-gray-600 font-heading">Batch</th>
+                        <th className="p-2 border-r border-gray-600 font-heading">Faculty</th>
+                        <th className="p-2 border-r border-gray-600 font-heading">Registered</th>
+                        <th className="p-2 text-center font-heading">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filteredWaitingList.map((entry, index) => (
+                        <tr
+                          key={entry.id}
+                          className="hover:bg-blue-50/50 transition-colors text-xs"
+                        >
+                          <td className="p-2 text-gray-500 font-mono border-r border-gray-200">
+                            {index + 1}
+                          </td>
+                          <td className="p-2 font-semibold text-gray-900 border-r border-gray-200 whitespace-nowrap">
+                            {entry.name}
+                          </td>
+                          <td className="p-2 border-r border-gray-200">
+                            <a
+                              href={`mailto:${entry.email}`}
+                              className="text-blue-600 hover:underline break-all"
+                            >
+                              {entry.email}
+                            </a>
+                          </td>
+                          <td className="p-2 border-r border-gray-200 whitespace-nowrap">
+                            <a
+                              href={`https://wa.me/${toWhatsAppNumber(entry.phone)}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-green-700 hover:underline font-mono"
+                            >
+                              {entry.phone}
+                            </a>
+                          </td>
+                          <td className="p-2 border-r border-gray-200 whitespace-nowrap">
+                            <span
+                              className={`inline-block px-2 py-0.5 rounded text-[10px] font-heading font-semibold ${
+                                entry.batch === 'Batch 36'
+                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-400'
+                                  : 'bg-purple-100 text-purple-800 border border-purple-400'
+                              }`}
+                            >
+                              {entry.batch}
+                            </span>
+                          </td>
+                          <td className="p-2 border-r border-gray-200 font-medium whitespace-nowrap">
+                            {entry.faculty}
+                          </td>
+                          <td className="p-2 border-r border-gray-200 text-gray-500 text-[11px] whitespace-nowrap">
+                            {new Date(entry.createdAt).toLocaleDateString()}{' '}
+                            {new Date(entry.createdAt).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </td>
+                          <td className="p-2 text-center whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteWaitingListEntry(entry.id)}
+                              className="text-red-600 hover:text-red-800 underline font-medium text-[11px]"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </WindowCard>
+
       <WindowCard title="Events Manager">
+
         <div className="grid gap-6 md:grid-cols-2">
           <form onSubmit={handleSubmit} className="space-y-3">
             <h2 className="font-semibold text-sm">
