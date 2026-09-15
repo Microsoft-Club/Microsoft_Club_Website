@@ -1,11 +1,39 @@
-import { motion } from 'framer-motion';
 import WindowCard from '../components/WindowCard';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
-    <div className="space-y-6">
-      <section className="grid-layout">
+    <div className="flex flex-col gap-6">
+      <section className="order-1 md:order-2 flex justify-center">
+        <div className="retro-window retro-window-highlight bg-white max-w-xl w-full">
+          <div className="retro-window-header">
+            <span className="retro-window-title">Inductions 2026</span>
+            <div className="retro-window-controls">
+              <span className="retro-dot" />
+              <span className="retro-dot" />
+              <span className="retro-dot" />
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4">
+            <div className="flex items-start gap-3">
+              <div>
+                <p className="font-heading text-xs font-bold mb-1">Inductions Waiting List is Open!</p>
+                <p className="text-xs text-gray-700">
+                  Batch 35 and Batch 36 freshers can now register on the official waiting list to get early updates and interview details.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/waiting-list"
+              className="pixel-button bg-purpleAccent text-white self-end sm:self-center shrink-0"
+            >
+              Join Waiting List
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="order-2 md:order-1 grid-layout">
         <WindowCard title="Featured Event">
           <p className="mb-3 text-sm">
             Stay tuned for the next Microsoft Club GIKI event. Join us for
@@ -36,41 +64,6 @@ const Home = () => {
           </Link>
         </WindowCard>
       </section>
-
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="flex justify-center"
-      >
-        <div className="retro-window bg-white max-w-xl w-full">
-          <div className="retro-window-header">
-            <span className="retro-window-title">Inductions 2026</span>
-            <div className="retro-window-controls">
-              <span className="retro-dot" />
-              <span className="retro-dot" />
-              <span className="retro-dot" />
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4">
-            <div className="flex items-start gap-3">
-              <div>
-                <p className="font-heading text-xs font-bold mb-1">Inductions Waiting List is Open!</p>
-                <p className="text-xs text-gray-700">
-                  Batch 35 and Batch 36 freshers can now register on the official waiting list to get early updates and interview details.
-                </p>
-              </div>
-            </div>
-            <Link
-              to="/waiting-list"
-              className="pixel-button bg-purpleAccent text-white self-end sm:self-center shrink-0"
-            >
-              Join Waiting List
-            </Link>
-          </div>
-        </div>
-      </motion.section>
-
     </div>
   );
 };

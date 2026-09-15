@@ -1,4 +1,4 @@
-import clubLogo from '../assets/club-logo.png';
+import clubLogoWhite from '../assets/club_logo_white.png';
 
 const Footer = () => {
   return (
@@ -6,13 +6,13 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-3">
           <img
-            src={clubLogo}
-            alt="Microsoft Club GIKI logo"
-            className="w-8 h-8 object-contain bg-white border-2 border-black"
+            src={clubLogoWhite}
+            alt="Microsoft Club GIKI"
+            className="h-8 w-auto max-w-[160px] object-contain"
           />
           <p className="font-body">
-          © {new Date().getFullYear()} Microsoft Club GIKI. All rights
-          reserved.
+            © {new Date().getFullYear()} Microsoft Club GIKI. All rights
+            reserved.
           </p>
         </div>
         <div className="flex gap-4 flex-wrap justify-center md:justify-end">
