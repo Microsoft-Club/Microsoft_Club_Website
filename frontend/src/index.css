@@ -16,7 +16,7 @@
   background-size: 18px 18px, auto;
   background-position: 0 0, 0 0;
   position: relative;
-  overflow: hidden;
+  overflow-x: clip;
 }
 
 .retro-app-bg::after {

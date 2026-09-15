@@ -74,3 +74,15 @@ model Blog {
   updatedAt DateTime @updatedAt
 }
 
+model WaitingListEntry {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String
+  batch     String
+  faculty   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("waiting_list")
+}

@@ -1,14 +1,20 @@
-import { FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PixelButton from '../components/PixelButton';
 import { api } from '../services/api';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionExpired = searchParams.get('sessionExpired') === '1';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    sessionExpired ? 'Your session has expired. Please log in again.' : null
+  );
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -24,8 +30,14 @@ const AdminLogin = () => {
       localStorage.setItem('mcg_admin_token', res.data.token);
       localStorage.setItem('mcg_admin_email', email);
       navigate('/admin/dashboard');
-    } catch {
-      setError('Invalid email or password.');
+    } catch (err: any) {
+      if (!err.response) {
+        setError('Unable to reach the server. Please try again.');
+      } else if (err.response.status >= 500) {
+        setError('The server is temporarily unavailable. Please try again.');
+      } else {
+        setError('Invalid email or password.');
+      }
     } finally {
       setLoading(false);
     }

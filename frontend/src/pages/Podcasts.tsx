@@ -56,7 +56,7 @@ const Podcasts = () => {
   // Keep episode cards compact; 120 chars still reads well at `text-sm`.
   const MAX_DESCRIPTION_CHARS = 120;
 
-  const toggleDescription = (episodeId: string) => {
+  const toggleDescription = (episodeId: number) => {
     setExpandedDescriptions((prev) => ({
       ...prev,
       [episodeId]: !prev[episodeId],

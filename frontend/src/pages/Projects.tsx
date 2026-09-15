@@ -210,13 +210,19 @@ const Projects = () => {
                     href={project.githubLink}
                     target="_blank"
                     rel="noreferrer"
+                    className="pixel-button"
                   >
-                    <PixelButton label="GitHub" />
+                    GitHub
                   </a>
                 )}
                 {!!project.demoLink?.trim() && (
-                  <a href={project.demoLink} target="_blank" rel="noreferrer">
-                    <PixelButton label="Demo" />
+                  <a
+                    href={project.demoLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="pixel-button"
+                  >
+                    Demo
                   </a>
                 )}
               </div>

@@ -4,7 +4,9 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js",
+    "start": "prisma db push --skip-generate && node server.js",
+    "start:server": "node server.js",
+    "db:push": "prisma db push",
     "seed:admin": "node scripts/seedAdmin.js"
   },
   "keywords": [],

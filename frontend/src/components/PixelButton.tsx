@@ -1,7 +1,6 @@
-import { ButtonHTMLAttributes } from 'react';
-import { motion } from 'framer-motion';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 
-type PixelButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type PixelButtonProps = HTMLMotionProps<'button'> & {
   label: string;
 };
 
