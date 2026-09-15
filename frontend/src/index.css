@@ -16,7 +16,6 @@
   background-size: 18px 18px, auto;
   background-position: 0 0, 0 0;
   position: relative;
-  overflow-x: clip;
 }
 
 .retro-app-bg::after {
@@ -40,12 +39,27 @@
   z-index: 1;
 }
 
+.retro-app-bg > header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
 body {
   @apply text-black font-body;
 }
 
 .retro-window {
   @apply bg-white border-retro border-black rounded-retro shadow-retro overflow-hidden;
+}
+
+.retro-window-highlight {
+  border-color: #7c3aed;
+  box-shadow: 4px 4px 0 #7c3aed;
+}
+
+.retro-window-highlight .retro-window-header {
+  background-color: #7c3aed;
 }
 
 .retro-window-header {
