@@ -11,7 +11,7 @@ import Blogs from './pages/Blogs';
 import BlogDetail from './pages/BlogDetail';
 import AdminLogin from './pages/AdminLogin';
 import ProtectedRoute from './components/ProtectedRoute';
-import InductionsWaitingList from './pages/InductionsWaitingList';
+import Inductions from './pages/Inductions';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
@@ -23,9 +23,9 @@ const App = () => {
         <Suspense fallback={<p className="text-sm">Loading page...</p>}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/waiting-list" element={<InductionsWaitingList />} />
-            <Route path="/inductions" element={<InductionsWaitingList />} />
-            <Route path="/inductions-waiting-list" element={<InductionsWaitingList />} />
+            <Route path="/inductions" element={<Inductions />} />
+            <Route path="/waiting-list" element={<Inductions />} />
+            <Route path="/inductions-waiting-list" element={<Inductions />} />
             <Route path="/events" element={<Events />} />
 
             <Route path="/members" element={<Members />} />
