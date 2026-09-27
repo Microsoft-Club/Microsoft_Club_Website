@@ -17,18 +17,28 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4">
             <div className="flex items-start gap-3">
               <div>
-                <p className="font-heading text-xs font-bold mb-1">Inductions Waiting List is Open!</p>
+                <p className="font-heading text-xs font-bold mb-1">Inductions are LIVE!</p>
                 <p className="text-xs text-gray-700">
-                  Batch 35 and Batch 36 freshers can now register on the official waiting list to get early updates and interview details.
+                  Microsoft Club GIKI Inductions 2026 are officially open for Batch 35 and Batch 36! Submit your application today.
                 </p>
               </div>
             </div>
-            <Link
-              to="/waiting-list"
-              className="pixel-button bg-purpleAccent text-white self-end sm:self-center shrink-0"
-            >
-              Join Waiting List
-            </Link>
+            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <Link
+                to="/inductions"
+                className="pixel-button bg-gray-800 text-white"
+              >
+                Details
+              </Link>
+              <a
+                href="https://forms.gle/nRwTaNsm6KA8Xad86"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pixel-button bg-purpleAccent text-white"
+              >
+                Apply Now
+              </a>
+            </div>
           </div>
         </div>
       </section>

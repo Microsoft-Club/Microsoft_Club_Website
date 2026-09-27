@@ -5,9 +5,9 @@ import clubLogoWhite from '../assets/club_logo_white.png';
 const navItems = [
   { to: '/', label: 'Home', end: true },
   {
-    to: '/waiting-list',
+    to: '/inductions',
     label: 'Inductions',
-    matchPaths: ['/waiting-list', '/inductions', '/inductions-waiting-list'],
+    matchPaths: ['/inductions', '/waiting-list', '/inductions-waiting-list'],
   },
   { to: '/events', label: 'Events' },
   { to: '/members', label: 'Members' },
