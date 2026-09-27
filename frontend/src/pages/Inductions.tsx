@@ -75,51 +75,16 @@ const Inductions = () => {
               </p>
             </div>
 
-            {/* Key Information Box */}
-            <div className="bg-lightBg border-2 border-black p-4 text-left rounded shadow-retro text-xs space-y-3 max-w-md mx-auto">
-              <div className="border-b border-gray-300 pb-2 font-heading font-semibold text-gray-800 flex items-center justify-between">
-                <span>Inductions Information</span>
-                <span className="bg-purpleAccent text-white px-2 py-0.5 text-[10px] rounded">
-                  Batch 35 & 36
-                </span>
-              </div>
-              <div className="space-y-2 text-gray-700">
-                <div className="flex items-start gap-2">
-                  <span className="font-heading font-bold text-black min-w-[75px]">Eligibility:</span>
-                  <span>Batch 35 (Sophomores) & Batch 36 (Freshers)</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-heading font-bold text-black min-w-[75px]">Domains:</span>
-                  <span>Technical, Creative & Media, Event Operations, Marketing & PR, Logistics</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-heading font-bold text-black min-w-[75px]">Status:</span>
-                  <a
-                    href={APPLY_FORM_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-700 font-bold hover:underline inline-flex items-center gap-1"
-                  >
-                    Induction are LIVE ↗
-                  </a>
-                </div>
-              </div>
-            </div>
-
             {/* Call to Action Button */}
-            <div className="pt-2 flex flex-col items-center gap-3">
+            <div className="pt-2 flex justify-center">
               <a
                 href={APPLY_FORM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="pixel-button bg-purpleAccent text-white text-xs sm:text-sm px-8 py-3.5 shadow-retro hover:bg-purple-700 transition-all inline-flex items-center justify-center gap-2"
+                className="pixel-button bg-purpleAccent text-white text-xs sm:text-sm px-8 py-3.5 shadow-retro hover:bg-purple-700 transition-all inline-flex items-center justify-center"
               >
-                <span>Apply Now</span>
-                <span aria-hidden="true">🚀</span>
+                Apply Now
               </a>
-              <p className="text-[11px] text-gray-500">
-                Fill out the official Google Form before the deadline closes.
-              </p>
             </div>
 
             {/* Social Follow Links */}
