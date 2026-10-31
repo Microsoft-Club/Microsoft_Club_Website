@@ -35,6 +35,9 @@ const Dashboard = () => {
     date: '',
     type: 'upcoming',
     registrationLink: '',
+    featured: false,
+    slug: '',
+    location: '',
   });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
@@ -293,6 +296,9 @@ const Dashboard = () => {
       date: '',
       type: 'upcoming',
       registrationLink: '',
+      featured: false,
+      slug: '',
+      location: '',
     });
     setImagesText('');
     setEditingId(null);
@@ -348,6 +354,9 @@ const Dashboard = () => {
         date: formState.date || new Date().toISOString(),
         type: formState.type || 'upcoming',
         registrationLink: formState.registrationLink || undefined,
+        featured: Boolean(formState.featured),
+        slug: formState.slug || undefined,
+        location: formState.location || undefined,
         images: imagesText
           ? imagesText
               .split(',')
@@ -487,6 +496,9 @@ const Dashboard = () => {
       date: event.date.slice(0, 10),
       type: event.type,
       registrationLink: event.registrationLink,
+      featured: Boolean(event.featured),
+      slug: event.slug || '',
+      location: event.location || '',
     });
     setImagesText((event.images || []).join(', '));
   };
@@ -952,6 +964,55 @@ const Dashboard = () => {
                 className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
               />
             </div>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="block text-xs font-medium mb-1">
+                  Location (optional)
+                </label>
+                <input
+                  type="text"
+                  value={formState.location || ''}
+                  onChange={(e) =>
+                    setFormState((s) => ({
+                      ...s,
+                      location: e.target.value,
+                    }))
+                  }
+                  className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                  placeholder="GIKI Auditorium"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-xs font-medium mb-1">
+                  Slug (optional)
+                </label>
+                <input
+                  type="text"
+                  value={formState.slug || ''}
+                  onChange={(e) =>
+                    setFormState((s) => ({
+                      ...s,
+                      slug: e.target.value,
+                    }))
+                  }
+                  className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                  placeholder="micathon-2026"
+                />
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-xs">
+              <input
+                type="checkbox"
+                checked={Boolean(formState.featured)}
+                onChange={(e) =>
+                  setFormState((s) => ({
+                    ...s,
+                    featured: e.target.checked,
+                  }))
+                }
+              />
+              Featured on home (only one at a time)
+            </label>
             <div>
               <label className="block text-xs font-medium mb-1">
                 Event Photos (optional, comma-separated URLs)
@@ -1005,10 +1066,14 @@ const Dashboard = () => {
                       className="flex items-start justify-between gap-2 border border-gray-300 rounded px-2 py-1 text-xs bg-white"
                     >
                       <div>
-                        <p className="font-semibold">{event.title}</p>
+                        <p className="font-semibold">
+                          {event.title}
+                          {event.featured ? ' ★' : ''}
+                        </p>
                         <p className="text-gray-600">
                           {new Date(event.date).toLocaleDateString()} •{' '}
                           {event.type}
+                          {event.slug ? ` • /${event.slug}` : ''}
                         </p>
                       </div>
                       <div className="flex flex-col gap-1">

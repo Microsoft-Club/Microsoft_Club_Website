@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Events from './pages/Events';
+import EventDetail from './pages/EventDetail';
 import Members from './pages/Members';
 import Projects from './pages/Projects';
 import Podcasts from './pages/Podcasts';
@@ -27,6 +28,7 @@ const App = () => {
             <Route path="/waiting-list" element={<Inductions />} />
             <Route path="/inductions-waiting-list" element={<Inductions />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/:idOrSlug" element={<EventDetail />} />
 
             <Route path="/members" element={<Members />} />
             <Route path="/projects" element={<Projects />} />

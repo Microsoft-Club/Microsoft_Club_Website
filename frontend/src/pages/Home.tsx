@@ -1,7 +1,31 @@
+import { useEffect, useState } from 'react';
 import WindowCard from '../components/WindowCard';
+import EventImageCarousel from '../components/EventImageCarousel';
 import { Link } from 'react-router-dom';
+import { api } from '../services/api';
+import type { Event } from '../services/api';
+
+const eventPath = (event: Event) => `/events/${event.slug || event.id}`;
 
 const Home = () => {
+  const [featuredEvent, setFeaturedEvent] = useState<Event | null>(null);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
+
+  useEffect(() => {
+    const loadFeatured = async () => {
+      try {
+        const res = await api.get<Event>('/api/events/featured');
+        setFeaturedEvent(res.data);
+      } catch {
+        setFeaturedEvent(null);
+      } finally {
+        setFeaturedLoading(false);
+      }
+    };
+
+    loadFeatured();
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
       <section className="order-1 md:order-2 flex justify-center">
@@ -17,9 +41,12 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4">
             <div className="flex items-start gap-3">
               <div>
-                <p className="font-heading text-xs font-bold mb-1">Inductions are LIVE!</p>
+                <p className="font-heading text-xs font-bold mb-1">
+                  Applications closed
+                </p>
                 <p className="text-xs text-gray-700">
-                  Microsoft Club GIKI Inductions 2026 are officially open for Batch 35 and Batch 36! Submit your application today.
+                  Microsoft Club GIKI Inductions 2026 have concluded. Thanks to
+                  everyone who applied — follow us for future openings.
                 </p>
               </div>
             </div>
@@ -30,28 +57,59 @@ const Home = () => {
               >
                 Details
               </Link>
-              <a
-                href="https://forms.gle/nRwTaNsm6KA8Xad86"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pixel-button bg-purpleAccent text-white"
-              >
-                Apply Now
-              </a>
             </div>
           </div>
         </div>
       </section>
 
       <section className="order-2 md:order-1 grid-layout">
-        <WindowCard title="Featured Event">
-          <p className="mb-3 text-sm">
-            Stay tuned for the next Microsoft Club GIKI event. Join us for
-            talks, workshops, and more.
-          </p>
-          <Link to="/events" className="pixel-button">
-            View Events
-          </Link>
+        <WindowCard
+          title="Featured Event"
+          imageSlot={
+            featuredEvent?.images?.length ? (
+              <EventImageCarousel
+                images={featuredEvent.images}
+                eventTitle={featuredEvent.title}
+              />
+            ) : undefined
+          }
+        >
+          {featuredLoading && (
+            <p className="text-sm">Loading featured event...</p>
+          )}
+          {!featuredLoading && featuredEvent && (
+            <>
+              <p className="font-heading text-sm font-bold mb-1">
+                {featuredEvent.title}
+              </p>
+              <p className="text-xs text-gray-700 mb-2">
+                {new Date(featuredEvent.date).toLocaleDateString()}
+                {featuredEvent.location ? ` · ${featuredEvent.location}` : ''}
+              </p>
+              <p className="mb-3 text-sm">
+                {featuredEvent.description.length > 160
+                  ? `${featuredEvent.description.slice(0, 160).trimEnd()}...`
+                  : featuredEvent.description}
+              </p>
+              <Link
+                to={eventPath(featuredEvent)}
+                className="pixel-button bg-purpleAccent text-white"
+              >
+                View Event
+              </Link>
+            </>
+          )}
+          {!featuredLoading && !featuredEvent && (
+            <>
+              <p className="mb-3 text-sm">
+                Stay tuned for the next Microsoft Club GIKI event. Join us for
+                talks, workshops, and more.
+              </p>
+              <Link to="/events" className="pixel-button">
+                View Events
+              </Link>
+            </>
+          )}
         </WindowCard>
 
         <WindowCard title="Latest Projects">
@@ -79,4 +137,3 @@ const Home = () => {
 };
 
 export default Home;
-

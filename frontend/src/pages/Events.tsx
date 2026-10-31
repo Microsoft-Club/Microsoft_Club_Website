@@ -1,126 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
+import EventImageCarousel from '../components/EventImageCarousel';
 import { api } from '../services/api';
 import type { Event } from '../services/api';
-import { resolveImageUrl } from '../utils/image';
-
-const EventImage = ({ src, alt }: { src: string; alt: string }) => {
-  const [failed, setFailed] = useState(false);
-  if (failed) return null;
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="w-full h-full min-h-[10rem] object-cover"
-      loading="lazy"
-      onError={() => setFailed(true)}
-    />
-  );
-};
-
-const AUTO_SWIPE_INTERVAL_MS = 4000;
-
-const EventImageCarousel = ({
-  images,
-  eventTitle,
-}: {
-  images: string[];
-  eventTitle: string;
-}) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const validImages = images
-    .map((raw) => resolveImageUrl(raw))
-    .filter((src): src is string => !!src);
-  if (validImages.length === 0) return null;
-
-  const isMulti = validImages.length > 1;
-  const count = validImages.length;
-
-  useEffect(() => {
-    if (!isMulti || !scrollRef.current) return;
-    const el = scrollRef.current;
-    const scrollToIndex = (idx: number) => {
-      const next = idx % count;
-      setCurrentIndex(next);
-      el.scrollTo({ left: el.clientWidth * next, behavior: 'smooth' });
-    };
-    const interval = setInterval(
-      () => scrollToIndex(currentIndex + 1),
-      AUTO_SWIPE_INTERVAL_MS
-    );
-    return () => clearInterval(interval);
-  }, [isMulti, count, currentIndex]);
-
-  const handleScroll = () => {
-    if (!scrollRef.current || !isMulti) return;
-    const el = scrollRef.current;
-    const idx = Math.round(el.scrollLeft / el.clientWidth);
-    setCurrentIndex(Math.min(idx, count - 1));
-  };
-
-  const goToSlide = (idx: number) => {
-    if (!scrollRef.current) return;
-    setCurrentIndex(idx);
-    scrollRef.current.scrollTo({
-      left: scrollRef.current.clientWidth * idx,
-      behavior: 'smooth',
-    });
-  };
-
-  return (
-    <div className="relative aspect-video bg-black">
-      <div
-        ref={scrollRef}
-        className={`flex h-full w-full ${
-          isMulti ? 'overflow-x-auto scroll-snap-swipe' : ''
-        }`}
-        onScroll={handleScroll}
-      >
-        {validImages.map((src, idx) => (
-          <div
-            key={`${src}-${idx}`}
-            className="h-full w-full flex-shrink-0"
-            style={isMulti ? { scrollSnapAlign: 'start' } : undefined}
-          >
-            <EventImage
-              src={src}
-              alt={`${eventTitle} photo ${idx + 1}`}
-            />
-          </div>
-        ))}
-      </div>
-      {isMulti && (
-        <>
-          <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 text-white text-[10px] font-medium">
-            {currentIndex + 1} / {count}
-          </div>
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2">
-            {validImages.map((_, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => goToSlide(idx)}
-                className={`h-2 w-2 rounded-full border border-white/50 transition-all ${
-                  idx === currentIndex
-                    ? 'bg-white scale-125'
-                    : 'bg-white/50 hover:bg-white/70'
-                }`}
-                aria-label={`Go to image ${idx + 1}`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
 
 type Filter = 'all' | 'upcoming' | 'past';
 
 const MAX_DESCRIPTION_CHARS = 120;
+
+const eventPath = (event: Event) => `/events/${event.slug || event.id}`;
 
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -209,8 +99,14 @@ const Events = () => {
                 )
               }
             >
+              {event.featured && (
+                <p className="mb-2 inline-flex px-2 py-0.5 border-2 border-black bg-yellow-100 font-heading text-[10px] shadow-retro">
+                  Featured
+                </p>
+              )}
               <p className="text-sm mb-1">
                 Date: {new Date(event.date).toLocaleDateString()}
+                {event.location ? ` · ${event.location}` : ''}
               </p>
               {(() => {
                 const description = event.description ?? '';
@@ -237,18 +133,24 @@ const Events = () => {
                   </div>
                 );
               })()}
-              {event.registrationLink && (
-                <a
-                  href={event.registrationLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="pixel-button"
-                >
-                  {new Date(event.date) >= new Date(new Date().setHours(0, 0, 0, 0))
-                    ? 'Register'
-                    : 'Link'}
-                </a>
-              )}
+              <div className="flex flex-wrap gap-2">
+                <Link to={eventPath(event)} className="pixel-button">
+                  View details
+                </Link>
+                {event.registrationLink && (
+                  <a
+                    href={event.registrationLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="pixel-button bg-purpleAccent text-white"
+                  >
+                    {new Date(event.date) >=
+                    new Date(new Date().setHours(0, 0, 0, 0))
+                      ? 'Register'
+                      : 'Link'}
+                  </a>
+                )}
+              </div>
             </WindowCard>
           ))}
           {!filteredEvents.length && (
@@ -263,4 +165,3 @@ const Events = () => {
 };
 
 export default Events;
-

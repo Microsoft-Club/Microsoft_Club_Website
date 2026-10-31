@@ -53,6 +53,9 @@ export type Event = {
   images?: string[];
   speakers?: string[];
   registrationLink?: string;
+  featured?: boolean;
+  slug?: string | null;
+  location?: string | null;
 };
 
 export type Member = {

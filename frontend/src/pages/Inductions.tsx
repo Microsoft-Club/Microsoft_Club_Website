@@ -45,8 +45,6 @@ const followLinks = [
   },
 ];
 
-const APPLY_FORM_URL = 'https://forms.gle/nRwTaNsm6KA8Xad86';
-
 const Inductions = () => {
   return (
     <div className="max-w-2xl mx-auto py-2">
@@ -57,40 +55,26 @@ const Inductions = () => {
       >
         <WindowCard title="Microsoft Club GIKI - Inductions 2026">
           <div className="p-2 md:p-5 text-center space-y-6">
-            {/* Live Indicator Badge */}
             <div className="flex items-center justify-center">
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 border-2 border-black text-green-900 font-heading text-xs shadow-retro">
-                <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse inline-block" />
-                Inductions are LIVE!
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 border-2 border-black text-gray-800 font-heading text-xs shadow-retro">
+                Applications closed
               </span>
             </div>
 
-            {/* Title & Tagline */}
             <div className="space-y-2">
               <h1 className="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-wide">
-                Inductions are LIVE
+                Inductions 2026 have concluded
               </h1>
               <p className="text-xs sm:text-sm text-gray-700 max-w-lg mx-auto leading-relaxed">
-                The recruitment drive for Microsoft Club GIKI is officially live! We are looking for enthusiastic, creative, and tech-driven students ready to learn, build, and lead.
+                Thank you to everyone who applied to Microsoft Club GIKI.
+                Applications for Batch 35 and Batch 36 are now closed. Follow
+                our socials for interview updates and future recruitment drives.
               </p>
             </div>
 
-            {/* Call to Action Button */}
-            <div className="pt-2 flex justify-center">
-              <a
-                href={APPLY_FORM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pixel-button bg-purpleAccent text-white text-xs sm:text-sm px-8 py-3.5 shadow-retro hover:bg-purple-700 transition-all inline-flex items-center justify-center"
-              >
-                Apply Now
-              </a>
-            </div>
-
-            {/* Social Follow Links */}
             <div className="pt-4 border-t-2 border-black space-y-3">
               <p className="font-heading text-xs text-gray-900">
-                Follow us for interview schedules and announcements
+                Follow us for announcements
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {followLinks.map((item) => (
