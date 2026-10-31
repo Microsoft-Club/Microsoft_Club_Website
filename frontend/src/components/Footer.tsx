@@ -41,6 +41,14 @@ const Footer = () => {
             YouTube
           </a>
           <a
+            href="https://linktr.ee/MS_clubgiki"
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-2 hover:text-purpleAccent"
+          >
+            All links
+          </a>
+          <a
             href="https://chat.whatsapp.com/IGUY9fBM2SRC5baqV5DvoH"
             target="_blank"
             rel="noreferrer"
