@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import WindowCard from '../components/WindowCard';
+import Seo from '../components/Seo';
 import { api } from '../services/api';
 import type { Blog } from '../services/api';
 
@@ -78,8 +79,21 @@ const BlogDetail = () => {
     fetchBlog();
   }, [id]);
 
+  const plainText = blog
+    ? blog.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    : '';
+
   return (
     <div className="space-y-4">
+      <Seo
+        title={blog?.title || 'Blog Post'}
+        description={
+          plainText
+            ? plainText.slice(0, 160)
+            : 'Read posts from Microsoft Club GIKI.'
+        }
+        path={id ? `/blogs/${id}` : '/blogs'}
+      />
       <WindowCard title="Notepad - Blog Post">
         {loading && <p className="text-sm">Loading...</p>}
         {error && <p className="text-sm text-red-600">{error}</p>}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
+import Seo from '../components/Seo';
 import type { Project } from '../services/api';
 import { api } from '../services/api';
 import { resolveImageUrl } from '../utils/image';
@@ -156,6 +157,11 @@ const Projects = () => {
 
   return (
     <div className="space-y-4">
+      <Seo
+        title="Projects"
+        description="Explore projects built by Microsoft Club GIKI members across web, AI, cloud, and more."
+        path="/projects"
+      />
       <h1 className="font-heading text-sm md:text-base mb-2">Projects</h1>
       {loading && <p className="text-sm">Loading projects...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}

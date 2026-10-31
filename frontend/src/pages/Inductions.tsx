@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import WindowCard from '../components/WindowCard';
+import Seo from '../components/Seo';
 
 const InstagramIcon = () => (
   <svg viewBox="0 0 24 24" className="w-6 h-6" aria-hidden="true">
@@ -48,6 +49,11 @@ const followLinks = [
 const Inductions = () => {
   return (
     <div className="max-w-2xl mx-auto py-2">
+      <Seo
+        title="Inductions 2026"
+        description="Microsoft Club GIKI Inductions 2026 applications are closed. Follow the club for future recruitment updates."
+        path="/inductions"
+      />
       <motion.div
         initial={false}
         animate={{ opacity: 1, y: 0 }}

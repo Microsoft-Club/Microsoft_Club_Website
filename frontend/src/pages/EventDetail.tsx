@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import WindowCard from '../components/WindowCard';
 import EventImageCarousel from '../components/EventImageCarousel';
+import Seo from '../components/Seo';
 import { api } from '../services/api';
 import type { Event } from '../services/api';
 
@@ -36,8 +37,23 @@ const EventDetail = () => {
     event != null &&
     new Date(event.date) >= new Date(new Date().setHours(0, 0, 0, 0));
 
+  const eventPath = event
+    ? `/events/${event.slug || event.id}`
+    : idOrSlug
+      ? `/events/${idOrSlug}`
+      : '/events';
+
   return (
     <div className="space-y-4 max-w-3xl mx-auto">
+      <Seo
+        title={event?.title || 'Event'}
+        description={
+          event?.description
+            ? event.description.slice(0, 160)
+            : 'Microsoft Club GIKI event details, schedule, and registration.'
+        }
+        path={eventPath}
+      />
       <div className="flex items-center justify-between gap-3">
         <Link to="/events" className="pixel-button bg-gray-800 text-white">
           Back to Events

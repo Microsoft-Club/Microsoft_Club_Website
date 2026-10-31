@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import WindowCard from '../components/WindowCard';
+import Seo from '../components/Seo';
 import type { Member } from '../services/api';
 import { api } from '../services/api';
 import { resolveImageUrl } from '../utils/image';
@@ -75,6 +76,12 @@ const Members = () => {
 
   return (
     <div className="space-y-6">
+      <Seo
+        title="Members"
+        description="Meet the current members and alumni of Microsoft Club GIKI at Ghulam Ishaq Khan Institute."
+        path="/members"
+      />
+      <h1 className="font-heading text-sm md:text-base">Members</h1>
       {/* Search Bar & Category Filters */}
       <div className="retro-window p-3 md:p-4 bg-white border-black space-y-3">
         <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">

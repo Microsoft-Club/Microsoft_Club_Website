@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
 import EventImageCarousel from '../components/EventImageCarousel';
+import Seo from '../components/Seo';
 import { api } from '../services/api';
 import type { Event } from '../services/api';
 
@@ -55,6 +56,11 @@ const Events = () => {
 
   return (
     <div className="space-y-4">
+      <Seo
+        title="Events"
+        description="Upcoming and past Microsoft Club GIKI events, workshops, and hackathons at Ghulam Ishaq Khan Institute."
+        path="/events"
+      />
       <h1 className="font-heading text-sm md:text-base mb-2">Events</h1>
       <div className="flex flex-wrap gap-2 mb-4">
         <PixelButton

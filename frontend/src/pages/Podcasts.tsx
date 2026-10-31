@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
+import Seo from '../components/Seo';
 import { api } from '../services/api';
 import type { Podcast } from '../services/api';
 
@@ -85,6 +86,11 @@ const Podcasts = () => {
 
   return (
     <div className="space-y-4">
+      <Seo
+        title="Logikal Podcast"
+        description="Listen to Logikal, the Microsoft Club GIKI podcast featuring guests from industry and academia."
+        path="/podcasts"
+      />
       <h1 className="font-heading text-sm md:text-base mb-2">Logikal Podcast</h1>
       {loading && <p className="text-sm">Loading podcasts...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}

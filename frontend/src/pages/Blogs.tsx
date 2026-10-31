@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import WindowCard from '../components/WindowCard';
+import Seo from '../components/Seo';
 import { api } from '../services/api';
 import type { Blog } from '../services/api';
 
@@ -26,6 +27,11 @@ const Blogs = () => {
 
   return (
     <div className="space-y-4">
+      <Seo
+        title="Blogs"
+        description="Articles and insights from Microsoft Club GIKI members on tech, community, and campus life."
+        path="/blogs"
+      />
       <h1 className="font-heading text-sm md:text-base mb-2">Blogs</h1>
       {loading && <p className="text-sm">Loading blogs...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}

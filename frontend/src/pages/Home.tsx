@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import WindowCard from '../components/WindowCard';
 import EventImageCarousel from '../components/EventImageCarousel';
+import Seo from '../components/Seo';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import type { Event } from '../services/api';
@@ -28,7 +29,27 @@ const Home = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="order-1 md:order-2 flex justify-center">
+      <Seo
+        title="Microsoft Club GIKI | Tech Community at GIKI"
+        description="Microsoft Club GIKI is a student tech community at Ghulam Ishaq Khan Institute. Explore events, projects, the Logikal podcast, and Microsoft Learn Student Ambassador activities."
+        path="/"
+      />
+
+      <section className="order-1 md:order-none">
+        <WindowCard title="About">
+          <h1 className="font-heading text-sm md:text-base mb-3">
+            Microsoft Club GIKI
+          </h1>
+          <p className="text-sm leading-6 text-gray-800">
+            Microsoft Club GIKI is the student tech community at Ghulam Ishaq
+            Khan Institute (GIKI). As Microsoft Learn Student Ambassadors, we
+            host workshops, hackathons, community projects, and the Logikal
+            podcast — helping students learn, build, and lead with technology.
+          </p>
+        </WindowCard>
+      </section>
+
+      <section className="order-2 md:order-none flex justify-center">
         <div className="retro-window retro-window-highlight bg-white max-w-xl w-full">
           <div className="retro-window-header">
             <span className="retro-window-title">Inductions 2026</span>
@@ -62,7 +83,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="order-2 md:order-1 grid-layout">
+      <section className="order-3 md:order-none grid-layout">
         <WindowCard
           title="Featured Event"
           imageSlot={
