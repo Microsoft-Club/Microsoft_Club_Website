@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import WindowCard from '../components/WindowCard';
 import EventImageCarousel from '../components/EventImageCarousel';
-import Seo from '../components/Seo';
+import Seo, { organizationJsonLd } from '../components/Seo';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import type { Event } from '../services/api';
@@ -33,6 +33,7 @@ const Home = () => {
         title="Microsoft Club GIKI | Tech Community at GIKI"
         description="Microsoft Club GIKI is a student tech community at Ghulam Ishaq Khan Institute. Explore events, projects, the Logikal podcast, and Microsoft Learn Student Ambassador activities."
         path="/"
+        jsonLd={organizationJsonLd}
       />
 
       <section className="order-1 md:order-none">
