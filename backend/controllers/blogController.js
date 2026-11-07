@@ -134,19 +134,19 @@ const createBlog = async (req, res) => {
       });
     }
 
-    // const result = await uploadBufferToR2(
-    //   req.file.buffer,
-    //   req.file.originalname,
-    //   req.file.mimetype,
-    //   'blogs',
-    //   'blog-author'
-    // );
+    const result = await uploadBufferToR2(
+      req.file.buffer,
+      req.file.originalname,
+      req.file.mimetype,
+      'blogs',
+      'blog-author'
+    );
 
-    // if (result.storage === 'local-fallback') {
-    //   return res.status(503).json({
-    //     message: 'Image upload did not reach Cloudflare R2; blog was not created.',
-    //   });
-    // }
+    if (result.storage === 'local-fallback') {
+      return res.status(503).json({
+        message: 'Image upload did not reach Cloudflare R2; blog was not created.',
+      });
+    }
 
     const tagsArr = Array.isArray(tags)
       ? tags
@@ -159,7 +159,7 @@ const createBlog = async (req, res) => {
         title,
         content,
         author,
-        authorImage: "/blog-author-placeholder.svg",
+        authorImage: result.url,
         instagramUrl: instagram,
         linkedinUrl: linkedin,
         tags: tagsArr,
