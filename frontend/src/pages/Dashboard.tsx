@@ -103,21 +103,19 @@ const Dashboard = () => {
 
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loadingBlogs, setLoadingBlogs] = useState(false);
-  const [blogForm, setBlogForm] = useState<{
-    title: string;
-    author: string;
-    content: string;
-    tagsText: string;
-  }>({
-    title: '',
-    author: '',
-    content: '',
-    tagsText: '',
-  });
-  const [editingBlogId, setEditingBlogId] = useState<number | null>(null);
-  const [savingBlog, setSavingBlog] = useState(false);
-  const [blogError, setBlogError] = useState<string | null>(null);
-
+const [blogForm, setBlogForm] = useState({
+  title: '',
+  author: '',
+  content: '',
+  tagsText: '',
+  instagramUrl: '',
+  linkedinUrl: '',
+});
+const [blogImageFile, setBlogImageFile] = useState<File | null>(null);
+const [blogImagePreview, setBlogImagePreview] = useState('');
+const [editingBlogId, setEditingBlogId] = useState<number | null>(null);
+const [savingBlog, setSavingBlog] = useState(false);
+const [blogError, setBlogError] = useState<string | null>(null);
   // Accordion toggles to keep the dashboard usable as lists grow.
   const [waitingListOpen, setWaitingListOpen] = useState(true);
   const [eventsListOpen, setEventsListOpen] = useState(true);
@@ -338,7 +336,11 @@ const Dashboard = () => {
       author: '',
       content: '',
       tagsText: '',
+      instagramUrl: '',
+      linkedinUrl: '',
     });
+    setBlogImageFile(null);
+    setBlogImagePreview('');
     setEditingBlogId(null);
   };
 
@@ -380,34 +382,107 @@ const Dashboard = () => {
     }
   };
 
+  const handleBlogImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      setBlogError('Choose a JPEG, PNG, WEBP, or GIF image.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setBlogError('Image size must be 10MB or less.');
+      return;
+    }
+
+    setBlogError(null);
+    setBlogImageFile(file);
+    setBlogImagePreview(URL.createObjectURL(file));
+  };
+
   const handleBlogSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSavingBlog(true);
     setBlogError(null);
 
-    try {
-      const payload = {
-        title: blogForm.title || '',
-        author: blogForm.author || '',
-        content: blogForm.content || '',
-        tags: blogForm.tagsText
-          ? blogForm.tagsText
-              .split(',')
-              .map((s) => s.trim())
-              .filter(Boolean)
-          : [],
-      };
+    const contentText = blogForm.content
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/gi, ' ')
+      .trim();
 
-      if (editingBlogId !== null) {
-        await api.put(`/api/blogs/${editingBlogId}`, payload);
+    if (!blogForm.title.trim() || !contentText || !blogForm.author.trim()) {
+      setBlogError('Title, content, and author are required.');
+      setSavingBlog(false);
+      return;
+    }
+
+    if (editingBlogId === null && !blogImageFile) {
+      setBlogError('Choose an author image before creating the blog.');
+      setSavingBlog(false);
+      return;
+    }
+
+    const tags = blogForm.tagsText
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+
+    try {
+      if (editingBlogId === null) {
+        const formData = new FormData();
+        formData.append('title', blogForm.title.trim());
+        formData.append('author', blogForm.author.trim());
+        formData.append('content', blogForm.content);
+        formData.append('tags', tags.join(','));
+        formData.append('image', blogImageFile!);
+
+        if (blogForm.instagramUrl.trim()) {
+          formData.append('instagramUrl', blogForm.instagramUrl.trim());
+        }
+        if (blogForm.linkedinUrl.trim()) {
+          formData.append('linkedinUrl', blogForm.linkedinUrl.trim());
+        }
+
+        await api.post('/api/blogs', formData);
       } else {
-        await api.post('/api/blogs', payload);
+        await api.put(`/api/blogs/${editingBlogId}`, {
+          title: blogForm.title.trim(),
+          author: blogForm.author.trim(),
+          content: blogForm.content,
+          tags,
+          instagramUrl: blogForm.instagramUrl.trim() || null,
+          linkedinUrl: blogForm.linkedinUrl.trim() || null,
+        });
+
+        if (blogImageFile) {
+          const imageData = new FormData();
+          imageData.append('image', blogImageFile);
+
+          try {
+            await api.post(
+              `/api/blogs/${editingBlogId}/author-image`,
+              imageData
+            );
+          } catch {
+            setBlogError(
+              'Blog details were saved, but the image upload failed. Try uploading the image again.'
+            );
+            await loadBlogs();
+            return;
+          }
+        }
       }
 
       await loadBlogs();
       resetBlogForm();
-    } catch {
-      setBlogError('Failed to save blog.');
+    } catch (err: any) {
+      setBlogError(
+        err.response?.data?.message || 'Failed to save blog. Check the fields and try again.'
+      );
     } finally {
       setSavingBlog(false);
     }
@@ -676,8 +751,13 @@ const Dashboard = () => {
       title: blog.title,
       author: blog.author,
       content: blog.content,
-      tagsText: (blog.tags || []).join(', '),
+      tagsText: (blog.tags || []).join(','),
+      instagramUrl: blog.instagramUrl ?? '',
+      linkedinUrl: blog.linkedinUrl ?? '',
     });
+    setBlogImageFile(null);
+    setBlogImagePreview(blog.authorImage || '');
+    setBlogError(null);
   };
 
   const handleDeleteBlog = async (id: number) => {
@@ -1975,6 +2055,31 @@ const Dashboard = () => {
 
             <div>
               <label className="block text-xs font-medium mb-1">
+                Author photo {editingBlogId === null && '*'}
+              </label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={handleBlogImageChange}
+                required={editingBlogId === null}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+              />
+              {blogImagePreview && (
+                <img
+                  src={blogImagePreview.startsWith('blob:')
+                    ? blogImagePreview
+                    : resolveImageUrl(blogImagePreview)}
+                  alt="Author preview"
+                  className="mt-2 h-16 w-16 rounded-full border border-black object-cover"
+                />
+              )}
+              <p className="mt-1 text-[10px] text-gray-500">
+                JPEG, PNG, WEBP, or GIF; maximum 10MB.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1">
                 Tags (comma-separated)
               </label>
               <input
@@ -1983,6 +2088,32 @@ const Dashboard = () => {
                 onChange={(e) =>
                   setBlogForm((s) => ({ ...s, tagsText: e.target.value }))
                 }
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1">Instagram URL (optional)</label>
+              <input
+                type="url"
+                value={blogForm.instagramUrl}
+                onChange={(e) =>
+                  setBlogForm((s) => ({ ...s, instagramUrl: e.target.value }))
+                }
+                placeholder="https://www.instagram.com/username/"
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1">LinkedIn URL (optional)</label>
+              <input
+                type="url"
+                value={blogForm.linkedinUrl}
+                onChange={(e) =>
+                  setBlogForm((s) => ({ ...s, linkedinUrl: e.target.value }))
+                }
+                placeholder="https://www.linkedin.com/in/username/"
                 className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
               />
             </div>
