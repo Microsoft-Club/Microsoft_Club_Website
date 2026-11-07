@@ -4,6 +4,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import PixelButton from '../components/PixelButton';
 import { api } from '../services/api';
 
+const ADMIN_ROLES = ['Logikal', 'Marketing', 'Inductions', 'General'] as const;
+type AdminRole = (typeof ADMIN_ROLES)[number];
+
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -11,6 +14,7 @@ const AdminLogin = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<AdminRole>('General');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(
     sessionExpired ? 'Your session has expired. Please log in again.' : null
@@ -26,6 +30,7 @@ const AdminLogin = () => {
       const res = await api.post<{ token: string }>('/api/auth/login', {
         email,
         password,
+        role,
       });
       localStorage.setItem('mcg_admin_token', res.data.token);
       localStorage.setItem('mcg_admin_email', email);
@@ -36,7 +41,7 @@ const AdminLogin = () => {
       } else if (err.response.status >= 500) {
         setError('The server is temporarily unavailable. Please try again.');
       } else {
-        setError('Invalid email or password.');
+        setError('Invalid email, password, or role.');
       }
     } finally {
       setLoading(false);
@@ -80,6 +85,21 @@ const AdminLogin = () => {
               {showPassword ? 'Hide' : 'Show'}
             </button>
           </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Admin Role</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value as AdminRole)}
+            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+            required
+          >
+            {ADMIN_ROLES.map((adminRole) => (
+              <option key={adminRole} value={adminRole}>
+                {adminRole}
+              </option>
+            ))}
+          </select>
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
         <PixelButton
