@@ -12,6 +12,35 @@ const optionalSocialUrl = (value, domain) => {
   return isSocialProfileUrl(trimmed, domain) ? trimmed : false;
 };
 
+const getUploadedImageUrl = (result) => {
+  if (result.storage !== 'local-fallback') {
+    return result.url;
+  }
+
+  if (
+    process.env.NODE_ENV === 'production' ||
+    process.env.ALLOW_LOCAL_IMAGE_UPLOADS !== 'true'
+  ) {
+    return null;
+  }
+
+  if (!result.key) {
+    throw new Error('Local upload did not return a file key.');
+  }
+
+  const backendUrl = (
+    process.env.BACKEND_PUBLIC_URL ||
+    `http://localhost:${process.env.PORT || 5000}`
+  ).replace(/\/+$/, '');
+
+  const encodedKey = result.key
+    .split('/')
+    .map(encodeURIComponent)
+    .join('/');
+
+  return `${backendUrl}/uploads/${encodedKey}`;
+};
+
 const isSocialProfileUrl = (value, domain) => {
   if (typeof value !== 'string') return false;
 
@@ -53,15 +82,17 @@ const uploadBlogAuthorImage = async (req, res) => {
 
     // The existing service can save locally if R2 isn't available.
     // Don't save its R2-looking URL to the database in that case.
-    if (result.storage === 'local-fallback') {
+    const imageUrl = getUploadedImageUrl(result);
+
+    if (!imageUrl) {
       return res.status(503).json({
-        message: 'Upload did not reach Cloudflare R2; the blog image was not updated.',
+        message: 'Image upload requires Cloudflare R2, or enable local uploads for development.',
       });
     }
-
+    
     const updatedBlog = await prisma.blog.update({
       where: { id: blogId },
-      data: { authorImage: result.url },
+      data: { authorImage: imageUrl },
     });
 
     return res.json({ authorImage: updatedBlog.authorImage });
@@ -142,9 +173,11 @@ const createBlog = async (req, res) => {
       'blog-author'
     );
 
-    if (result.storage === 'local-fallback') {
+    const imageUrl = getUploadedImageUrl(result);
+
+    if (!imageUrl) {
       return res.status(503).json({
-        message: 'Image upload did not reach Cloudflare R2; blog was not created.',
+        message: 'Image upload requires Cloudflare R2, or enable local uploads for development.',
       });
     }
 
@@ -159,7 +192,7 @@ const createBlog = async (req, res) => {
         title,
         content,
         author,
-        authorImage: result.url,
+        authorImage:  imageUrl,
         instagramUrl: instagram,
         linkedinUrl: linkedin,
         tags: tagsArr,

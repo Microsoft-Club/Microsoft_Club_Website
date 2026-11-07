@@ -97,8 +97,8 @@ export type Blog = {
   tags: string[];
   createdAt: string;
   authorImage: string;
-  instagramUrl: string;
-  linkedinUrl: string;
+  instagramUrl: string | null;
+  linkedinUrl: string | null;
 };
 
 export type WaitingListEntry = {
