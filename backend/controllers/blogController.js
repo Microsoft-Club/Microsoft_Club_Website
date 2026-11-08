@@ -222,7 +222,7 @@ const createBlog = async (req, res) => {
 const updateBlog = async (req, res) => {
   const { id } = req.params;
   try {
-    const { title, content, author, tags, instagramUrl, linkedinUrl } = req.body || {};
+    const { title, content, author, tags, instagramUrl, linkedinUrl, authorImage } = req.body || {};
     const tagsArr = Array.isArray(tags)
       ? tags
       : typeof tags === 'string'
@@ -238,6 +238,28 @@ const updateBlog = async (req, res) => {
         });
       }
 
+      let authorImageUrl;
+
+      if (authorImage !== undefined) {
+        if (typeof authorImage !== 'string' || !authorImage.trim()) {
+          return res.status(400).json({
+            message: 'Provide a valid author image URL.',
+          });
+        }
+
+        try {
+          const parsedUrl = new URL(authorImage.trim());
+          if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+            throw new Error('Unsupported protocol');
+          }
+          authorImageUrl = authorImage.trim();
+        } catch {
+          return res.status(400).json({
+            message: 'Author image must be a valid HTTP or HTTPS URL.',
+          });
+        }
+      }
+
     const blog = await prisma.blog.update({
       where: { id: Number(id) },
       data: {
@@ -247,6 +269,7 @@ const updateBlog = async (req, res) => {
         ...(tagsArr !== undefined ? { tags: tagsArr } : {}),
         ...(instagram !== undefined ? { instagramUrl: instagram } : {}),
         ...(linkedin !== undefined ? { linkedinUrl: linkedin } : {}),
+        ...(authorImageUrl !== undefined ? { authorImage: authorImageUrl } : {}),
       },
     });
     res.json(blog);
