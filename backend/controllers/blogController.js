@@ -1,17 +1,6 @@
 const prisma = require('../prisma/client');
 const { uploadBufferToR2 } = require('../services/r2Service');
 
-const optionalSocialUrl = (value, domain) => {
-  if (value === undefined) return undefined;
-  if (value === null) return null;
-  if (typeof value !== 'string') return false;
-
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  return isSocialProfileUrl(trimmed, domain) ? trimmed : false;
-};
-
 const getUploadedImageUrl = (result) => {
   if (result.storage !== 'local-fallback') {
     return result.url;
@@ -24,13 +13,8 @@ const getUploadedImageUrl = (result) => {
     return null;
   }
 
-  if (!result.key) {
-    throw new Error('Local upload did not return a file key.');
-  }
-
   const backendUrl = (
-    process.env.BACKEND_PUBLIC_URL ||
-    `http://localhost:${process.env.PORT || 5000}`
+    process.env.BACKEND_PUBLIC_URL || `http://localhost:${process.env.PORT || 5000}`
   ).replace(/\/+$/, '');
 
   const encodedKey = result.key
@@ -39,6 +23,17 @@ const getUploadedImageUrl = (result) => {
     .join('/');
 
   return `${backendUrl}/uploads/${encodedKey}`;
+};
+
+const optionalSocialUrl = (value, domain) => {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (typeof value !== 'string') return false;
+
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  return isSocialProfileUrl(trimmed, domain) ? trimmed : false;
 };
 
 const isSocialProfileUrl = (value, domain) => {
@@ -82,14 +77,14 @@ const uploadBlogAuthorImage = async (req, res) => {
 
     // The existing service can save locally if R2 isn't available.
     // Don't save its R2-looking URL to the database in that case.
-    const imageUrl = getUploadedImageUrl(result);
+   const imageUrl = getUploadedImageUrl(result);
 
     if (!imageUrl) {
       return res.status(503).json({
         message: 'Image upload requires Cloudflare R2, or enable local uploads for development.',
       });
     }
-    
+
     const updatedBlog = await prisma.blog.update({
       where: { id: blogId },
       data: { authorImage: imageUrl },
@@ -132,7 +127,7 @@ const getBlogById = async (req, res) => {
 
 const createBlog = async (req, res) => {
   try {
-    const { title, content, author, tags, instagramUrl, linkedinUrl } =
+    const { title, content, author, tags, instagramUrl, linkedinUrl, authorImage } =
       req.body || {};
 
     const contentText =
@@ -152,9 +147,16 @@ const createBlog = async (req, res) => {
       });
     }
 
-    if (!req.file) {
-      return res.status(400).json({ message: 'Author image is required.' });
-    } 
+    const isHttpUrl = (value) => {
+      if (typeof value !== 'string' || !value.trim()) return false;
+
+      try {
+        const url = new URL(value.trim());
+        return url.protocol === 'https:' || url.protocol === 'http:';
+      } catch {
+        return false;
+      }
+    };
 
     const instagram = optionalSocialUrl(instagramUrl, 'instagram.com');
     const linkedin = optionalSocialUrl(linkedinUrl, 'linkedin.com');
@@ -165,21 +167,32 @@ const createBlog = async (req, res) => {
       });
     }
 
-    const result = await uploadBufferToR2(
-      req.file.buffer,
-      req.file.originalname,
-      req.file.mimetype,
-      'blogs',
-      'blog-author'
-    );
+    let authorImageUrl;
 
-    const imageUrl = getUploadedImageUrl(result);
+    if (req.file) {
+      const result = await uploadBufferToR2(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        'blogs',
+        'blog-author'
+      );
 
-    if (!imageUrl) {
-      return res.status(503).json({
-        message: 'Image upload requires Cloudflare R2, or enable local uploads for development.',
+      authorImageUrl = getUploadedImageUrl(result);
+
+      if (!authorImageUrl) {
+        return res.status(503).json({
+          message: 'Image upload requires Cloudflare R2, or enable local uploads for development.',
+        });
+      }
+    } else if (isHttpUrl(authorImage)) {
+      authorImageUrl = authorImage.trim();
+    } else {
+      return res.status(400).json({
+        message: 'Upload an author image or provide a valid image URL.',
       });
     }
+
 
     const tagsArr = Array.isArray(tags)
       ? tags
@@ -192,7 +205,7 @@ const createBlog = async (req, res) => {
         title,
         content,
         author,
-        authorImage:  imageUrl,
+        authorImage: authorImageUrl,
         instagramUrl: instagram,
         linkedinUrl: linkedin,
         tags: tagsArr,
