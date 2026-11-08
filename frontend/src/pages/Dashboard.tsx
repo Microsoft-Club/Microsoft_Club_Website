@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PixelButton from '../components/PixelButton';
 import WindowCard from '../components/WindowCard';
 import { api } from '../services/api';
 import type { Event, Podcast, Member, Project, Blog, WaitingListEntry } from '../services/api';
 import { resolveImageUrl } from '../utils/image';
+import { getAdminRole, getAllowedTabs, TAB_LABELS } from '../utils/auth';
+import type { DashboardTab } from '../utils/auth';
 import ReactQuill from 'react-quill';
 
 import 'react-quill/dist/quill.snow.css';
@@ -25,7 +27,16 @@ const csvCell = (value: string | number) => {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const email = localStorage.getItem('mcg_admin_email');
+  const email = localStorage.getItem('mcg_admin_email');
+
+  // Role-based access: each role only sees its own tabs
+  const role = getAdminRole();
+  const allowedTabs = getAllowedTabs(role);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTab = searchParams.get('tab') as DashboardTab | null;
+  const activeTab: DashboardTab | null =
+    requestedTab && allowedTabs.includes(requestedTab) ? requestedTab : allowedTabs[0] ?? null;
+  const canAccess = (tab: DashboardTab) => allowedTabs.includes(tab);
 
   const [events, setEvents] = useState<Event[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
@@ -232,12 +243,13 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    loadWaitingList();
-    loadEvents();
-    loadPodcasts();
-    loadMembers();
-    loadProjects();
-    loadBlogs();
+    // Only fetch data for tabs this role is allowed to use
+    if (canAccess('waitingList')) loadWaitingList();
+    if (canAccess('events')) loadEvents();
+    if (canAccess('podcasts')) loadPodcasts();
+    if (canAccess('members')) loadMembers();
+    if (canAccess('projects')) loadProjects();
+    if (canAccess('blogs')) loadBlogs();
   }, []);
 
 
@@ -696,12 +708,33 @@ const Dashboard = () => {
         <h1 className="text-xl font-semibold mb-2">Admin Dashboard</h1>
         <div className="flex items-center gap-3">
           {email && (
-            <span className="text-xs text-gray-600">Logged in as {email}</span>
+            <span className="text-xs text-gray-600">
+              Logged in as {email}{role ? ` (${role})` : ''}
+            </span>
           )}
           <PixelButton label="Logout" onClick={handleLogout} />
         </div>
       </div>
 
+      {/* Tab bar: only the tabs this role can access are shown */}
+      <nav className="flex flex-wrap gap-2" aria-label="Dashboard sections">
+        {allowedTabs.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setSearchParams({ tab })}
+            className={`px-4 py-2 text-xs md:text-sm font-heading border-2 border-black transition ${
+              activeTab === tab
+                ? 'bg-primary text-white'
+                : 'bg-white text-black hover:bg-lightBg'
+            }`}
+          >
+            {TAB_LABELS[tab]}
+          </button>
+        ))}
+      </nav>
+
+      {activeTab === 'waitingList' && (
       <WindowCard title="Inductions Waiting List">
 
         <div className="space-y-4">
@@ -884,7 +917,9 @@ const Dashboard = () => {
           )}
         </div>
       </WindowCard>
+      )}
 
+      {activeTab === 'events' && (
       <WindowCard title="Events Manager">
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -1099,7 +1134,9 @@ const Dashboard = () => {
           </div>
         </div>
       </WindowCard>
+      )}
 
+      {activeTab === 'podcasts' && (
       <WindowCard title="Logikal Podcast Manager">
         <div className="grid gap-6 md:grid-cols-2">
           <form
@@ -1323,7 +1360,9 @@ const Dashboard = () => {
           </div>
         </div>
       </WindowCard>
+      )}
 
+      {activeTab === 'members' && (
       <WindowCard title="Members Manager">
         <div className="grid gap-6 md:grid-cols-2">
           <form onSubmit={handleMemberSubmit} className="space-y-3">
@@ -1749,7 +1788,9 @@ const Dashboard = () => {
           </div>
         </div>
       </WindowCard>
+      )}
 
+      {activeTab === 'projects' && (
       <WindowCard title="Projects Manager">
         <div className="grid gap-6 md:grid-cols-2">
           <form onSubmit={handleProjectSubmit} className="space-y-3">
@@ -1938,7 +1979,9 @@ const Dashboard = () => {
           </div>
         </div>
       </WindowCard>
+      )}
 
+      {activeTab === 'blogs' && (
       <WindowCard title="Blogs Manager">
         <div className="grid gap-6 md:grid-cols-2">
           <form onSubmit={handleBlogSubmit} className="space-y-3">
@@ -2084,6 +2127,7 @@ const Dashboard = () => {
           </div>
         </div>
       </WindowCard>
+      )}
     </div>
   );
 };
