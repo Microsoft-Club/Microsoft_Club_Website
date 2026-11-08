@@ -106,11 +106,16 @@ const createEvent = async (req, res) => {
       images,
       speakers,
       registrationLink,
+      endDate,
+      timezone,
       featured,
       slug,
       location,
     } = req.body || {};
 
+    if (endDate && new Date(endDate) <= new Date(date)) {
+      return res.status(400).json({ message: 'endDate must be after date' });
+    }
     const resolvedSlug = await resolveSlug({ slug, title });
     const isFeatured = Boolean(featured);
 
@@ -128,6 +133,8 @@ const createEvent = async (req, res) => {
           images: Array.isArray(images) ? images : [],
           speakers: Array.isArray(speakers) ? speakers : [],
           registrationLink: registrationLink || null,
+          endDate: endDate ? new Date(endDate) : null,
+          timezone: timezone || null,
           featured: isFeatured,
           slug: resolvedSlug,
           location: location || null,
@@ -153,6 +160,8 @@ const updateEvent = async (req, res) => {
       images,
       speakers,
       registrationLink,
+      endDate,
+      timezone,
       featured,
       slug,
       location,
@@ -163,6 +172,17 @@ const updateEvent = async (req, res) => {
     });
     if (!existing) {
       return res.status(404).json({ message: 'Event not found' });
+    }
+
+    const finalStart = date !== undefined ? new Date(date) : existing.date;
+    const finalEnd =
+      endDate !== undefined
+        ? endDate
+          ? new Date(endDate)
+          : null
+        : existing.endDate;
+    if (finalEnd && finalEnd <= finalStart) {
+      return res.status(400).json({ message: 'endDate must be after date' });
     }
 
     const data = {
@@ -179,6 +199,10 @@ const updateEvent = async (req, res) => {
       ...(registrationLink !== undefined
         ? { registrationLink: registrationLink || null }
         : {}),
+      ...(endDate !== undefined
+        ? { endDate: endDate ? new Date(endDate) : null }
+        : {}),
+      ...(timezone !== undefined ? { timezone: timezone || null } : {}),
       ...(location !== undefined ? { location: location || null } : {}),
     };
 
