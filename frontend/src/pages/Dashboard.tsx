@@ -27,7 +27,8 @@ const csvCell = (value: string | number) => {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const email = localStorage.getItem('mcg_admin_email');
+  const email = localStorage.getItem('mcg_admin_email');
+
 
   // Role-based access: each role only sees its own tabs
   const role = getAdminRole();
@@ -709,7 +710,7 @@ const Dashboard = () => {
         <div className="flex items-center gap-3">
           {email && (
             <span className="text-xs text-gray-600">
-              Logged in as {email}{role ? ` (${role})` : ''}
+              Logged in as {role ? ` ${role}` : ''} Admin
             </span>
           )}
           <PixelButton label="Logout" onClick={handleLogout} />
