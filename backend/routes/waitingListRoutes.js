@@ -5,6 +5,7 @@ const {
   deleteEntry,
 } = require('../controllers/waitingListController');
 const authMiddleware = require('../middleware/authMiddleware');
+const { requireRole } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ const router = express.Router();
 router.post('/', createEntry);
 
 // Admin-only routes: view and manage waiting list
-router.get('/', authMiddleware, getEntries);
-router.delete('/:id', authMiddleware, deleteEntry);
+router.get('/', authMiddleware, requireRole('Inductions'), getEntries);
+router.delete('/:id', authMiddleware, requireRole('Inductions'), deleteEntry);
 
 module.exports = router;

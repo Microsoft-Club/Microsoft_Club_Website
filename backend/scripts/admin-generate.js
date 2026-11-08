@@ -21,13 +21,20 @@ async function main() {
     return;
   }
 
+  // Optional: ADMIN_ROLE = Logikal | Marketing | Inductions | General (default General)
+  const role = process.env.ADMIN_ROLE || 'General';
+  const validRoles = ['Logikal', 'Marketing', 'Inductions', 'General'];
+  if (!validRoles.includes(role)) {
+    throw new Error(`Invalid ADMIN_ROLE "${role}". Use one of: ${validRoles.join(', ')}`);
+  }
+
   const hashed = await bcrypt.hash(plainPassword, 10);
 
   const admin = await prisma.admin.create({
     data: {
       email,
       password: hashed,
-      role: 'General',
+      role,
     },
   });
 
