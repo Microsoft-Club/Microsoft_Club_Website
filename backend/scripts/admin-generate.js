@@ -21,9 +21,9 @@ async function main() {
     return;
   }
 
-  // Optional: ADMIN_ROLE = Logikal | Marketing | Inductions | General (default General)
+  // Optional: ADMIN_ROLE = Logikal | Marketing | Inductions | Dev | General (default General)
   const role = process.env.ADMIN_ROLE || 'General';
-  const validRoles = ['Logikal', 'Marketing', 'Inductions', 'General'];
+  const validRoles = ['Logikal', 'Marketing', 'Inductions', 'Dev', 'General'];
   if (!validRoles.includes(role)) {
     throw new Error(`Invalid ADMIN_ROLE "${role}". Use one of: ${validRoles.join(', ')}`);
   }

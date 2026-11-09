@@ -1,6 +1,6 @@
 // Helpers for admin login info (role + token) and tab permissions.
 
-export type AdminRole = 'Logikal' | 'Marketing' | 'Inductions' | 'General';
+export type AdminRole = 'Logikal' | 'Marketing' | 'Inductions' | 'Dev' | 'General';
 export type DashboardTab =
   | 'waitingList'
   | 'events'
@@ -16,6 +16,7 @@ export const ROLE_TABS: Record<AdminRole, DashboardTab[]> = {
   Logikal: ['podcasts'],
   Marketing: ['events', 'members', 'blogs'],
   Inductions: ['waitingList'],
+  Dev: ['projects'],
   General: ['waitingList', 'events', 'podcasts', 'members', 'projects', 'blogs'],
 };
 

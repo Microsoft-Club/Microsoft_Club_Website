@@ -12,6 +12,7 @@ enum AdminRole {
   Logikal
   Marketing
   Inductions
+  Dev
   General
 }
 

@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../prisma/client');
 
-const VALID_ROLES = ['Logikal', 'Marketing', 'Inductions', 'General'];
+const VALID_ROLES = ['Logikal', 'Marketing', 'Inductions', 'Dev', 'General'];
 
 const login = async (req, res) => {
   const { email, password, role } = req.body;

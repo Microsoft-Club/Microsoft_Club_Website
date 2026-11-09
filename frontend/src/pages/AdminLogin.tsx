@@ -5,7 +5,7 @@ import PixelButton from '../components/PixelButton';
 import { api } from '../services/api';
 import type { AdminRole } from '../utils/auth';
 
-const ADMIN_ROLES: AdminRole[] = ['Logikal', 'Marketing', 'Inductions', 'General'];
+const ADMIN_ROLES: AdminRole[] = ['Logikal', 'Marketing', 'Inductions', 'Dev', 'General'];
 
 const AdminLogin = () => {
   const navigate = useNavigate();
