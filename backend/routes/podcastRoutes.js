@@ -6,13 +6,14 @@ const {
   deletePodcast,
 } = require('../controllers/podcastController');
 const authMiddleware = require('../middleware/authMiddleware');
+const { requireRole } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.get('/', getPodcasts);
-router.post('/', authMiddleware, createPodcast);
-router.put('/:id', authMiddleware, updatePodcast);
-router.delete('/:id', authMiddleware, deletePodcast);
+router.post('/', authMiddleware, requireRole('Logikal'), createPodcast);
+router.put('/:id', authMiddleware, requireRole('Logikal'), updatePodcast);
+router.delete('/:id', authMiddleware, requireRole('Logikal'), deletePodcast);
 
 module.exports = router;
 

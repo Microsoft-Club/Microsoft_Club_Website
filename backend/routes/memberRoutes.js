@@ -8,6 +8,7 @@ const {
   deleteMember,
 } = require('../controllers/memberController');
 const authMiddleware = require('../middleware/authMiddleware');
+const { requireRole } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -38,9 +39,9 @@ const handleUpload = (field) => (req, res, next) => {
 };
 
 router.get('/', getMembers);
-router.post('/upload-image', authMiddleware, handleUpload('image'), uploadMemberImage);
-router.post('/', authMiddleware, handleUpload('image'), createMember);
-router.put('/:id', authMiddleware, handleUpload('image'), updateMember);
-router.delete('/:id', authMiddleware, deleteMember);
+router.post('/upload-image', authMiddleware, requireRole('Marketing'), handleUpload('image'), uploadMemberImage);
+router.post('/', authMiddleware, requireRole('Marketing'), handleUpload('image'), createMember);
+router.put('/:id', authMiddleware, requireRole('Marketing'), handleUpload('image'), updateMember);
+router.delete('/:id', authMiddleware, requireRole('Marketing'), deleteMember);
 
 module.exports = router;
