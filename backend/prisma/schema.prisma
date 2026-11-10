@@ -23,6 +23,8 @@ model Event {
   images           String[] @default([])
   speakers         String[] @default([])
   registrationLink String?
+  endDate          DateTime?
+  timezone         String?
   featured         Boolean  @default(false)
   slug             String?  @unique
   location         String?
