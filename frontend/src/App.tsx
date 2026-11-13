@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -17,10 +17,12 @@ import Inductions from './pages/Inductions';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 const App = () => {
+  const isHome = useLocation().pathname === '/';
+
   return (
-    <div className="min-h-screen retro-app-bg font-body text-black flex flex-col">
+    <div className="min-h-screen retro-app-bg font-body text-black flex flex-col overflow-x-clip">
       <Navbar />
-      <main className="flex-1 px-3 py-5 sm:px-4 sm:py-6 md:px-8 md:py-10 max-w-6xl mx-auto w-full">
+      <main className={`flex-1 ${isHome ? 'w-full' : 'page-container'}`}>
         <Suspense fallback={<p className="text-sm">Loading page...</p>}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -53,4 +55,3 @@ const App = () => {
 };
 
 export default App;
-
