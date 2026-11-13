@@ -77,6 +77,9 @@ model Blog {
   tags      String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  authorImage     String   @default("/blog-author-placeholder.svg")
+  instagramUrl  String? 
+  linkedinUrl   String? 
 }
 
 model WaitingListEntry {
