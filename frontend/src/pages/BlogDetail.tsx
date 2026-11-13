@@ -4,6 +4,7 @@ import WindowCard from '../components/WindowCard';
 import Seo from '../components/Seo';
 import { api } from '../services/api';
 import type { Blog } from '../services/api';
+import { resolveImageUrl } from '../utils/image';
 
 const ALLOWED_BLOG_TAGS = new Set([
   'p',
@@ -101,10 +102,32 @@ const BlogDetail = () => {
           <article className="font-body">
             <div className="bg-[#fef9c3] border-retro border-black rounded-retro shadow-retro p-5 md:p-6">
               <p className="text-xs text-gray-800 mb-3">
-                By {blog.author} •{' '}
-                {blog.createdAt
-                  ? new Date(blog.createdAt).toLocaleDateString()
-                  : '—'}
+                <h1 className="font-heading text-sm md:text-base mb-4">
+                  {blog.title}
+                </h1>
+                <div className="mb-4 flex items-center gap-3">
+                <img
+                  src={resolveImageUrl(blog.authorImage)}
+                  alt={`${blog.author}'s profile`}
+                  className="h-14 w-14 rounded-full border border-black object-cover"
+                />
+                <div>
+                  <p className="text-xs text-gray-800">
+                    By {blog.author} •{' '}
+                    {blog.createdAt
+                      ? new Date(blog.createdAt).toLocaleDateString()
+                      : '—'}
+                  </p>
+                  <div className="mt-1 flex gap-3 text-xs">
+                    {blog.instagramUrl && (<a href={blog.instagramUrl} target="_blank" rel="noreferrer" className="underline">
+                      Instagram
+                    </a>)}
+                    {blog.linkedinUrl && ( <a href ={blog.linkedinUrl} target="_blank" rel="noreferrer" className="underline">
+                      LinkedIn
+                    </a>)}
+                  </div>
+                </div>
+              </div>
               </p>
               {blog.tags && blog.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-4">
