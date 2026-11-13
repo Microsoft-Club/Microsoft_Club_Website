@@ -29,6 +29,7 @@ app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/podcasts', require('./routes/podcastRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/waiting-list', require('./routes/waitingListRoutes'));
+app.use('/api/system', require('./routes/systemRoutes'));
 
 
 app.get('/health', (req, res) => {
