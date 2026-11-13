@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "prisma db push --skip-generate && node server.js",
-    "start:server": "node server.js",
+    "dev": "node init && nodemon server.js",
+    "start": "node init && prisma db push --skip-generate && node server.js",
+    "start:server": "node init && node server.js",
     "db:push": "prisma db push",
     "seed:admin": "node scripts/seedAdmin.js"
   },
