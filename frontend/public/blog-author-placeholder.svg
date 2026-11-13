@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="t">
+  <title id="t">Default profile picture</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E3A8A"/>
+      <stop offset="1" stop-color="#1E3A8A"/>
+    </linearGradient> 
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FEF9C3"/>
+      <stop offset="1" stop-color="#FEF9C3"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg)"/>
+  <rect width="256" height="256" fill="url(#glow)"/>
+  <!-- shoulders -->
+  <path d="M36 256C36 192 80 166 128 166s92 26 92 90z" fill="url(#body)"/>
+  <!-- head -->
+  <circle cx="128" cy="100" r="46" fill="#FEF9C3"/>
+  <!-- soft shadow under chin -->
+  <path d="M96 150c10 10 20 14 32 14s22-4 32-14c-8-3-20-4-32-4s-24 1-32 4z" fill="#07124a" opacity=".18"/>
+</svg>
