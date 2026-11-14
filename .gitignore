@@ -2,6 +2,8 @@
 node_modules/
 
 # Env files (keep committed examples)
+.env
+.env.*
 !.env.example
 
 # Build output
@@ -21,6 +23,7 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 .idea
+.vscode/*
 !.vscode/extensions.json
 *.suo
 *.ntvs*
@@ -31,4 +34,3 @@ Thumbs.db
 # Local / temp
 *.local
 *.tmp
-config.bat
