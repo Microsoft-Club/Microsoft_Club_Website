@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node init && vite",
-    "build": "node init && vite build && node scripts/spa-fallback.mjs",
+    "dev": "vite",
+    "build": "vite build && node scripts/spa-fallback.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
