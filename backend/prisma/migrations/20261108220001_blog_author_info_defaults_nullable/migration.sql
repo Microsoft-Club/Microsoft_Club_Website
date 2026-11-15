@@ -1,7 +1,3 @@
--- AlterTable
-ALTER TABLE "Event" ADD COLUMN     "endDate" TIMESTAMP(3),
-ADD COLUMN     "timezone" TEXT;
-
 ALTER TABLE "Blog"
   ADD COLUMN IF NOT EXISTS "authorImage" TEXT,
   ADD COLUMN IF NOT EXISTS "instagramUrl" TEXT,
