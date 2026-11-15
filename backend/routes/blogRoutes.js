@@ -9,6 +9,7 @@ const {
   deleteBlog,
 } = require('../controllers/blogController');
 const authMiddleware = require('../middleware/authMiddleware');
+const { requireRole } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -46,9 +47,9 @@ router.post(
   uploadBlogAuthorImage
 );
 router.get('/:id', getBlogById);
-router.post('/', authMiddleware, handleUpload('image'), createBlog);
-router.put('/:id', authMiddleware, updateBlog);
-router.delete('/:id', authMiddleware, deleteBlog);
+router.post('/', authMiddleware, requireRole('Marketing'), handleUpload('image'), createBlog);
+router.put('/:id', authMiddleware, requireRole('Marketing'), updateBlog);
+router.delete('/:id', authMiddleware, requireRole('Marketing'), deleteBlog);
 
 module.exports = router;
 
