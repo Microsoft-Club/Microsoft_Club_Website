@@ -2,17 +2,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../prisma/client');
 
-const VALID_ROLES = ['Logikal', 'Marketing', 'Inductions', 'Dev', 'General'];
-
 const login = async (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password } = req.body;
 
-  if (!email || !password || !role) {
-    return res.status(400).json({ message: 'Email, password, and role are required' });
-  }
-
-  if (!VALID_ROLES.includes(role)) {
-    return res.status(400).json({ message: 'Invalid role' });
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
   }
 
   try {
@@ -26,17 +20,13 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    if (admin.role !== role) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
     const token = jwt.sign(
-      { id: admin.id, email: admin.email, role: admin.role },
+      { id: admin.id, email: admin.email },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    return res.json({ token, role: admin.role });
+    return res.json({ token });
   } catch (error) {
     console.error('Login error:', error);
     return res.status(500).json({ message: 'Server error' });

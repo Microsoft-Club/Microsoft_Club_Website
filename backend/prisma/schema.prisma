@@ -8,19 +8,10 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum AdminRole {
-  Logikal
-  Marketing
-  Inductions
-  Dev
-  General
-}
-
 model Admin {
-  id       Int       @id @default(autoincrement())
-  email    String    @unique
+  id       Int    @id @default(autoincrement())
+  email    String @unique
   password String
-  role     AdminRole @default(General)
 }
 
 model Event {
@@ -32,8 +23,6 @@ model Event {
   images           String[] @default([])
   speakers         String[] @default([])
   registrationLink String?
-  endDate          DateTime?
-  timezone         String?
   featured         Boolean  @default(false)
   slug             String?  @unique
   location         String?

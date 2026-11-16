@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import clubLogoWhite from '../assets/club_logo_white.png';
 
 const Footer = () => {
@@ -16,6 +17,12 @@ const Footer = () => {
           </p>
         </div>
         <div className="flex gap-4 flex-wrap justify-center md:justify-end">
+          <Link
+            to="/work-with-us"
+            className="underline underline-offset-2 hover:text-purpleAccent"
+          >
+            Work With Us
+          </Link>
           <a
             href="https://www.instagram.com/microsoftclubgiki/?hl=en"
             target="_blank"
