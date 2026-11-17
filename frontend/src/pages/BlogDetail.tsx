@@ -4,6 +4,7 @@ import WindowCard from '../components/WindowCard';
 import Seo from '../components/Seo';
 import { api } from '../services/api';
 import type { Blog } from '../services/api';
+import { resolveImageUrl } from '../utils/image';
 
 const ALLOWED_BLOG_TAGS = new Set([
   'p',
@@ -55,6 +56,24 @@ const sanitizeBlogHtml = (html: string) => {
   return parsed.body.innerHTML;
 };
 
+const getSafeSocialUrl = (value: string | null, domain: string) => {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    if (
+      url.protocol === 'https:' &&
+      (url.hostname === domain || url.hostname.endsWith(`.${domain}`))
+    ) {
+      return url.toString();
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+};
+
 const BlogDetail = () => {
   const params = useParams();
   const id = params.id ? Number(params.id) : null;
@@ -82,6 +101,12 @@ const BlogDetail = () => {
   const plainText = blog
     ? blog.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
     : '';
+  const instagramUrl = blog
+    ? getSafeSocialUrl(blog.instagramUrl, 'instagram.com')
+    : null;
+  const linkedinUrl = blog
+    ? getSafeSocialUrl(blog.linkedinUrl, 'linkedin.com')
+    : null;
 
   return (
     <div className="space-y-4">
@@ -100,12 +125,56 @@ const BlogDetail = () => {
         {!loading && !error && blog && (
           <article className="font-body">
             <div className="bg-[#fef9c3] border-retro border-black rounded-retro shadow-retro p-5 md:p-6">
-              <p className="text-xs text-gray-800 mb-3">
-                By {blog.author} •{' '}
-                {blog.createdAt
-                  ? new Date(blog.createdAt).toLocaleDateString()
-                  : '—'}
-              </p>
+              <h1 className="font-heading text-base md:text-lg mb-4">
+                {blog.title}
+              </h1>
+              <div className="mb-4 flex items-center gap-3">
+                <img
+                  src={resolveImageUrl(
+                    blog.authorImage || '/blog-author-placeholder.svg'
+                  )}
+                  alt={`${blog.author} author photo`}
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = resolveImageUrl(
+                      '/blog-author-placeholder.svg'
+                    );
+                  }}
+                  className="h-12 w-12 rounded-full border border-black object-cover"
+                />
+                <div>
+                  <p className="text-xs text-gray-800">
+                    By {blog.author} •{' '}
+                    {blog.createdAt
+                      ? new Date(blog.createdAt).toLocaleDateString()
+                      : '—'}
+                  </p>
+                  {(instagramUrl || linkedinUrl) && (
+                    <div className="mt-1 flex gap-3 text-xs">
+                      {instagramUrl && (
+                        <a
+                          href={instagramUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          Instagram
+                        </a>
+                      )}
+                      {linkedinUrl && (
+                        <a
+                          href={linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          LinkedIn
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
               {blog.tags && blog.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-4">
                   {blog.tags.map((t) => (
