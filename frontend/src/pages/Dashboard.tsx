@@ -120,12 +120,21 @@ const Dashboard = () => {
     author: string;
     content: string;
     tagsText: string;
+    authorImageUrl: string;
+    instagramUrl: string;
+    linkedinUrl: string;
   }>({
     title: '',
     author: '',
     content: '',
     tagsText: '',
+    authorImageUrl: '',
+    instagramUrl: '',
+    linkedinUrl: '',
   });
+  const [blogImageFile, setBlogImageFile] = useState<File | null>(null);
+  const [blogImagePreview, setBlogImagePreview] = useState('');
+  const [blogImageUrlChanged, setBlogImageUrlChanged] = useState(false);
   const [editingBlogId, setEditingBlogId] = useState<number | null>(null);
   const [savingBlog, setSavingBlog] = useState(false);
   const [blogError, setBlogError] = useState<string | null>(null);
@@ -346,12 +355,21 @@ const Dashboard = () => {
   };
 
   const resetBlogForm = () => {
+    if (blogImagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(blogImagePreview);
+    }
     setBlogForm({
       title: '',
       author: '',
       content: '',
       tagsText: '',
+      authorImageUrl: '',
+      instagramUrl: '',
+      linkedinUrl: '',
     });
+    setBlogImageFile(null);
+    setBlogImagePreview('');
+    setBlogImageUrlChanged(false);
     setEditingBlogId(null);
   };
 
@@ -393,34 +411,113 @@ const Dashboard = () => {
     }
   };
 
+  const handleBlogImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+      setBlogError('Choose a JPEG, PNG, WEBP, or GIF image.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setBlogError('Image size must be 10MB or less.');
+      return;
+    }
+
+    if (blogImagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(blogImagePreview);
+    }
+    setBlogError(null);
+    setBlogImageFile(file);
+    setBlogImageUrlChanged(false);
+    setBlogForm((current) => ({ ...current, authorImageUrl: '' }));
+    setBlogImagePreview(URL.createObjectURL(file));
+  };
+
   const handleBlogSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSavingBlog(true);
     setBlogError(null);
 
+    const authorImageUrl = blogForm.authorImageUrl.trim();
+    if (authorImageUrl) {
+      try {
+        const parsedUrl = new URL(authorImageUrl);
+        if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+          throw new Error('Invalid protocol');
+        }
+      } catch {
+        setBlogError('Enter a valid HTTP or HTTPS author image URL.');
+        setSavingBlog(false);
+        return;
+      }
+    }
+
     try {
       const payload = {
-        title: blogForm.title || '',
-        author: blogForm.author || '',
-        content: blogForm.content || '',
+        title: blogForm.title.trim(),
+        author: blogForm.author.trim(),
+        content: blogForm.content,
         tags: blogForm.tagsText
           ? blogForm.tagsText
               .split(',')
               .map((s) => s.trim())
               .filter(Boolean)
           : [],
+        instagramUrl: blogForm.instagramUrl.trim() || null,
+        linkedinUrl: blogForm.linkedinUrl.trim() || null,
       };
 
       if (editingBlogId !== null) {
-        await api.put(`/api/blogs/${editingBlogId}`, payload);
+        await api.put(`/api/blogs/${editingBlogId}`, {
+          ...payload,
+          ...(!blogImageFile && blogImageUrlChanged
+            ? { authorImage: authorImageUrl }
+            : {}),
+        });
+
+        if (blogImageFile) {
+          const imageData = new FormData();
+          imageData.append('image', blogImageFile);
+
+          try {
+            await api.post(`/api/blogs/${editingBlogId}/author-image`, imageData);
+          } catch (error: any) {
+            setBlogError(
+              error.response?.data?.message ||
+                'Blog details were saved, but the image upload failed. Try uploading the image again.'
+            );
+            await loadBlogs();
+            return;
+          }
+        }
       } else {
-        await api.post('/api/blogs', payload);
+        if (blogImageFile) {
+          const formData = new FormData();
+          formData.append('title', payload.title);
+          formData.append('author', payload.author);
+          formData.append('content', payload.content);
+          formData.append('tags', payload.tags.join(','));
+          formData.append('image', blogImageFile);
+          if (payload.instagramUrl) formData.append('instagramUrl', payload.instagramUrl);
+          if (payload.linkedinUrl) formData.append('linkedinUrl', payload.linkedinUrl);
+          await api.post('/api/blogs', formData);
+        } else {
+          await api.post('/api/blogs', {
+            ...payload,
+            ...(authorImageUrl ? { authorImage: authorImageUrl } : {}),
+          });
+        }
       }
 
       await loadBlogs();
       resetBlogForm();
-    } catch {
-      setBlogError('Failed to save blog.');
+    } catch (error: any) {
+      setBlogError(
+        error.response?.data?.message ||
+          'Failed to save blog. Check the fields and try again.'
+      );
     } finally {
       setSavingBlog(false);
     }
@@ -690,7 +787,14 @@ const Dashboard = () => {
       author: blog.author,
       content: blog.content,
       tagsText: (blog.tags || []).join(', '),
+      authorImageUrl: '',
+      instagramUrl: blog.instagramUrl ?? '',
+      linkedinUrl: blog.linkedinUrl ?? '',
     });
+    setBlogImageFile(null);
+    setBlogImagePreview(blog.authorImage || '');
+    setBlogImageUrlChanged(false);
+    setBlogError(null);
   };
 
   const handleDeleteBlog = async (id: number) => {
@@ -2014,6 +2118,110 @@ const Dashboard = () => {
                 }
                 className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1">
+                Author photo (optional)
+              </label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={handleBlogImageChange}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+              />
+              <div className="relative mt-2 inline-block">
+                <img
+                  src={
+                    blogImagePreview
+                      ? blogImagePreview.startsWith('blob:')
+                        ? blogImagePreview
+                        : resolveImageUrl(blogImagePreview)
+                      : resolveImageUrl('/blog-author-placeholder.svg')
+                  }
+                  alt="Author photo preview"
+                  className="h-16 w-16 rounded-full border border-black object-cover"
+                />
+                <button
+                  type="button"
+                  aria-label="Remove author photo"
+                  title="Use placeholder image"
+                  onClick={() => {
+                    if (blogImagePreview.startsWith('blob:')) {
+                      URL.revokeObjectURL(blogImagePreview);
+                    }
+                    setBlogImageFile(null);
+                    setBlogImageUrlChanged(true);
+                    setBlogForm((current) => ({ ...current, authorImageUrl: '' }));
+                    setBlogImagePreview('/blog-author-placeholder.svg');
+                  }}
+                  className="absolute -right-2 -top-1 flex h-5 w-5 items-center justify-center rounded-full border border-black bg-white text-xs leading-none"
+                >
+                  ×
+                </button>
+              </div>
+              <p className="mt-1 text-[10px] text-gray-500">
+                JPEG, PNG, WEBP, or GIF; maximum 10MB. Leave empty to use the placeholder.
+              </p>
+              <label className="mt-2 block text-xs font-medium">
+                Or use an image URL
+              </label>
+              <input
+                type="url"
+                value={blogForm.authorImageUrl}
+                onChange={(e) => {
+                  if (blogImagePreview.startsWith('blob:')) {
+                    URL.revokeObjectURL(blogImagePreview);
+                  }
+                  const value = e.target.value;
+                  setBlogImageFile(null);
+                  setBlogImageUrlChanged(true);
+                  setBlogForm((current) => ({ ...current, authorImageUrl: value }));
+                  setBlogImagePreview(
+                    value
+                      ? resolveImageUrl(value)
+                      : '/blog-author-placeholder.svg'
+                  );
+                }}
+                placeholder="https://example.com/author-photo.jpg"
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1">
+                Instagram profile URL (optional)
+              </label>
+              <input
+                type="url"
+                value={blogForm.instagramUrl}
+                onChange={(e) =>
+                  setBlogForm((current) => ({
+                    ...current,
+                    instagramUrl: e.target.value,
+                  }))
+                }
+                placeholder="https://www.instagram.com/username/"
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1">
+                LinkedIn profile URL (optional)
+              </label>
+              <input
+                type="url"
+                value={blogForm.linkedinUrl}
+                onChange={(e) =>
+                  setBlogForm((current) => ({
+                    ...current,
+                    linkedinUrl: e.target.value,
+                  }))
+                }
+                placeholder="https://www.linkedin.com/in/username/"
+                className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
               />
             </div>
 
