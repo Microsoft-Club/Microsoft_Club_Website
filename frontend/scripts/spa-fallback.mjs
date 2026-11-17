@@ -19,6 +19,7 @@ const routes = [
   'projects',
   'podcasts',
   'blogs',
+  'work-with-us',
   'inductions',
   'waiting-list',
   'inductions-waiting-list',

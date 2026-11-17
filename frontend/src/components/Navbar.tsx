@@ -14,6 +14,7 @@ const navItems = [
   { to: '/projects', label: 'Projects' },
   { to: '/podcasts', label: 'Podcasts' },
   { to: '/blogs', label: 'Blogs' },
+  { to: '/work-with-us', label: 'Work With Us' },
 ];
 
 const Navbar = () => {
