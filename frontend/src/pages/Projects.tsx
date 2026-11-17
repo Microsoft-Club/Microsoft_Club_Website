@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import WindowCard from '../components/WindowCard';
-import PixelButton from '../components/PixelButton';
-import Seo from '../components/Seo';
-import type { Project } from '../services/api';
-import { api } from '../services/api';
-import { resolveImageUrl } from '../utils/image';
+import SearchFilter from "../components/SearchFilter";
+import { useEffect, useRef, useState } from "react";
+import WindowCard from "../components/WindowCard";
+import PixelButton from "../components/PixelButton";
+import Seo from "../components/Seo";
+import type { Project } from "../services/api";
+import { api } from "../services/api";
+import { resolveImageUrl } from "../utils/image";
 
 const ProjectImage = ({ src, alt }: { src: string; alt: string }) => {
   const [failed, setFailed] = useState(false);
@@ -46,11 +47,11 @@ const ProjectImageCarousel = ({
     const scrollToIndex = (idx: number) => {
       const next = idx % count;
       setCurrentIndex(next);
-      el.scrollTo({ left: el.clientWidth * next, behavior: 'smooth' });
+      el.scrollTo({ left: el.clientWidth * next, behavior: "smooth" });
     };
     const interval = setInterval(
       () => scrollToIndex(currentIndex + 1),
-      AUTO_SWIPE_INTERVAL_MS
+      AUTO_SWIPE_INTERVAL_MS,
     );
     return () => clearInterval(interval);
   }, [isMulti, count, currentIndex]);
@@ -67,7 +68,7 @@ const ProjectImageCarousel = ({
     setCurrentIndex(idx);
     scrollRef.current.scrollTo({
       left: scrollRef.current.clientWidth * idx,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -76,7 +77,7 @@ const ProjectImageCarousel = ({
       <div
         ref={scrollRef}
         className={`flex h-full w-full ${
-          isMulti ? 'overflow-x-auto scroll-snap-swipe' : ''
+          isMulti ? "overflow-x-auto scroll-snap-swipe" : ""
         }`}
         onScroll={handleScroll}
       >
@@ -84,12 +85,9 @@ const ProjectImageCarousel = ({
           <div
             key={`${src}-${idx}`}
             className="h-full w-full flex-shrink-0"
-            style={isMulti ? { scrollSnapAlign: 'start' } : undefined}
+            style={isMulti ? { scrollSnapAlign: "start" } : undefined}
           >
-            <ProjectImage
-              src={src}
-              alt={`${projectTitle} photo ${idx + 1}`}
-            />
+            <ProjectImage src={src} alt={`${projectTitle} photo ${idx + 1}`} />
           </div>
         ))}
       </div>
@@ -106,8 +104,8 @@ const ProjectImageCarousel = ({
                 onClick={() => goToSlide(idx)}
                 className={`h-2 w-2 rounded-full border border-white/50 transition-all ${
                   idx === currentIndex
-                    ? 'bg-white scale-125'
-                    : 'bg-white/50 hover:bg-white/70'
+                    ? "bg-white scale-125"
+                    : "bg-white/50 hover:bg-white/70"
                 }`}
                 aria-label={`Go to image ${idx + 1}`}
               />
@@ -123,18 +121,34 @@ const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [expandedProjectIds, setExpandedProjectIds] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
+  const filteredProjects = projects.filter((project) => {
+    const query = searchTerm.trim().toLowerCase();
+
+    const searchableText = [
+      project.title,
+      project.description,
+      ...(project.techStack ?? []),
+      ...(project.contributors ?? []),
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return searchableText.includes(query);
+  });
   const DESCRIPTION_PREVIEW_LIMIT = 140;
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await api.get<Project[]>('/api/projects');
+        const res = await api.get<Project[]>("/api/projects");
         setProjects(res.data);
       } catch {
-        setError('Failed to load projects.');
+        setError("Failed to load projects.");
       } finally {
         setLoading(false);
       }
@@ -163,11 +177,16 @@ const Projects = () => {
         path="/projects"
       />
       <h1 className="font-heading text-sm md:text-base mb-2">Projects</h1>
+      <SearchFilter
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search projects..."
+      />
       {loading && <p className="text-sm">Loading projects...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!loading && !error && (
         <div className="grid-layout">
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <WindowCard
               key={project.id}
               title={project.title}
@@ -192,16 +211,16 @@ const Projects = () => {
                 return (
                   <>
                     <p className="text-sm mb-1">
-                      Tech: {project.techStack?.join(', ') || '—'}
+                      Tech: {project.techStack?.join(", ") || "—"}
                     </p>
                     <p className="text-sm mb-1">
-                      Contributors: {project.contributors?.join(', ') || '—'}
+                      Contributors: {project.contributors?.join(", ") || "—"}
                     </p>
                     <p className="text-sm">{displayedDescription}</p>
                     {hasLongDescription && (
                       <PixelButton
                         type="button"
-                        label={isExpanded ? 'Read less' : 'Read more'}
+                        label={isExpanded ? "Read less" : "Read more"}
                         className="mt-2 mb-3 self-start"
                         onClick={() => toggleProjectDescription(project.id)}
                       />
@@ -234,8 +253,12 @@ const Projects = () => {
               </div>
             </WindowCard>
           ))}
-          {!projects.length && (
-            <p className="text-sm col-span-full">No projects found.</p>
+          {filteredProjects.length === 0 && (
+            <p className="text-sm col-span-full">
+              {projects.length === 0
+                ? "No projects found."
+                : "No projects match your search."}
+            </p>
           )}
         </div>
       )}
@@ -244,4 +267,3 @@ const Projects = () => {
 };
 
 export default Projects;
-
