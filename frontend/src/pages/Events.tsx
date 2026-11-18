@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import WindowCard from '../components/WindowCard';
-import PixelButton from '../components/PixelButton';
-import EventImageCarousel from '../components/EventImageCarousel';
-import Seo from '../components/Seo';
-import { api } from '../services/api';
-import type { Event } from '../services/api';
+import SearchFilter from "../components/SearchFilter";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import WindowCard from "../components/WindowCard";
+import PixelButton from "../components/PixelButton";
+import EventImageCarousel from "../components/EventImageCarousel";
+import Seo from "../components/Seo";
+import { api } from "../services/api";
+import type { Event } from "../services/api";
 
-type Filter = 'all' | 'upcoming' | 'past';
+type Filter = "all" | "upcoming" | "past";
 
 const MAX_DESCRIPTION_CHARS = 120;
 
@@ -15,8 +16,9 @@ const eventPath = (event: Event) => `/events/${event.slug || event.id}`;
 
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<Filter>("all");
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [expandedDescriptions, setExpandedDescriptions] = useState<
     Record<string, boolean>
@@ -37,10 +39,10 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await api.get<Event[]>('/api/events');
+        const res = await api.get<Event[]>("/api/events");
         setEvents(res.data);
       } catch {
-        setError('Failed to load events. Please try again later.');
+        setError("Failed to load events. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -48,11 +50,23 @@ const Events = () => {
 
     fetchEvents();
   }, []);
+  const filteredEvents = events.filter((event) => {
+    const matchesType = filter === "all" || event.type === filter;
 
-  const filteredEvents =
-    filter === 'all'
-      ? events
-      : events.filter((e) => e.type === filter);
+    const searchableText = [
+      event.title,
+      event.description,
+      event.location ?? "",
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch = searchableText.includes(
+      searchTerm.trim().toLowerCase(),
+    );
+
+    return matchesType && matchesSearch;
+  });
 
   return (
     <div className="space-y-4">
@@ -62,21 +76,26 @@ const Events = () => {
         path="/events"
       />
       <h1 className="font-heading text-sm md:text-base mb-2">Events</h1>
+      <SearchFilter
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search events..."
+      />
       <div className="flex flex-wrap gap-2 mb-4">
         <PixelButton
           label="All"
-          onClick={() => setFilter('all')}
-          className={`${filter === 'all' ? 'bg-primary text-white' : ''} min-w-[88px]`}
+          onClick={() => setFilter("all")}
+          className={`${filter === "all" ? "bg-primary text-white" : ""} min-w-[88px]`}
         />
         <PixelButton
           label="Upcoming"
-          onClick={() => setFilter('upcoming')}
-          className={`${filter === 'upcoming' ? 'bg-primary text-white' : ''} min-w-[88px]`}
+          onClick={() => setFilter("upcoming")}
+          className={`${filter === "upcoming" ? "bg-primary text-white" : ""} min-w-[88px]`}
         />
         <PixelButton
           label="Past"
-          onClick={() => setFilter('past')}
-          className={`${filter === 'past' ? 'bg-primary text-white' : ''} min-w-[88px]`}
+          onClick={() => setFilter("past")}
+          className={`${filter === "past" ? "bg-primary text-white" : ""} min-w-[88px]`}
         />
       </div>
       {loading && <p className="text-sm">Loading events...</p>}
@@ -112,10 +131,10 @@ const Events = () => {
               )}
               <p className="text-sm mb-1">
                 Date: {new Date(event.date).toLocaleDateString()}
-                {event.location ? ` · ${event.location}` : ''}
+                {event.location ? ` · ${event.location}` : ""}
               </p>
               {(() => {
-                const description = event.description ?? '';
+                const description = event.description ?? "";
                 const isExpanded = expandedDescriptions[event.id] ?? false;
                 const shouldTruncate =
                   description.length > MAX_DESCRIPTION_CHARS;
@@ -131,7 +150,7 @@ const Events = () => {
                     {shouldTruncate && (
                       <PixelButton
                         type="button"
-                        label={isExpanded ? 'Read less' : 'Read more'}
+                        label={isExpanded ? "Read less" : "Read more"}
                         onClick={() => toggleDescription(event.id)}
                         className="mt-2 self-start"
                       />
@@ -152,8 +171,8 @@ const Events = () => {
                   >
                     {new Date(event.date) >=
                     new Date(new Date().setHours(0, 0, 0, 0))
-                      ? 'Register'
-                      : 'Link'}
+                      ? "Register"
+                      : "Link"}
                   </a>
                 )}
               </div>
@@ -161,7 +180,9 @@ const Events = () => {
           ))}
           {!filteredEvents.length && (
             <p className="text-sm col-span-full">
-              No events found for this filter.
+              {events.length === 0
+                ? "No events found."
+                : "No events match your search or selected filter."}
             </p>
           )}
         </div>

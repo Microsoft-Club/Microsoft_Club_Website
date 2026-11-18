@@ -1,22 +1,24 @@
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import WindowCard from '../components/WindowCard';
-import Seo from '../components/Seo';
-import { api } from '../services/api';
-import type { Blog } from '../services/api';
+import { Link } from "react-router-dom";
+import SearchFilter from "../components/SearchFilter";
+import { useEffect, useState } from "react";
+import WindowCard from "../components/WindowCard";
+import Seo from "../components/Seo";
+import { api } from "../services/api";
+import type { Blog } from "../services/api";
 
 const Blogs = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await api.get<Blog[]>('/api/blogs');
+        const res = await api.get<Blog[]>("/api/blogs");
         setBlogs(res.data);
       } catch {
-        setError('Failed to load blogs. Please try again later.');
+        setError("Failed to load blogs. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -24,6 +26,20 @@ const Blogs = () => {
 
     fetchBlogs();
   }, []);
+  const filteredBlogs = blogs.filter((blog) => {
+    const query = searchTerm.trim().toLowerCase();
+
+    const searchableText = [
+      blog.title,
+      blog.content.replace(/<[^>]*>/g, ""),
+      blog.author,
+      ...(blog.tags ?? []),
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return searchableText.includes(query);
+  });
 
   return (
     <div className="space-y-4">
@@ -33,17 +49,23 @@ const Blogs = () => {
         path="/blogs"
       />
       <h1 className="font-heading text-sm md:text-base mb-2">Blogs</h1>
+      <SearchFilter
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search blogs..."
+      />
+
       {loading && <p className="text-sm">Loading blogs...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!loading && !error && (
         <div className="grid-layout">
-          {blogs.map((blog) => (
+          {filteredBlogs.map((blog) => (
             <WindowCard key={blog.id} title={blog.title}>
               <p className="text-xs text-gray-700 mb-1">By {blog.author}</p>
               <p className="text-sm mb-3">
-                {blog.content.replace(/<[^>]*>/g, '').length > 160
-                  ? `${blog.content.replace(/<[^>]*>/g, '').slice(0, 160)}...`
-                  : blog.content.replace(/<[^>]*>/g, '')}
+                {blog.content.replace(/<[^>]*>/g, "").length > 160
+                  ? `${blog.content.replace(/<[^>]*>/g, "").slice(0, 160)}...`
+                  : blog.content.replace(/<[^>]*>/g, "")}
               </p>
               {blog.tags && blog.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-3">
@@ -65,9 +87,11 @@ const Blogs = () => {
               </Link>
             </WindowCard>
           ))}
-          {!blogs.length && (
+          {filteredBlogs.length === 0 && (
             <p className="text-sm text-gray-600 col-span-full">
-              No blogs yet.
+              {blogs.length === 0
+                ? "No blogs yet."
+                : "No blogs match your search."}
             </p>
           )}
         </div>
@@ -77,4 +101,3 @@ const Blogs = () => {
 };
 
 export default Blogs;
-
