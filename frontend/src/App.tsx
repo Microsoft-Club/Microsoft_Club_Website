@@ -13,7 +13,7 @@ import BlogDetail from './pages/BlogDetail';
 import AdminLogin from './pages/AdminLogin';
 import ProtectedRoute from './components/ProtectedRoute';
 import Inductions from './pages/Inductions';
-
+import WorkWithUs from './pages/WorkWithUs';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 const App = () => {
@@ -35,6 +35,7 @@ const App = () => {
             <Route path="/podcasts" element={<Podcasts />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/blogs/:id" element={<BlogDetail />} />
+            <Route path="/work-with-us" element={<WorkWithUs />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
               path="/admin/dashboard"
