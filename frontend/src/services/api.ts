@@ -96,6 +96,9 @@ export type Blog = {
   author: string;
   tags: string[];
   createdAt: string;
+  authorImage: string;
+  instagramUrl: string | null;
+  linkedinUrl: string | null;
 };
 
 export type WaitingListEntry = {
