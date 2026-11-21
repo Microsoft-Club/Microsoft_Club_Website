@@ -58,7 +58,7 @@ const Blogs = () => {
                 </div>
               )}
               <Link
-                to={`/blogs/${blog.id}`}
+                to={`/blogs/${blog.slug || blog.id}`}
                 className="underline text-sm font-semibold"
               >
                 Read more

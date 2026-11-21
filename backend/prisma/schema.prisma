@@ -89,6 +89,7 @@ model Blog {
   authorImage String   @default("/blog-author-placeholder.svg")
   instagramUrl String?
   linkedinUrl  String?
+  slug         String?  @unique
 }
 
 model WaitingListEntry {

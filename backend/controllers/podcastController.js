@@ -12,6 +12,25 @@ const getPodcasts = async (req, res) => {
   }
 };
 
+const getPodcastById = async (req, res) => {
+  const numericId = Number(req.params.id);
+  if (!Number.isInteger(numericId)) {
+    return res.status(404).json({ message: 'Podcast not found' });
+  }
+  try {
+    const podcast = await prisma.podcast.findUnique({
+      where: { id: numericId },
+    });
+    if (!podcast) {
+      return res.status(404).json({ message: 'Podcast not found' });
+    }
+    res.json(podcast);
+  } catch (error) {
+    console.error('Get podcast error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 const createPodcast = async (req, res) => {
   try {
     const { title, description, youtubeLink, guest, date } = req.body || {};
@@ -67,8 +86,8 @@ const deletePodcast = async (req, res) => {
 
 module.exports = {
   getPodcasts,
+  getPodcastById,
   createPodcast,
   updatePodcast,
   deletePodcast,
 };
-

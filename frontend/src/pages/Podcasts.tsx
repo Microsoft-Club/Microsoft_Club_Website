@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
@@ -147,6 +148,12 @@ const Podcasts = () => {
                 })()}
               </div>
               <p className="text-sm font-semibold mb-1">{episode.guest}</p>
+              <Link
+                to={`/podcasts/${episode.id}`}
+                className="underline text-xs font-semibold"
+              >
+                Episode page
+              </Link>
               <p className="text-xs text-gray-700 mb-1">
                 Date: {new Date(episode.date).toLocaleDateString()}
               </p>
@@ -186,4 +193,3 @@ const Podcasts = () => {
 };
 
 export default Podcasts;
-
