@@ -79,13 +79,16 @@ model Podcast {
 }
 
 model Blog {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  author    String
-  tags      String[] @default([])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String
+  author      String
+  tags        String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  authorImage String   @default("/blog-author-placeholder.svg")
+  instagramUrl String?
+  linkedinUrl  String?
 }
 
 model WaitingListEntry {
