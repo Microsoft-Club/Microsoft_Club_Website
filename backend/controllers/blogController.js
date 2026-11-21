@@ -3,6 +3,37 @@ const { uploadBufferToR2 } = require('../services/r2Service');
 
 const DEFAULT_AUTHOR_IMAGE = '/blog-author-placeholder.svg';
 
+const slugify = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const ensureUniqueSlug = async (base, excludeId = null) => {
+  let candidate = base;
+  let suffix = 2;
+  while (true) {
+    const existing = await prisma.blog.findFirst({
+      where: {
+        slug: candidate,
+        ...(excludeId != null ? { NOT: { id: Number(excludeId) } } : {}),
+      },
+      select: { id: true },
+    });
+    if (!existing) return candidate;
+    candidate = `${base}-${suffix}`;
+    suffix += 1;
+  }
+};
+
+const resolveSlug = async ({ slug, title, excludeId = null }) => {
+  const base = slugify(slug !== undefined ? slug : title);
+  if (!base) return null;
+  return ensureUniqueSlug(base, excludeId);
+};
+
 const isHttpUrl = (value) => {
   if (typeof value !== 'string' || !value.trim()) return false;
 
@@ -102,7 +133,7 @@ const uploadBlogAuthorImage = async (req, res) => {
 
     // The existing service can save locally if R2 isn't available.
     // Don't save its R2-looking URL to the database in that case.
-   const imageUrl = getUploadedImageUrl(result);
+    const imageUrl = getUploadedImageUrl(result);
 
     if (!imageUrl) {
       return res.status(503).json({
@@ -137,9 +168,11 @@ const getBlogs = async (req, res) => {
 const getBlogById = async (req, res) => {
   const { id } = req.params;
   try {
-    const blog = await prisma.blog.findUnique({
-      where: { id: Number(id) },
-    });
+    const numericId = Number(id);
+    const blog =
+      Number.isInteger(numericId) && String(numericId) === id
+        ? await prisma.blog.findUnique({ where: { id: numericId } })
+        : await prisma.blog.findUnique({ where: { slug: id } });
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }
@@ -152,7 +185,7 @@ const getBlogById = async (req, res) => {
 
 const createBlog = async (req, res) => {
   try {
-    const { title, content, author, tags, instagramUrl, linkedinUrl, authorImage } =
+    const { title, content, author, tags, instagramUrl, linkedinUrl, authorImage, slug } =
       req.body || {};
 
     const contentText =
@@ -209,12 +242,13 @@ const createBlog = async (req, res) => {
       }
     }
 
-
     const tagsArr = Array.isArray(tags)
       ? tags
       : typeof tags === 'string'
         ? tags.split(',').map((tag) => tag.trim()).filter(Boolean)
         : [];
+
+    const resolvedSlug = await resolveSlug({ slug, title });
 
     const blog = await prisma.blog.create({
       data: {
@@ -225,6 +259,7 @@ const createBlog = async (req, res) => {
         instagramUrl: instagram,
         linkedinUrl: linkedin,
         tags: tagsArr,
+        slug: resolvedSlug,
       },
     });
 
@@ -238,23 +273,24 @@ const createBlog = async (req, res) => {
 const updateBlog = async (req, res) => {
   const { id } = req.params;
   try {
-    const { title, content, author, tags, instagramUrl, linkedinUrl, authorImage } = req.body || {};
+    const { title, content, author, tags, instagramUrl, linkedinUrl, authorImage, slug } =
+      req.body || {};
     const tagsArr = Array.isArray(tags)
       ? tags
       : typeof tags === 'string'
-      ? tags.split(',').map((s) => s.trim()).filter(Boolean)
-      : undefined;
- 
-      const instagram = optionalSocialUrl(instagramUrl, 'instagram.com');
-      const linkedin = optionalSocialUrl(linkedinUrl, 'linkedin.com');
+        ? tags.split(',').map((s) => s.trim()).filter(Boolean)
+        : undefined;
 
-      if (instagram === false || linkedin === false) {
-        return res.status(400).json({
-          message: 'Instagram and LinkedIn links must be valid HTTPS profile URLs.',
-        });
-      }
+    const instagram = optionalSocialUrl(instagramUrl, 'instagram.com');
+    const linkedin = optionalSocialUrl(linkedinUrl, 'linkedin.com');
 
-      let authorImageUrl;
+    if (instagram === false || linkedin === false) {
+      return res.status(400).json({
+        message: 'Instagram and LinkedIn links must be valid HTTPS profile URLs.',
+      });
+    }
+
+    let authorImageUrl;
 
     if (authorImage !== undefined) {
       authorImageUrl = normalizeAuthorImage(authorImage);
@@ -263,6 +299,24 @@ const updateBlog = async (req, res) => {
         return res.status(400).json({
           message: 'Author image must be a valid HTTP or HTTPS URL.',
         });
+      }
+    }
+
+    let slugData = {};
+    if (slug !== undefined) {
+      slugData = { slug: await resolveSlug({ slug, title, excludeId: id }) };
+    } else {
+      const existing = await prisma.blog.findUnique({
+        where: { id: Number(id) },
+        select: { slug: true, title: true },
+      });
+      if (existing && !existing.slug) {
+        slugData = {
+          slug: await resolveSlug({
+            title: title ?? existing.title,
+            excludeId: id,
+          }),
+        };
       }
     }
 
@@ -276,6 +330,7 @@ const updateBlog = async (req, res) => {
         ...(instagram !== undefined ? { instagramUrl: instagram } : {}),
         ...(linkedin !== undefined ? { linkedinUrl: linkedin } : {}),
         ...(authorImageUrl !== undefined ? { authorImage: authorImageUrl } : {}),
+        ...slugData,
       },
     });
     res.json(blog);
@@ -306,4 +361,3 @@ module.exports = {
   updateBlog,
   deleteBlog,
 };
-
