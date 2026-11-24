@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Microsoft Club GIKI — redesign preview (vibrant)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="icons/simple-line-icons.css" />
+<style>
+  :root {
+    /* Vibrant palette Nov 2026 */
+    --coral: #E74C3C;
+    --lime: #BADA55;
+    --blue: #3498DB;
+    --yellow: #F1C40F;
+    --navy: #1C3A47;
+    --white: #FFFFFF;
+    --gray: #95A5A6;
+    --black: #000000;
+
+    --text: var(--black);
+    --text-soft: #555555;
+    --line: 2.5px solid var(--black);
+    --shadow: 5px 5px 0 var(--black);
+    --shadow-press: 2px 2px 0 var(--black);
+    --radius: 8px;
+    --display: 'Bricolage Grotesque', 'Barlow', sans-serif;
+    --ui: 'Barlow', system-ui, sans-serif;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+
+    /* Light theme (default) */
+    --bg: var(--white);
+    --bg-alt: #F7F7F7;
+    --window-bg: var(--white);
+    --action: var(--blue);
+    --action-alt: var(--coral);
+    --status-open: var(--lime);
+    --status-closed: var(--coral);
+    --accent: var(--yellow);
+  }
+
+  html[data-theme="dark"] {
+    --text: #E0E0E0;
+    --text-soft: #B0B0B0;
+    --bg: var(--navy);
+    --bg-alt: #2A4A5C;
+    --window-bg: #253847;
+    --action: #5DADE2;
+    --action-alt: #F39C12;
+    --status-open: #58D68D;
+    --status-closed: #EC7063;
+    --accent: #F4D03F;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--blue) var(--gray); }
+  body {
+    margin: 0;
+    font-family: var(--ui);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--text);
+    background-color: var(--bg);
+    min-height: 100dvh;
+    transition: background-color .3s var(--ease), color .3s var(--ease);
+  }
+
+  /* Animated background fields */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: transparent;
+    opacity: 1;
+    transition: opacity .3s var(--ease);
+  }
+
+  html[data-theme="dark"] body::before {
+    opacity: 0.08;
+    background-image:
+      linear-gradient(118deg, transparent 0 58%, var(--blue) 58% 71%, transparent 71%),
+      linear-gradient(118deg, transparent 0 71%, var(--coral) 71% 100%);
+  }
+
+  ::selection { background: var(--action); color: var(--bg); }
+  :focus-visible { outline: 3px solid var(--action); outline-offset: 3px; }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+
+  .skip { position: absolute; left: -999px; top: 8px; background: var(--action); color: var(--bg); padding: 8px 14px; border: var(--line); z-index: 100; font-weight: 700; }
+  .skip:focus { left: 12px; }
+
+  /* Theme toggle */
+  .theme-toggle { position: fixed; bottom: 20px; right: 20px; z-index: 50; display: flex; gap: 8px; background: var(--window-bg); border: var(--line); border-radius: var(--radius); padding: 10px; }
+  .theme-toggle button { background: transparent; border: none; padding: 6px 12px; font-weight: 600; cursor: pointer; border-radius: 4px; transition: background .2s; }
+  .theme-toggle button.active { background: var(--action); color: var(--bg); }
+
+  /* Menu bar */
+  .menubar { position: sticky; top: 0; z-index: 40; background: var(--blue); color: var(--white); border-bottom: var(--line); }
+  .menubar-inner { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 24px; padding: 10px 20px; }
+  .menubar .logo img { height: 40px; width: auto; }
+  .menubar nav { margin-left: auto; }
+  .menubar ul { list-style: none; display: flex; gap: 4px; margin: 0; padding: 0; }
+  .menubar nav a { display: block; padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 15px; text-decoration: none; border: 2px solid transparent; color: var(--white); }
+  .menubar nav a:hover { border-color: var(--white); }
+  .menubar nav a[aria-current="page"] { background: var(--action-alt); color: var(--white); }
+  .menubar .admin { font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; color: var(--white); }
+  .menubar .admin:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .menu-btn { display: none; }
+
+  /* Window */
+  .window { background: var(--window-bg); border: var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .titlebar { display: flex; align-items: center; gap: 14px; padding: 9px 14px; border-bottom: var(--line); background: var(--window-bg); }
+  .dots { display: flex; gap: 7px; }
+  .dots span { width: 15px; height: 15px; border: 2.5px solid var(--black); border-radius: 50%; }
+  .titlebar .title { flex: 1; margin: 0; text-align: center; font: 600 15px/1.2 var(--ui); letter-spacing: .01em; padding-right: 37px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 10px 20px; font: 700 16px/1 var(--ui); text-decoration: none; color: var(--white); border: var(--line); border-radius: 6px; background: var(--action); box-shadow: 4px 4px 0 var(--black); cursor: pointer; transition: transform .12s var(--ease), box-shadow .12s var(--ease); }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--black); }
+  .btn:active { transform: translate(2px, 2px); box-shadow: var(--shadow-press); }
+  .btn-primary { background: var(--action); }
+  .btn-secondary { background: var(--action-alt); color: var(--white); }
+  .btn i { font-size: 15px; }
+
+  /* Desktop layout */
+  .desktop { max-width: 1240px; margin: 0 auto; padding: 40px 20px 80px; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 32px; }
+  .icons { display: flex; flex-direction: column; gap: 22px; padding-top: 6px; }
+  .icons a { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; font-size: 14px; font-weight: 600; text-align: center; }
+  .icons .tile { width: 64px; height: 64px; display: grid; place-items: center; background: var(--window-bg); border: var(--line); border-radius: 10px; font-size: 28px; box-shadow: 3px 3px 0 var(--black); transition: transform .15s var(--ease), background .15s; }
+  .icons a:hover .tile { background: var(--action); color: var(--white); transform: translateY(-2px); }
+
+  .stage { display: flex; flex-direction: column; gap: 56px; min-width: 0; }
+
+  .hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 380px; align-items: start; }
+  .welcome { grid-column: 1 / 2; grid-row: 1; margin-right: -40px; }
+  .welcome-body { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 28px; padding: 36px 76px 36px 36px; }
+  .welcome h1 { font: 800 clamp(2.6rem, 5.4vw, 4.6rem)/0.98 var(--display); letter-spacing: -0.03em; margin: 0 0 18px; text-wrap: balance; color: var(--text); }
+  .welcome p.lede { margin: 0 0 28px; max-width: 46ch; font-size: 19px; color: var(--text-soft); }
+  .actions { display: flex; flex-wrap: wrap; gap: 14px; }
+  .art { align-self: stretch; background: var(--blue); border: var(--line); border-radius: 6px; display: grid; place-items: center; padding: 14px; }
+  .art svg { width: 100%; height: auto; }
+
+  .installer { grid-column: 2 / 3; grid-row: 1; margin-top: 150px; position: relative; z-index: 2; }
+  .installer-body { padding: 22px 22px 24px; }
+  .installer .status { display: inline-flex; align-items: center; gap: 8px; background: var(--status-closed); color: var(--white); font-weight: 700; font-size: 14px; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; border: var(--line); }
+  .installer h2 { font: 800 26px/1.1 var(--display); margin: 0 0 8px; letter-spacing: -0.02em; }
+  .installer p { margin: 0 0 16px; font-size: 16px; color: var(--text-soft); }
+  .progress { height: 26px; border: var(--line); border-radius: 4px; padding: 3px; display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; margin-bottom: 6px; background: var(--bg-alt); }
+  .progress span { background: var(--black); border-radius: 1px; }
+  .progress span.off { background: transparent; }
+  .installer p.eta { font-size: 14px; margin-bottom: 18px; }
+  .installer .actions { gap: 10px; }
+  .installer .btn { flex: 1 1 auto; }
+
+  /* Events: job-board list */
+  .events-head { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; padding: 26px 28px 18px; border-bottom: var(--line); }
+  .events-head h2 { font: 800 34px/1 var(--display); margin: 0; letter-spacing: -0.02em; }
+  .count { border: var(--line); border-radius: 4px; padding: 4px 10px; font-weight: 700; font-size: 14px; background: var(--bg-alt); }
+  .tabs { margin-left: auto; display: flex; border: var(--line); border-radius: 6px; overflow: hidden; }
+  .tabs button { font: 600 15px var(--ui); color: var(--text); background: var(--window-bg); border: 0; padding: 9px 16px; min-height: 42px; cursor: pointer; }
+  .tabs button + button { border-left: var(--line); }
+  .tabs button[aria-pressed="true"] { background: var(--action); color: var(--white); }
+
+  .event-list { list-style: none; margin: 0; padding: 22px 28px 28px; display: flex; flex-direction: column; gap: 18px; }
+  .event { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; gap: 22px; align-items: center; background: var(--window-bg); border: var(--line); border-radius: 6px; padding: 18px 20px; box-shadow: 4px 4px 0 var(--black); }
+  .date { border: var(--line); border-radius: 6px; text-align: center; overflow: hidden; }
+  .date b { display: block; font: 800 30px/1 var(--display); padding: 8px 0 4px; font-variant-numeric: tabular-nums; }
+  .date small { display: block; font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; background: var(--black); color: var(--white); padding: 3px 0; }
+  .event h3 { font: 700 22px/1.2 var(--display); margin: 0 0 6px; letter-spacing: -0.01em; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 15px; color: var(--text-soft); margin-bottom: 8px; }
+  .tag { font-weight: 700; font-size: 13px; padding: 2px 9px; border: 2px solid var(--black); border-radius: 4px; color: var(--white); }
+  .tag.up { background: var(--status-open); }
+  .tag.past { background: var(--gray); }
+  .event p { margin: 0; color: var(--text-soft); font-size: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* Lower windows */
+  .pair { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .player-body { padding: 24px; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 20px; align-items: center; }
+  .cover { aspect-ratio: 1; background: var(--blue); border: var(--line); border-radius: 6px; display: grid; place-items: center; color: var(--white); font-size: 46px; }
+  .player-body h3 { font: 700 22px/1.2 var(--display); margin: 2px 0 4px; }
+  .player-body .small { font-size: 14px; color: var(--text-soft); margin: 0; }
+  .scrub { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; }
+  .scrub .play { width: 48px; height: 48px; border-radius: 50%; padding: 0; }
+  .bar { flex: 1; height: 10px; border: 2px solid var(--black); border-radius: 6px; position: relative; overflow: hidden; }
+  .bar::after { content: ''; position: absolute; inset: 0 62% 0 0; background: var(--action-alt); }
+
+  .files { list-style: none; margin: 0; padding: 10px; }
+  .files a { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px; border-radius: 6px; text-decoration: none; }
+  .files a:hover { background: var(--bg-alt); }
+  .files .ico { font-size: 26px; }
+  .files strong { display: block; font: 700 18px/1.2 var(--display); }
+  .files small { display: block; font-size: 14px; color: var(--text-soft); }
+
+  /* Footer */
+  footer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 39; background: var(--black); border-top: var(--line); }
+  .taskbar { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 8px; padding: 7px 20px; min-height: 36px; }
+  .start, .task, .clock { min-height: 36px; padding: 7px 12px; font: 600 13px var(--ui); display: inline-flex; align-items: center; border-radius: 4px; }
+  .start { background: var(--action); color: var(--white); cursor: pointer; }
+  .task { background: var(--action); color: var(--white); cursor: pointer; flex: 1; max-width: 200px; }
+  .clock { margin-left: auto; color: var(--white); }
+
+  /* Responsive */
+  @media (max-width: 1099px) {
+    .desktop { grid-template-columns: 1fr; }
+    .icons { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .welcome { margin-right: 0; }
+    .welcome-body { grid-template-columns: 1fr; }
+    .installer { grid-column: 1 / -1; margin-top: 0; }
+    .pair { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .welcome-body { grid-template-columns: 1fr; }
+    .art { aspect-ratio: 2 / 1; }
+  }
+
+  @media (max-width: 560px) {
+    .event { grid-template-columns: 1fr; gap: 12px; }
+    .menubar-inner { flex-direction: column; gap: 12px; }
+    .menubar nav { margin-left: 0; width: 100%; }
+    .menubar ul { width: 100%; justify-content: center; }
+    .theme-toggle { flex-direction: column; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip">Skip to main</a>
+
+<div class="theme-toggle">
+  <button class="active" onclick="setTheme('light')">Light</button>
+  <button onclick="setTheme('dark')">Dark</button>
+</div>
+
+<header class="menubar">
+  <div class="menubar-inner">
+    <div class="logo">
+      <img src="club_logo_white.png" alt="Microsoft Club GIKI" />
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#" aria-current="page">Home</a></li>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">Members</a></li>
+        <li><a href="#">Projects</a></li>
+      </ul>
+    </nav>
+    <a href="#" class="admin"><i class="icon-admin"></i> Admin</a>
+  </div>
+</header>
+
+<main id="main" class="desktop">
+  <aside class="icons">
+    <a href="#"><div class="tile">🎯</div><span>Events</span></a>
+    <a href="#"><div class="tile">👥</div><span>Members</span></a>
+    <a href="#"><div class="tile">🚀</div><span>Projects</span></a>
+  </aside>
+
+  <div class="stage">
+    <div class="hero">
+      <div class="window welcome">
+        <div class="titlebar">
+          <div class="dots"><span></span><span></span></div>
+          <h2 class="title">welcome.app</h2>
+        </div>
+        <div class="welcome-body">
+          <div>
+            <h1>Microsoft Club GIKI</h1>
+            <p class="lede">The only Microsoft Learn Student Ambassadors chapter at GIKI. We run events, ship real code, and help students grow.</p>
+            <div class="actions">
+              <button class="btn btn-primary"><i class="icon-play"></i> Join the Club</button>
+              <button class="btn btn-secondary"><i class="icon-folder"></i> Browse Events</button>
+            </div>
+          </div>
+          <div class="art">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="120" rx="8" fill="white" opacity="0.1"/>
+              <circle cx="60" cy="60" r="30" stroke="white" stroke-width="2"/>
+              <line x1="60" y1="30" x2="60" y2="90" stroke="white" stroke-width="2"/>
+              <line x1="30" y1="60" x2="90" y2="60" stroke="white" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="window installer">
+        <div class="titlebar">
+          <div class="dots"><span></span><span></span></div>
+          <h2 class="title">Installing: Microsoft Club GIKI</h2>
+        </div>
+        <div class="installer-body">
+          <div class="status">⏸ Paused</div>
+          <h2>Inductions 2026 are closed</h2>
+          <p>Join the waiting list to get notified when inductions open.</p>
+          <div class="progress">
+            <span></span><span></span><span></span><span></span>
+            <span class="off"></span><span class="off"></span><span class="off"></span><span class="off"></span>
+            <span class="off"></span><span class="off"></span><span class="off"></span><span class="off"></span>
+            <span class="off"></span><span class="off"></span>
+          </div>
+          <p class="eta">Estimated time: until next inductions</p>
+          <div class="actions">
+            <button class="btn btn-secondary"><i class="icon-list"></i> Join Waiting List</button>
+            <button class="btn"><i class="icon-share"></i> WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="window">
+      <div class="events-head">
+        <h2>events.exe</h2>
+        <span class="count">36 items</span>
+        <div class="tabs">
+          <button aria-pressed="true">All</button>
+          <button>Upcoming</button>
+          <button>Past</button>
+        </div>
+      </div>
+      <ul class="event-list">
+        <li class="event">
+          <div class="date"><b>14</b><small>Nov</small></div>
+          <div>
+            <h3>UI/UX Bootcamp</h3>
+            <div class="meta">
+              <span>2026</span>
+              <span class="tag up">Upcoming</span>
+            </div>
+            <p>Learn modern design principles with industry professionals. Hands-on workshop covering Figma, prototyping, and user research.</p>
+          </div>
+          <button class="btn btn-primary" style="align-self: center;">Register</button>
+        </li>
+        <li class="event">
+          <div class="date"><b>08</b><small>Nov</small></div>
+          <div>
+            <h3>MICATHON 2026</h3>
+            <div class="meta">
+              <span>2026</span>
+              <span class="tag up">Upcoming</span>
+            </div>
+            <p>48-hour hackathon challenge. Build innovative solutions, compete for prizes, and network with fellow developers and designers.</p>
+          </div>
+          <button class="btn btn-primary" style="align-self: center;">Learn More</button>
+        </li>
+        <li class="event">
+          <div class="date"><b>22</b><small>Oct</small></div>
+          <div>
+            <h3>Cloud Fundamentals Session</h3>
+            <div class="meta">
+              <span>2026</span>
+              <span class="tag past">Past</span>
+            </div>
+            <p>Introduction to Azure cloud services. Covered VM setup, storage, and deployment strategies for scalable applications.</p>
+          </div>
+          <button class="btn">View Recording</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="pair">
+      <div class="window">
+        <div class="titlebar">
+          <div class="dots"><span></span><span></span></div>
+          <h2 class="title">logikal.mp3</h2>
+        </div>
+        <div class="player-body">
+          <div class="cover"><i class="icon-volume"></i></div>
+          <div>
+            <h3>Episode 12: Web Performance</h3>
+            <p class="small">Logikal Podcast</p>
+            <div class="scrub">
+              <button class="btn" style="background: var(--action); padding: 0;"><i class="icon-play"></i></button>
+              <div class="bar"></div>
+              <span>2:34</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="window">
+        <div class="titlebar">
+          <div class="dots"><span></span><span></span></div>
+          <h2 class="title">projects/</h2>
+        </div>
+        <ul class="files">
+          <li><a href="#"><span class="ico">📁</span><strong>GIKI Wallet</strong><small>Payment system</small></a></li>
+          <li><a href="#"><span class="ico">📁</span><strong>ORIC</strong><small>Learning platform</small></a></li>
+          <li><a href="#"><span class="ico">📄</span><strong>Logikal</strong><small>Podcast series</small></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="taskbar">
+    <button class="start">Start</button>
+    <button class="task">Microsoft Club GIKI</button>
+    <div class="clock" id="clock">12:00 AM</div>
+  </div>
+</footer>
+
+<script>
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    document.querySelectorAll('.theme-toggle button').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.toLowerCase() === theme);
+    });
+  }
+
+  // Load saved theme or detect preference
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  setTheme(theme);
+
+  // Update clock
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}`;
+  }
+  updateClock();
+  setInterval(updateClock, 60000);
+</script>
+
+</body>
+</html>

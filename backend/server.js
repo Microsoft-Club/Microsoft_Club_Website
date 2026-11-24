@@ -10,6 +10,8 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
+// Render sits behind one proxy; needed so req.ip is the visitor, not the load balancer.
+app.set('trust proxy', 1);
 
 // Database
 connectDB();
@@ -29,6 +31,7 @@ app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/podcasts', require('./routes/podcastRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/waiting-list', require('./routes/waitingListRoutes'));
+app.use('/api/contact', require('./routes/contactRoutes'));
 
 
 app.get('/health', (req, res) => {

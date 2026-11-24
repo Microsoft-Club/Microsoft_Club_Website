@@ -1,0 +1,19 @@
+name: Feature or content request
+description: Suggest a new page, section, or change to the site
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does it help members or visitors?
+  - type: textarea
+    id: refs
+    attributes:
+      label: Sketches or references
+      description: Drawings, screenshots or links are welcome.

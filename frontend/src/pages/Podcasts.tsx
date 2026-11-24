@@ -91,7 +91,7 @@ const Podcasts = () => {
         description="Listen to Logikal, the Microsoft Club GIKI podcast featuring guests from industry and academia."
         path="/podcasts"
       />
-      <h1 className="font-heading text-sm md:text-base mb-2">Logikal Podcast</h1>
+      <h1 className="font-display text-sm md:text-base mb-2">Logikal Podcast</h1>
       {loading && <p className="text-sm">Loading podcasts...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!loading && !error && (

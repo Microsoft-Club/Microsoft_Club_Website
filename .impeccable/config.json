@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          ".impeccable/preview/index.html"
+        ],
+        "createdAt": "2026-11-11T13:04:13.021Z",
+        "reason": "Intro desktop grid copies the user's own reference recording (grid desktop boot animation); deliberate world material"
+      }
+    ]
+  }
+}

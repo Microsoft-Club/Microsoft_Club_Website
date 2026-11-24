@@ -62,13 +62,13 @@ const Inductions = () => {
         <WindowCard title="Microsoft Club GIKI - Inductions 2026">
           <div className="p-2 md:p-5 text-center space-y-6">
             <div className="flex items-center justify-center">
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 border-2 border-black text-gray-800 font-heading text-xs shadow-retro">
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 border-2 border-black text-gray-800 font-display text-xs shadow-retro">
                 Applications closed
               </span>
             </div>
 
             <div className="space-y-2">
-              <h1 className="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-wide">
+              <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-wide">
                 Inductions 2026 have concluded
               </h1>
               <p className="text-xs sm:text-sm text-gray-700 max-w-lg mx-auto leading-relaxed">
@@ -79,7 +79,7 @@ const Inductions = () => {
             </div>
 
             <div className="pt-4 border-t-2 border-black space-y-3">
-              <p className="font-heading text-xs text-gray-900">
+              <p className="font-display text-xs text-gray-900">
                 Follow us for announcements
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
