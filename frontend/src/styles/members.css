@@ -1,0 +1,93 @@
+/* Members page: header window with search + filter, then sticker-headed grids of ID-card windows.
+   Imported by pages/Members.tsx; every class is mem-* so nothing here collides with theme.css. */
+
+.mem-page { display: flex; flex-direction: column; gap: 32px; }
+
+/* ---------- Header window ---------- */
+.mem-head-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 16px; }
+.mem-head-title { display: flex; align-items: center; gap: 12px; }
+.mem-head-title h1 { margin: 0; font: 800 clamp(1.9rem, 4vw, 2.5rem)/1 var(--display); letter-spacing: -0.03em; }
+.mem-head .count { font-variant-numeric: tabular-nums; }
+
+.mem-search { position: relative; display: block; }
+.mem-search > i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--ink-soft); pointer-events: none; }
+.mem-search .input { padding-left: 42px; padding-right: 44px; }
+.mem-search .input::-webkit-search-cancel-button { display: none; }
+.mem-search-clear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 32px; height: 32px; display: grid; place-items: center; cursor: pointer;
+  background: var(--yellow); color: var(--black); border: 2px solid var(--black); border-radius: 4px; font-size: 12px;
+}
+.mem-search-clear:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.mem-head .mem-seg { margin-left: 0; align-self: flex-start; }
+.mem-head .mem-seg button { display: inline-flex; align-items: center; gap: 8px; }
+.mem-seg-count {
+  min-width: 24px; padding: 0 6px; border: 2px solid var(--black); border-radius: 4px;
+  background: var(--white); font: 800 12px/18px var(--ui); font-variant-numeric: tabular-nums; text-align: center;
+}
+
+.mem-result { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 15px; color: var(--ink-soft); }
+.mem-reset {
+  padding: 0; border: 0; background: none; cursor: pointer; font: 700 15px var(--ui); color: var(--ink);
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px;
+}
+.mem-reset:hover { color: var(--blue); }
+
+/* ---------- Sections and cards ---------- */
+.mem-section h2 { display: inline-flex; align-items: center; gap: 10px; }
+.mem-section-count {
+  padding: 0 8px; border: 2px solid var(--black); border-radius: 4px; background: var(--white);
+  font: 800 14px/22px var(--ui); font-variant-numeric: tabular-nums;
+}
+
+.mem-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+.mem-card { display: flex; flex-direction: column; box-shadow: var(--shadow-sm); }
+.mem-card .win-bar { min-height: 38px; padding: 4px 6px 4px 12px; }
+.mem-card .win-title { font-size: 12px; }
+.mem-card .win-ctl { width: 22px; height: 22px; }
+.mem-card-body { flex: 1; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 16px; align-items: center; padding: 16px; }
+
+.mem-photo {
+  width: 84px; height: 84px; object-fit: cover; display: grid; place-items: center;
+  border: var(--line); border-radius: 6px; background: var(--paper-2); box-shadow: 3px 3px 0 var(--black);
+  font: 800 28px/1 var(--display); color: var(--black);
+}
+.mem-photo--blue { background: var(--blue); }
+.mem-photo--lime { background: var(--lime); }
+.mem-photo--yellow { background: var(--yellow); }
+.mem-photo--coral { background: var(--coral); }
+
+.mem-info { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; }
+.mem-name { margin: 0; font: 700 19px/1.15 var(--display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.mem-tenure { font-size: 12px; padding: 1px 8px; }
+.mem-link { min-height: 32px; padding: 3px 10px; font-size: 13px; gap: 6px; box-shadow: 2px 2px 0 var(--black); }
+.mem-link i { font-size: 13px; }
+
+/* ---------- Empty state ---------- */
+.mem-empty .win-body { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.mem-empty h2 { margin: 0; font: 800 24px/1.1 var(--display); }
+.mem-empty p { margin: 0; max-width: 52ch; color: var(--ink-soft); }
+.mem-empty-icon {
+  width: 52px; height: 52px; display: grid; place-items: center; font-size: 22px;
+  background: var(--yellow); border: var(--line); border-radius: 6px; box-shadow: 3px 3px 0 var(--black);
+}
+
+/* ---------- Phone: two-up ID cards with the photo on top ---------- */
+@media (max-width: 640px) {
+  .mem-page { gap: 22px; }
+  .mem-head-body { padding: 14px 14px 16px; gap: 12px; }
+  .mem-head .mem-seg { align-self: stretch; }
+  .mem-head .mem-seg button { justify-content: center; gap: 4px; padding: 8px 4px; font-size: 13px; white-space: nowrap; }
+  .mem-seg-count { min-width: 20px; padding: 0 4px; font-size: 11px; }
+  .mem-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .mem-card .win-bar { min-height: 32px; padding: 3px 4px 3px 8px; gap: 6px; }
+  .mem-card .win-title { font-size: 10px; }
+  .mem-card .win-controls { display: none; }
+  .mem-card-body { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 10px; padding: 12px 10px 14px; }
+  .mem-photo { width: 76px; height: 76px; }
+  .mem-info { align-items: center; gap: 6px; }
+  .mem-name { font-size: 16px; }
+  .mem-tenure { font-size: 11px; }
+  .mem-link { font-size: 12px; padding: 2px 8px; }
+}

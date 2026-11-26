@@ -1,10 +1,58 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
 import Seo from '../components/Seo';
 import type { Project } from '../services/api';
 import { api } from '../services/api';
 import { resolveImageUrl } from '../utils/image';
+
+// Category prefixes inside tech items, e.g. "Backend: Go" or "State Management: Zustand".
+const TECH_CATEGORY = /^([A-Za-z][A-Za-z /&-]{0,30}):\s*(.*)$/;
+const BOLD_CATEGORIES = new Set(['backend', 'state management', 'infrastructure']);
+
+type ContributorLinksProps = { names?: string[] };
+
+// Each contributor opens the Members page filtered to their name.
+function ContributorLinks({ names }: ContributorLinksProps) {
+  const cleaned = (names ?? []).map((name) => name.trim()).filter(Boolean);
+  if (!cleaned.length) return <>—</>;
+  return (
+    <>
+      {cleaned.map((name, i) => (
+        <span key={`${name}-${i}`}>
+          {i > 0 && ', '}
+          <Link to={`/members?q=${encodeURIComponent(name)}`} className="contributor-link">
+            {name}
+          </Link>
+        </span>
+      ))}
+    </>
+  );
+}
+
+type TechStackProps = { items?: string[] };
+
+function TechStack({ items }: TechStackProps) {
+  if (!items?.length) return <>—</>;
+  return (
+    <>
+      {items.map((item, i) => {
+        const match = TECH_CATEGORY.exec(item);
+        const separator = i > 0 ? ', ' : '';
+        if (!match || !BOLD_CATEGORIES.has(match[1].trim().toLowerCase())) {
+          return <span key={i}>{separator}{item}</span>;
+        }
+        return (
+          <span key={i}>
+            {separator}
+            <mark className="hl">{match[1]}:</mark> {match[2]}
+          </span>
+        );
+      })}
+    </>
+  );
+}
 
 const ProjectImage = ({ src, alt }: { src: string; alt: string }) => {
   const [failed, setFailed] = useState(false);
@@ -162,7 +210,7 @@ const Projects = () => {
         description="Explore projects built by Microsoft Club GIKI members across web, AI, cloud, and more."
         path="/projects"
       />
-      <h1 className="font-heading text-sm md:text-base mb-2">Projects</h1>
+      <h1 className="font-display text-sm md:text-base mb-2">Projects</h1>
       {loading && <p className="text-sm">Loading projects...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!loading && !error && (
@@ -192,10 +240,10 @@ const Projects = () => {
                 return (
                   <>
                     <p className="text-sm mb-1">
-                      Tech: {project.techStack?.join(', ') || '—'}
+                      <mark className="hl">Tech:</mark> <TechStack items={project.techStack} />
                     </p>
                     <p className="text-sm mb-1">
-                      Contributors: {project.contributors?.join(', ') || '—'}
+                      <mark className="hl">Contributors:</mark> <ContributorLinks names={project.contributors} />
                     </p>
                     <p className="text-sm">{displayedDescription}</p>
                     {hasLongDescription && (

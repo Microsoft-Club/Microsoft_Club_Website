@@ -32,7 +32,7 @@ const Blogs = () => {
         description="Articles and insights from Microsoft Club GIKI members on tech, community, and campus life."
         path="/blogs"
       />
-      <h1 className="font-heading text-sm md:text-base mb-2">Blogs</h1>
+      <h1 className="font-display text-sm md:text-base mb-2">Blogs</h1>
       {loading && <p className="text-sm">Loading blogs...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!loading && !error && (
@@ -50,7 +50,7 @@ const Blogs = () => {
                   {blog.tags.slice(0, 4).map((t) => (
                     <span
                       key={t}
-                      className="text-[10px] px-2 py-0.5 border border-black bg-lightBg"
+                      className="text-[10px] px-2 py-0.5 border border-black bg-paper-2"
                     >
                       {t}
                     </span>

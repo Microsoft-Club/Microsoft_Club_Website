@@ -59,7 +59,7 @@ const EventDetail = () => {
           Back to Events
         </Link>
         {event?.featured && (
-          <span className="inline-flex items-center px-2 py-1 border-2 border-black bg-yellow-100 font-heading text-[10px] shadow-retro">
+          <span className="inline-flex items-center px-2 py-1 border-2 border-black bg-yellow-100 font-display text-[10px] shadow-retro">
             Featured Event
           </span>
         )}
@@ -82,7 +82,7 @@ const EventDetail = () => {
         {!loading && !error && event && (
           <article className="space-y-5">
             <header className="space-y-2">
-              <h1 className="font-heading text-lg sm:text-xl md:text-2xl font-bold tracking-wide">
+              <h1 className="font-display text-lg sm:text-xl md:text-2xl font-bold tracking-wide">
                 {event.title}
               </h1>
               <div className="flex flex-wrap gap-2 text-[11px]">
@@ -94,7 +94,7 @@ const EventDetail = () => {
                     day: 'numeric',
                   })}
                 </span>
-                <span className="px-2 py-1 border-2 border-black bg-lightBg shadow-retro capitalize">
+                <span className="px-2 py-1 border-2 border-black bg-paper-2 shadow-retro capitalize">
                   {event.type}
                 </span>
                 {event.location && (
@@ -106,7 +106,7 @@ const EventDetail = () => {
             </header>
 
             <section className="space-y-2">
-              <h2 className="font-heading text-sm font-bold">About</h2>
+              <h2 className="font-display text-sm font-bold">About</h2>
               <p className="text-sm leading-6 whitespace-pre-wrap">
                 {event.description}
               </p>
@@ -114,7 +114,7 @@ const EventDetail = () => {
 
             {event.speakers && event.speakers.length > 0 && (
               <section className="space-y-2">
-                <h2 className="font-heading text-sm font-bold">Speakers</h2>
+                <h2 className="font-display text-sm font-bold">Speakers</h2>
                 <ul className="flex flex-wrap gap-2">
                   {event.speakers.map((speaker) => (
                     <li
@@ -134,7 +134,7 @@ const EventDetail = () => {
                   href={event.registrationLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="pixel-button bg-purpleAccent text-white"
+                  className="pixel-button bg-coral text-white"
                 >
                   {isUpcoming ? 'Register' : 'Event Link'}
                 </a>

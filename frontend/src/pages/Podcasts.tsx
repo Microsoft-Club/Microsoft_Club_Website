@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
 import Seo from '../components/Seo';
@@ -92,7 +92,7 @@ const Podcasts = () => {
         description="Listen to Logikal, the Microsoft Club GIKI podcast featuring guests from industry and academia."
         path="/podcasts"
       />
-      <h1 className="font-heading text-sm md:text-base mb-2">Logikal Podcast</h1>
+      <h1 className="font-display text-sm md:text-base mb-2">Logikal Podcast</h1>
       {loading && <p className="text-sm">Loading podcasts...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!loading && !error && (
@@ -150,9 +150,9 @@ const Podcasts = () => {
               <p className="text-sm font-semibold mb-1">{episode.guest}</p>
               <Link
                 to={`/podcasts/${episode.id}`}
-                className="underline text-xs font-semibold"
+                className="underline text-sm font-semibold mb-1 inline-block"
               >
-                Episode page
+                Open episode
               </Link>
               <p className="text-xs text-gray-700 mb-1">
                 Date: {new Date(episode.date).toLocaleDateString()}
@@ -193,3 +193,4 @@ const Podcasts = () => {
 };
 
 export default Podcasts;
+

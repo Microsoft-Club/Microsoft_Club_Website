@@ -3,7 +3,14 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
+import './styles/theme.css';
 import './index.css';
+import './styles/phone.css';
+import './assets/icons/simple-line-icons.css';
+
+if ('scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
 
 let spaRedirect: string | null = null;
 try {

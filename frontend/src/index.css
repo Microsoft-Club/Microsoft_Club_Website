@@ -2,107 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-.retro-app-bg {
-  background-color: #60a5fa; /* bright Windows-like blue */
-  background-image: radial-gradient(
-      rgba(0, 0, 0, 0.08) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.08),
-      rgba(0, 0, 0, 0.06)
-    );
-  background-size: 18px 18px, auto;
-  background-position: 0 0, 0 0;
-  position: relative;
-}
-
-.retro-app-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.12),
-    rgba(0, 0, 0, 0.12) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  opacity: 0.35;
-}
-
-.retro-app-bg > * {
-  position: relative;
-  z-index: 1;
-}
-
-.retro-app-bg > header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-body {
-  @apply text-black font-body;
-}
-
+@layer components {
 .retro-window {
-  @apply bg-white border-retro border-black rounded-retro shadow-retro overflow-hidden;
+  background: var(--paper);
+  border: var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
-
-.retro-window-highlight {
-  border-color: #7c3aed;
-  box-shadow: 4px 4px 0 #7c3aed;
-}
-
-.retro-window-highlight .retro-window-header {
-  background-color: #7c3aed;
-}
-
 .retro-window-header {
-  @apply flex items-center justify-between px-3 py-2 bg-primaryDark text-white border-b-retro border-black;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 8px 12px; background: var(--blue); color: var(--black); border-bottom: var(--line);
 }
-
-.retro-window-title {
-  @apply font-heading text-xs md:text-sm;
-}
-
-.retro-window-controls {
-  @apply flex gap-1;
-}
-
-.retro-dot {
-  @apply w-3 h-3 border border-black bg-lightBg;
-}
-
-.retro-window-controls .retro-dot:nth-child(1) {
-  background: #ef4444;
-}
-.retro-window-controls .retro-dot:nth-child(2) {
-  background: #f59e0b;
-}
-.retro-window-controls .retro-dot:nth-child(3) {
-  background: #10b981;
-}
+.retro-window-title { font: 800 14px/1.2 var(--ui); letter-spacing: 0.08em; text-transform: uppercase; }
+.retro-window-controls { display: flex; gap: 6px; }
+.retro-dot { width: 20px; height: 20px; border: 2px solid #000; border-radius: 3px; background: var(--white); }
+.retro-window-controls .retro-dot:last-child { background: var(--yellow); }
 
 .pixel-button {
-  @apply inline-flex items-center justify-center px-4 py-2 border-retro border-black rounded-none bg-purpleAccent text-white font-heading text-[10px] md:text-xs shadow-retro active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-transform;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 42px; padding: 8px 16px; font: 700 15px/1.1 var(--ui); color: var(--black);
+  background: var(--blue); border: var(--line); border-radius: 6px; box-shadow: var(--shadow-sm);
+  text-decoration: none; cursor: pointer; transition: transform 0.14s var(--ease), box-shadow 0.14s var(--ease);
 }
+.pixel-button:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 #000; }
+.pixel-button:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #000; }
 
-.grid-layout {
-  @apply grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
-}
+.grid-layout { display: grid; gap: 28px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); align-items: start; }
 
-/* Swipeable carousel scrollbar hide */
-.scroll-snap-swipe {
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+.scroll-snap-swipe { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.scroll-snap-swipe::-webkit-scrollbar { display: none; }
 }
-.scroll-snap-swipe::-webkit-scrollbar {
-  display: none;
-}
-

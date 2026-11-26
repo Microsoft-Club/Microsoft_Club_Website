@@ -1,266 +1,222 @@
-import { useEffect, useMemo, useState } from 'react';
-import WindowCard from '../components/WindowCard';
+import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Seo from '../components/Seo';
+import LoadState from '../components/board/LoadState';
+import WindowControls from '../components/desktop/WindowControls';
+import { useApiList } from '../hooks/useApiList';
 import type { Member } from '../services/api';
-import { api } from '../services/api';
 import { resolveImageUrl } from '../utils/image';
+import { safeExternalUrl } from '../utils/url';
+import '../styles/members.css';
 
-const Members = () => {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'current' | 'alumni'>('all');
+type Category = 'all' | 'current' | 'alumni';
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await api.get<Member[]>('/api/members');
-        setMembers(res.data);
-      } catch {
-        setError('Failed to load members.');
-      } finally {
-        setLoading(false);
-      }
-    };
+const SEARCH_MAX = 100;
+/** Role bars cycle through the club palette so a grid of cards reads like a desk of windows. */
+const TONES = ['blue', 'lime', 'yellow', 'coral'] as const;
 
-    fetchMembers();
-  }, []);
+const byDisplayOrder = (a: Member, b: Member) => {
+  const ao = a.displayOrder ?? Number.POSITIVE_INFINITY;
+  const bo = b.displayOrder ?? Number.POSITIVE_INFINITY;
+  return ao !== bo ? ao - bo : b.id - a.id;
+};
 
-  const normalizedQuery = searchQuery.trim().toLowerCase();
+/** Alumni: newest batch first, then display order. */
+const byTenureThenOrder = (a: Member, b: Member) => {
+  const byTenure = (b.tenure || '').localeCompare(a.tenure || '', undefined, { numeric: true });
+  return byTenure !== 0 ? byTenure : byDisplayOrder(a, b);
+};
 
-  const matchesSearch = (member: Member) => {
-    if (!normalizedQuery) return true;
-    const nameMatch = member.name.toLowerCase().includes(normalizedQuery);
-    const roleMatch = member.role.toLowerCase().includes(normalizedQuery);
-    const tenureMatch = member.tenure ? member.tenure.toLowerCase().includes(normalizedQuery) : false;
-    return nameMatch || roleMatch || tenureMatch;
-  };
+const matches = (member: Member, query: string) =>
+  !query ||
+  member.name.toLowerCase().includes(query) ||
+  member.role.toLowerCase().includes(query) ||
+  (member.tenure ?? '').toLowerCase().includes(query);
 
-  const currentMembers = useMemo(
-    () =>
-      members
-        .filter((m) => m.isCurrent && matchesSearch(m))
-        .slice()
-        .sort((a, b) => {
-          const ao = a.displayOrder ?? Number.POSITIVE_INFINITY;
-          const bo = b.displayOrder ?? Number.POSITIVE_INFINITY;
-          if (ao !== bo) return ao - bo;
-          return b.id - a.id;
-        }),
-    [members, normalizedQuery]
-  );
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
 
-  const alumniMembers = useMemo(
-    () =>
-      members
-        .filter((m) => !m.isCurrent && matchesSearch(m))
-        .slice()
-        .sort((a, b) => {
-          const tenureA = a.tenure || '';
-          const tenureB = b.tenure || '';
-          if (tenureA !== tenureB) {
-            return tenureB.localeCompare(tenureA, undefined, { numeric: true });
-          }
-          const ao = a.displayOrder ?? Number.POSITIVE_INFINITY;
-          const bo = b.displayOrder ?? Number.POSITIVE_INFINITY;
-          if (ao !== bo) return ao - bo;
-          return b.id - a.id;
-        }),
-    [members, normalizedQuery]
-  );
+type MemberCardProps = { member: Member; index: number };
 
-  const totalResults = currentMembers.length + alumniMembers.length;
-  const showCurrent = selectedCategory === 'all' || selectedCategory === 'current';
-  const showAlumni = selectedCategory === 'all' || selectedCategory === 'alumni';
+/** A member as a small ID-card window: role in the title bar, photo, name, batch and LinkedIn. */
+const MemberCard = ({ member, index }: MemberCardProps) => {
+  const tone = TONES[index % TONES.length];
+  const photo = member.image ? resolveImageUrl(member.image) : undefined;
+  const linkedin = safeExternalUrl(member.linkedin);
 
   return (
-    <div className="space-y-6">
+    <li className="win mem-card">
+      <div className={`win-bar win-bar--${tone}`}>
+        <p className="win-title" title={member.role}>{member.role}</p>
+        <WindowControls />
+      </div>
+      <div className="mem-card-body">
+        {photo ? (
+          <img className="mem-photo" src={photo} alt="" loading="lazy" />
+        ) : (
+          <span className={`mem-photo mem-photo--${tone}`} aria-hidden="true">{initials(member.name)}</span>
+        )}
+        <div className="mem-info">
+          <h3 className="mem-name">{member.name}</h3>
+          {member.tenure && <span className="tag tag--gray mem-tenure">{member.tenure}</span>}
+          {linkedin && (
+            <a className="btn btn--white btn--sm mem-link" href={linkedin} target="_blank" rel="noopener noreferrer">
+              <i className="icon-social-linkedin" aria-hidden="true" />
+              LinkedIn
+              <span className="sr-only"> profile of {member.name}</span>
+            </a>
+          )}
+        </div>
+      </div>
+    </li>
+  );
+};
+
+type MemberSectionProps = { id: string; title: string; members: Member[] };
+
+const MemberSection = ({ id, title, members }: MemberSectionProps) => (
+  <section aria-labelledby={id} className="mem-section">
+    <h2 id={id}>
+      {title} <span className="mem-section-count">{members.length}</span>
+    </h2>
+    <ul className="mem-grid">
+      {members.map((member, index) => (
+        <MemberCard key={member.id} member={member} index={index} />
+      ))}
+    </ul>
+  </section>
+);
+
+const Members = () => {
+  const { items: members, status, retry } = useApiList<Member>('/api/members');
+  const [searchParams] = useSearchParams();
+  // Project contributor links arrive as /members?q=<name>.
+  const [searchQuery, setSearchQuery] = useState(() => (searchParams.get('q') ?? '').slice(0, SEARCH_MAX));
+  const [category, setCategory] = useState<Category>('all');
+
+  const query = searchQuery.trim().toLowerCase();
+
+  const currentMembers = useMemo(
+    () => members.filter((m) => m.isCurrent && matches(m, query)).sort(byDisplayOrder),
+    [members, query]
+  );
+  const alumniMembers = useMemo(
+    () => members.filter((m) => !m.isCurrent && matches(m, query)).sort(byTenureThenOrder),
+    [members, query]
+  );
+
+  const counts: Record<Category, number> = {
+    all: members.length,
+    current: members.filter((m) => m.isCurrent).length,
+    alumni: members.filter((m) => !m.isCurrent).length,
+  };
+  const categories: { value: Category; label: string }[] = [
+    { value: 'all', label: 'All' },
+    { value: 'current', label: 'Current EC' },
+    { value: 'alumni', label: 'Alumni' },
+  ];
+
+  const showCurrent = category !== 'alumni' && currentMembers.length > 0;
+  const showAlumni = category !== 'current' && alumniMembers.length > 0;
+  const shownCount = (category !== 'alumni' ? currentMembers.length : 0) + (category !== 'current' ? alumniMembers.length : 0);
+  const resetAll = () => {
+    setSearchQuery('');
+    setCategory('all');
+  };
+
+  return (
+    <div className="mem-page">
       <Seo
         title="Members"
         description="Meet the current members and alumni of Microsoft Club GIKI at Ghulam Ishaq Khan Institute."
         path="/members"
       />
-      <h1 className="font-heading text-sm md:text-base">Members</h1>
-      {/* Search Bar & Category Filters */}
-      <div className="retro-window p-3 md:p-4 bg-white border-black space-y-3">
-        <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
-          <div className="relative flex-1">
+
+      <section className="win mem-head" aria-labelledby="members-title">
+        <div className="win-bar win-bar--yellow">
+          <p className="win-title">members.dir</p>
+          <WindowControls />
+        </div>
+        <div className="mem-head-body">
+          <div className="mem-head-title">
+            <h1 id="members-title">Members</h1>
+            {status === 'ready' && <span className="count">{shownCount}</span>}
+          </div>
+
+          <label className="mem-search">
+            <span className="sr-only">Search members</span>
+            <i className="icon-magnifier" aria-hidden="true" />
             <input
-              type="text"
+              className="input"
+              type="search"
               value={searchQuery}
+              maxLength={SEARCH_MAX}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search member by name, role, or batch (e.g. Lead, Batch 32)..."
-              className="w-full pl-8 pr-8 py-1.5 text-xs md:text-sm border border-black rounded-none shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-1 focus:ring-black bg-white"
+              placeholder="Search name, role or batch"
             />
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs select-none">
-              🔍
-            </span>
             {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black text-xs font-bold px-1"
-                aria-label="Clear search"
-              >
-                ✕
+              <button type="button" className="mem-search-clear" onClick={() => setSearchQuery('')} aria-label="Clear search">
+                <i className="icon-close" aria-hidden="true" />
               </button>
             )}
-          </div>
+          </label>
 
-          <div className="flex items-center gap-1">
-            {(['all', 'current', 'alumni'] as const).map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 text-xs border border-black transition-colors ${
-                  selectedCategory === cat
-                    ? 'bg-black text-white font-semibold'
-                    : 'bg-lightBg hover:bg-gray-200 text-black'
-                }`}
-              >
-                {cat === 'all'
-                  ? `All (${members.length})`
-                  : cat === 'current'
-                  ? `Current EC (${members.filter((m) => m.isCurrent).length})`
-                  : `Alumni (${members.filter((m) => !m.isCurrent).length})`}
+          <div className="seg mem-seg" role="group" aria-label="Filter members">
+            {categories.map((c) => (
+              <button key={c.value} type="button" aria-pressed={category === c.value} onClick={() => setCategory(c.value)}>
+                {c.label}
+                {status === 'ready' && <span className="mem-seg-count">{counts[c.value]}</span>}
               </button>
             ))}
           </div>
-        </div>
 
-        {searchQuery.trim() && (
-          <div className="flex items-center justify-between text-xs text-gray-600 pt-1 border-t border-gray-200">
-            <span>
-              Found <strong>{totalResults}</strong> matching member{totalResults === 1 ? '' : 's'} for &quot;{searchQuery.trim()}&quot;
-            </span>
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="underline text-blue-600 hover:text-blue-800"
-            >
-              Reset search
+          {query && status === 'ready' && (
+            <p className="mem-result" role="status">
+              {shownCount === 1 ? '1 member matches' : `${shownCount} members match`} “{searchQuery.trim()}”
+              <button type="button" className="mem-reset" onClick={() => setSearchQuery('')}>
+                Clear search
+              </button>
+            </p>
+          )}
+        </div>
+      </section>
+
+      {status !== 'ready' && (
+        <div className="win">
+          <LoadState status={status} isEmpty={false} what="members" onRetry={retry} />
+        </div>
+      )}
+
+      {status === 'ready' && shownCount === 0 && (
+        <section className="win mem-empty" aria-live="polite">
+          <div className="win-bar win-bar--coral">
+            <p className="win-title">search.exe — 0 results</p>
+            <WindowControls />
+          </div>
+          <div className="win-body">
+            <i className="icon-magnifier mem-empty-icon" aria-hidden="true" />
+            <h2>No members found</h2>
+            <p>
+              {query
+                ? `Nobody matches “${searchQuery.trim()}”. Check the spelling, or search by role or batch instead.`
+                : 'No members in this group yet.'}
+            </p>
+            <button type="button" className="btn btn--blue btn--sm" onClick={resetAll}>
+              Clear search &amp; filters
             </button>
           </div>
-        )}
-      </div>
-
-      {loading && <p className="text-sm">Loading members...</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
-      {/* No results state */}
-      {!loading && !error && totalResults === 0 && (
-        <div className="retro-window p-8 text-center bg-white border-black space-y-3">
-          <div className="text-2xl">🔍</div>
-          <h3 className="font-heading text-sm md:text-base">No Members Found</h3>
-          <p className="text-xs md:text-sm text-gray-600 max-w-md mx-auto">
-            No club members matched &quot;{searchQuery.trim()}&quot;. Try checking for typos or searching by a different role or batch.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('all');
-            }}
-            className="px-3 py-1 text-xs border border-black bg-black text-white hover:bg-gray-800"
-          >
-            Clear Search & Filters
-          </button>
-        </div>
-      )}
-
-      {/* Current EC */}
-      {!loading && !error && showCurrent && currentMembers.length > 0 && (
-        <section>
-          <h2 className="font-heading text-sm md:text-base mb-3 flex items-center justify-between">
-            <span>Current Executive Council</span>
-            <span className="text-xs font-normal text-gray-500 font-sans">
-              ({currentMembers.length})
-            </span>
-          </h2>
-          <div className="grid-layout">
-            {currentMembers.map((member) => (
-              <WindowCard key={member.id} title={member.role}>
-                <div className="flex items-start gap-3">
-                  {member.image ? (
-                    <img
-                      src={resolveImageUrl(member.image)}
-                      alt={member.name}
-                      className="w-16 h-16 rounded object-cover border border-black"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded bg-lightBg border border-black" />
-                  )}
-                  <div>
-                    <p className="text-sm font-semibold">{member.name}</p>
-                    <p className="text-xs text-gray-700">{member.tenure}</p>
-                    {member.linkedin && (
-                      <div className="mt-1">
-                        <a
-                          href={member.linkedin}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs underline text-blue-600"
-                        >
-                          LinkedIn
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </WindowCard>
-            ))}
-          </div>
         </section>
       )}
 
-      {/* Alumni */}
-      {!loading && !error && showAlumni && alumniMembers.length > 0 && (
-        <section>
-          <h2 className="font-heading text-sm md:text-base mb-3 flex items-center justify-between">
-            <span>Alumni</span>
-            <span className="text-xs font-normal text-gray-500 font-sans">
-              ({alumniMembers.length})
-            </span>
-          </h2>
-          <div className="grid-layout">
-            {alumniMembers.map((member) => (
-              <WindowCard key={member.id} title={member.role}>
-                <div className="flex items-start gap-3">
-                  {member.image ? (
-                    <img
-                      src={resolveImageUrl(member.image)}
-                      alt={member.name}
-                      className="w-16 h-16 rounded object-cover border border-black"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded bg-lightBg border border-black" />
-                  )}
-                  <div>
-                    <p className="text-sm font-semibold">{member.name}</p>
-                    <span className="inline-block mt-0.5 text-[11px] font-medium bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded border border-gray-300">
-                      {member.tenure}
-                    </span>
-                    {member.linkedin && (
-                      <div className="mt-1">
-                        <a
-                          href={member.linkedin}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs underline text-blue-600"
-                        >
-                          LinkedIn
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </WindowCard>
-            ))}
-          </div>
-        </section>
+      {status === 'ready' && showCurrent && (
+        <MemberSection id="members-current" title="Current Executive Council" members={currentMembers} />
       )}
+      {status === 'ready' && showAlumni && <MemberSection id="members-alumni" title="Alumni" members={alumniMembers} />}
     </div>
   );
 };
