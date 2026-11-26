@@ -95,7 +95,6 @@ export type Blog = {
   content: string;
   author: string;
   tags: string[];
-  slug?: string | null;
   createdAt: string;
   authorImage: string;
   instagramUrl: string | null;

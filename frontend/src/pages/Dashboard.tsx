@@ -724,10 +724,10 @@ const Dashboard = () => {
             key={tab}
             type="button"
             onClick={() => setSearchParams({ tab })}
-            className={`px-4 py-2 text-xs md:text-sm font-heading border-2 border-black transition ${
+            className={`px-4 py-2 text-xs md:text-sm font-display border-2 border-black transition ${
               activeTab === tab
-                ? 'bg-primary text-white'
-                : 'bg-white text-black hover:bg-lightBg'
+                ? 'bg-blue text-white'
+                : 'bg-white text-black hover:bg-paper-2'
             }`}
           >
             {TAB_LABELS[tab]}
@@ -740,12 +740,12 @@ const Dashboard = () => {
 
         <div className="space-y-4">
           {/* Header Bar with Accordion & Quick Stats */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-lightBg border border-black p-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-paper-2 border border-black p-3">
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="font-heading font-bold text-gray-800">
+              <span className="font-display font-bold text-gray-800">
                 Applicants:
               </span>
-              <span className="bg-primaryDark text-white px-2 py-0.5 rounded font-mono font-semibold">
+              <span className="bg-navy text-white px-2 py-0.5 rounded font-mono font-semibold">
                 Total: {waitingList.length}
               </span>
               <span className="bg-purple-600 text-white px-2 py-0.5 rounded font-mono">
@@ -837,15 +837,15 @@ const Dashboard = () => {
                 <div className="overflow-x-auto border border-black shadow-sm">
                   <table className="w-full text-left text-xs border-collapse bg-white">
                     <thead>
-                      <tr className="bg-primaryDark text-white border-b border-black text-[11px]">
-                        <th className="p-2 border-r border-gray-600 font-heading">#</th>
-                        <th className="p-2 border-r border-gray-600 font-heading">Name</th>
-                        <th className="p-2 border-r border-gray-600 font-heading">GIKI Email</th>
-                        <th className="p-2 border-r border-gray-600 font-heading">Phone / WhatsApp</th>
-                        <th className="p-2 border-r border-gray-600 font-heading">Batch</th>
-                        <th className="p-2 border-r border-gray-600 font-heading">Faculty</th>
-                        <th className="p-2 border-r border-gray-600 font-heading">Registered</th>
-                        <th className="p-2 text-center font-heading">Action</th>
+                      <tr className="bg-navy text-white border-b border-black text-[11px]">
+                        <th className="p-2 border-r border-gray-600 font-display">#</th>
+                        <th className="p-2 border-r border-gray-600 font-display">Name</th>
+                        <th className="p-2 border-r border-gray-600 font-display">GIKI Email</th>
+                        <th className="p-2 border-r border-gray-600 font-display">Phone / WhatsApp</th>
+                        <th className="p-2 border-r border-gray-600 font-display">Batch</th>
+                        <th className="p-2 border-r border-gray-600 font-display">Faculty</th>
+                        <th className="p-2 border-r border-gray-600 font-display">Registered</th>
+                        <th className="p-2 text-center font-display">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -880,7 +880,7 @@ const Dashboard = () => {
                           </td>
                           <td className="p-2 border-r border-gray-200 whitespace-nowrap">
                             <span
-                              className={`inline-block px-2 py-0.5 rounded text-[10px] font-heading font-semibold ${
+                              className={`inline-block px-2 py-0.5 rounded text-[10px] font-display font-semibold ${
                                 entry.batch === 'Batch 36'
                                   ? 'bg-emerald-100 text-emerald-800 border border-emerald-400'
                                   : 'bg-purple-100 text-purple-800 border border-purple-400'
@@ -1082,7 +1082,7 @@ const Dashboard = () => {
           <div className="space-y-2">
             <button
               type="button"
-              className="w-full flex items-center justify-between text-xs font-semibold bg-lightBg border border-black px-2 py-1"
+              className="w-full flex items-center justify-between text-xs font-semibold bg-paper-2 border border-black px-2 py-1"
               onClick={() => setEventsListOpen((v) => !v)}
             >
               <span>Existing Events</span>
@@ -1293,7 +1293,7 @@ const Dashboard = () => {
           <div className="space-y-2">
             <button
               type="button"
-              className="w-full flex items-center justify-between text-xs font-semibold bg-lightBg border border-black px-2 py-1"
+              className="w-full flex items-center justify-between text-xs font-semibold bg-paper-2 border border-black px-2 py-1"
               onClick={() => setEpisodesListOpen((v) => !v)}
             >
               <span>Episodes</span>
@@ -1608,7 +1608,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between gap-2">
               <button
                 type="button"
-                className="flex-1 flex items-center justify-between text-xs font-semibold bg-lightBg border border-black px-2 py-1"
+                className="flex-1 flex items-center justify-between text-xs font-semibold bg-paper-2 border border-black px-2 py-1"
                 onClick={() => setMembersListOpen((v) => !v)}
               >
                 <span>Existing Members ({members.length})</span>
@@ -1925,7 +1925,7 @@ const Dashboard = () => {
           <div className="space-y-2">
             <button
               type="button"
-              className="w-full flex items-center justify-between text-xs font-semibold bg-lightBg border border-black px-2 py-1"
+              className="w-full flex items-center justify-between text-xs font-semibold bg-paper-2 border border-black px-2 py-1"
               onClick={() => setProjectsListOpen((v) => !v)}
             >
               <span>Existing Projects</span>
@@ -2075,7 +2075,7 @@ const Dashboard = () => {
           <div className="space-y-2">
             <button
               type="button"
-              className="w-full flex items-center justify-between text-xs font-semibold bg-lightBg border border-black px-2 py-1"
+              className="w-full flex items-center justify-between text-xs font-semibold bg-paper-2 border border-black px-2 py-1"
               onClick={() => setBlogsListOpen((v) => !v)}
             >
               <span>Existing Blogs</span>

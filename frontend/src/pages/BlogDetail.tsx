@@ -57,7 +57,7 @@ const sanitizeBlogHtml = (html: string) => {
 
 const BlogDetail = () => {
   const params = useParams();
-  const idOrSlug = params.idOrSlug ?? null;
+  const id = params.id ? Number(params.id) : null;
 
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,32 +65,23 @@ const BlogDetail = () => {
 
   useEffect(() => {
     const fetchBlog = async () => {
-      if (!idOrSlug) return;
-      setLoading(true);
-      setError(null);
+      if (!id) return;
       try {
-        const res = await api.get<Blog>(`/api/blogs/${idOrSlug}`);
+        const res = await api.get<Blog>(`/api/blogs/${id}`);
         setBlog(res.data);
       } catch {
         setError('Failed to load blog post.');
-        setBlog(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchBlog();
-  }, [idOrSlug]);
+  }, [id]);
 
   const plainText = blog
     ? blog.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
     : '';
-
-  const blogPath = blog
-    ? `/blogs/${blog.slug || blog.id}`
-    : idOrSlug
-      ? `/blogs/${idOrSlug}`
-      : '/blogs';
 
   return (
     <div className="space-y-4">
@@ -101,7 +92,7 @@ const BlogDetail = () => {
             ? plainText.slice(0, 160)
             : 'Read posts from Microsoft Club GIKI.'
         }
-        path={blogPath}
+        path={id ? `/blogs/${id}` : '/blogs'}
       />
       <WindowCard title="Notepad - Blog Post">
         {loading && <p className="text-sm">Loading...</p>}
@@ -143,3 +134,4 @@ const BlogDetail = () => {
 };
 
 export default BlogDetail;
+

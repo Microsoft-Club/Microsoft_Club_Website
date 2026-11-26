@@ -49,10 +49,11 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg border-2 border-black overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-primary text-white border-b-2 border-black">
-        <h1 className="font-heading text-xs md:text-sm">Admin Login</h1>
-        <span className="text-[10px] bg-white text-primary px-2 py-0.5 border border-black">
+    <div className="win max-w-md mx-auto">
+      <div className="win-bar win-bar--blue">
+        <h1 className="win-title">Admin login</h1>
+        <span className="tag">
+          <i className="icon-lock" aria-hidden="true" />
           Secure
         </span>
       </div>
