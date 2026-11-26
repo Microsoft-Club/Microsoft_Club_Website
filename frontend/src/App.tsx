@@ -6,6 +6,7 @@ import EventDetail from './pages/EventDetail';
 import Members from './pages/Members';
 import Projects from './pages/Projects';
 import Podcasts from './pages/Podcasts';
+import PodcastDetail from './pages/PodcastDetail';
 import Blogs from './pages/Blogs';
 import BlogDetail from './pages/BlogDetail';
 import AdminLogin from './pages/AdminLogin';
@@ -55,8 +56,9 @@ const App = () => {
               <Route path="/members" element={<Members />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/podcasts" element={<Podcasts />} />
+              <Route path="/podcasts/:id" element={<PodcastDetail />} />
               <Route path="/blogs" element={<Blogs />} />
-              <Route path="/blogs/:id" element={<BlogDetail />} />
+              <Route path="/blogs/:idOrSlug" element={<BlogDetail />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route

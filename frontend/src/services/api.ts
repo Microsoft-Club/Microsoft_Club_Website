@@ -99,6 +99,7 @@ export type Blog = {
   authorImage: string;
   instagramUrl: string | null;
   linkedinUrl: string | null;
+  slug?: string | null;
 };
 
 export type WaitingListEntry = {

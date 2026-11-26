@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
 import Seo from '../components/Seo';
@@ -147,6 +148,12 @@ const Podcasts = () => {
                 })()}
               </div>
               <p className="text-sm font-semibold mb-1">{episode.guest}</p>
+              <Link
+                to={`/podcasts/${episode.id}`}
+                className="underline text-sm font-semibold mb-1 inline-block"
+              >
+                Open episode
+              </Link>
               <p className="text-xs text-gray-700 mb-1">
                 Date: {new Date(episode.date).toLocaleDateString()}
               </p>
