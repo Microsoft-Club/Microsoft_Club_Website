@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Seo from '../components/Seo';
+import SearchFilter from '../components/SearchFilter';
 import EventBoard from '../components/board/EventBoard';
 import PhoneEventList from '../components/board/PhoneEventList';
 import LoadState from '../components/board/LoadState';
@@ -31,11 +32,17 @@ const FilterBar = ({ filter, onChange }: FilterBarProps) => (
 const Events = () => {
   const { items, status, retry } = useApiList<Event>('/api/events');
   const [filter, setFilter] = useState<Filter>('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const isPhone = useIsPhone();
 
+  const query = searchTerm.trim().toLowerCase();
   const sorted = sortEventsForBoard(items);
-  const visible =
-    filter === 'all' ? sorted : sorted.filter((e) => (filter === 'upcoming' ? isUpcoming(e) : !isUpcoming(e)));
+  const visible = sorted.filter((event) => {
+    const matchesType = filter === 'all' || (filter === 'upcoming' ? isUpcoming(event) : !isUpcoming(event));
+    if (!matchesType) return false;
+    if (!query) return true;
+    return [event.title, event.description, event.location ?? ''].join(' ').toLowerCase().includes(query);
+  });
 
   const seo = (
     <Seo
@@ -50,7 +57,13 @@ const Events = () => {
       isEmpty={!visible.length}
       what="events"
       onRetry={retry}
-      emptyText={filter === 'all' ? 'No events posted yet.' : `No ${filter} events right now.`}
+      emptyText={
+        query
+          ? 'No events match your search.'
+          : filter === 'all'
+            ? 'No events posted yet.'
+            : `No ${filter} events right now.`
+      }
     />
   );
 
@@ -64,6 +77,7 @@ const Events = () => {
             {status === 'ready' && <span className="count">{visible.length}</span>}
           </div>
           <FilterBar filter={filter} onChange={setFilter} />
+          <SearchFilter value={searchTerm} onChange={setSearchTerm} placeholder="Search events" label="Search events" />
         </section>
         {status !== 'ready' || !visible.length ? <div className="win">{loadState}</div> : <PhoneEventList events={visible} />}
       </div>
@@ -80,6 +94,7 @@ const Events = () => {
         <h1 id="events-title">Events</h1>
         {status === 'ready' && <span className="count">{visible.length} results</span>}
         <FilterBar filter={filter} onChange={setFilter} />
+        <SearchFilter value={searchTerm} onChange={setSearchTerm} placeholder="Search events" label="Search events" />
       </div>
       {loadState}
       {status === 'ready' && visible.length > 0 && <EventBoard events={visible} />}
