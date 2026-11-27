@@ -27,6 +27,7 @@ const TONES: Record<string, PhoneTone> = {
   '/projects': 'blue',
   '/podcasts': 'coral',
   '/blogs': 'navy',
+  '/work-with-us': 'yellow',
 };
 
 const withTone = (app: DesktopApp): PhoneApp => ({ ...app, tone: TONES[app.to] ?? 'blue' });
@@ -38,7 +39,7 @@ export const dockApps: PhoneApp[] = DOCK_PATHS.map((to) => withTone(byPath(to)))
 
 /** Apps listed in the dock's More sheet. */
 export const moreApps: PhoneApp[] = [
-  ...['/inductions', '/podcasts', '/blogs'].map((to) => withTone(byPath(to))),
+  ...['/inductions', '/podcasts', '/blogs', '/work-with-us'].map((to) => withTone(byPath(to))),
   mailApp,
 ];
 
