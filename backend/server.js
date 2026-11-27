@@ -32,6 +32,7 @@ app.use('/api/podcasts', require('./routes/podcastRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/waiting-list', require('./routes/waitingListRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
+app.use('/api/system', require('./routes/systemRoutes'));
 
 
 app.get('/health', (req, res) => {
