@@ -6,10 +6,11 @@ import { DesktopArt } from '../components/desktop/DesktopArt';
 import societyGroupPhoto from '../assets/society-group.webp';
 import EventShelf from '../components/board/EventShelf';
 import LoadState from '../components/board/LoadState';
+import { useCallback, useEffect, useState } from 'react';
 import { useApiList, type LoadStatus } from '../hooks/useApiList';
 import NextEventInstaller from '../components/board/NextEventInstaller';
 import ContactWindow from '../components/board/ContactWindow';
-import type { Event, Podcast, Project } from '../services/api';
+import { api, type Blog, type Event, type Podcast, type Project } from '../services/api';
 import { sortEventsForBoard } from '../utils/events';
 import { safeExternalUrl } from '../utils/url';
 import { useIsPhone } from '../hooks/useIsPhone';
@@ -82,6 +83,107 @@ const EventsWindow = ({ events: items, status, onRetry: retry }: EventsProps) =>
 };
 
 const dateFmt = new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+type HomeFeed = {
+  event: Event | null;
+  blog: Blog | null;
+  project: Project | null;
+  podcast: Podcast | null;
+};
+
+const eventPath = (event: Event) => `/events/${event.slug || event.id}`;
+const blogPath = (blog: Blog) => `/blogs/${blog.slug || blog.id}`;
+
+type ActivityLink = { to: string; art: 'calendar' | 'docs' | 'folder' | 'music'; label: string; title: string; detail: string };
+
+const activityLinks = (feed: HomeFeed): ActivityLink[] => {
+  const links: ActivityLink[] = [];
+  if (feed.event) {
+    links.push({
+      to: eventPath(feed.event),
+      art: 'calendar',
+      label: 'Latest event',
+      title: feed.event.title,
+      detail: dateFmt.format(new Date(feed.event.date)),
+    });
+  }
+  if (feed.blog) {
+    links.push({
+      to: blogPath(feed.blog),
+      art: 'docs',
+      label: 'Latest blog',
+      title: feed.blog.title,
+      detail: feed.blog.author ? `By ${feed.blog.author}` : 'Blog',
+    });
+  }
+  if (feed.project) {
+    links.push({
+      to: '/projects',
+      art: 'folder',
+      label: 'Latest project',
+      title: feed.project.title,
+      detail: feed.project.techStack?.slice(0, 3).join(' · ') || 'Project',
+    });
+  }
+  if (feed.podcast) {
+    links.push({
+      to: `/podcasts/${feed.podcast.id}`,
+      art: 'music',
+      label: 'Latest podcast',
+      title: feed.podcast.title,
+      detail: feed.podcast.guest ? `With ${feed.podcast.guest}` : dateFmt.format(new Date(feed.podcast.date)),
+    });
+  }
+  return links;
+};
+
+/** Latest event, blog, project, and podcast from GET /api/system. */
+const ActivityWindow = () => {
+  const [feed, setFeed] = useState<HomeFeed | null>(null);
+  const [status, setStatus] = useState<LoadStatus>('loading');
+  const [attempt, setAttempt] = useState(0);
+  const retry = useCallback(() => setAttempt((n) => n + 1), []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setStatus('loading');
+    api
+      .get<HomeFeed>('/api/system', { signal: controller.signal })
+      .then((res) => {
+        setFeed(res.data);
+        setStatus('ready');
+      })
+      .catch((err: unknown) => {
+        if (controller.signal.aborted) return;
+        console.error('Failed to load /api/system', err);
+        setStatus('error');
+      });
+    return () => controller.abort();
+  }, [attempt]);
+
+  const links = feed ? activityLinks(feed) : [];
+
+  return (
+    <WindowCard title="activity.log" titleBg="yellow" bodyClassName="p-0">
+      <LoadState status={status} isEmpty={!links.length} what="the latest activity" onRetry={retry} emptyText="No club activity posted yet." />
+      {status === 'ready' && links.length > 0 && (
+        <ul className="files">
+          {links.map((item) => (
+            <li key={item.label}>
+              <Link to={item.to}>
+                <DesktopArt name={item.art} className="" />
+                <span className="min-w-0">
+                  <strong>{item.title}</strong>
+                  <small>{item.label} · {item.detail}</small>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </WindowCard>
+  );
+};
 
 const PodcastWindow = () => {
   const { items, status, retry } = useApiList<Podcast>('/api/podcasts');
@@ -185,6 +287,7 @@ const Home = () => {
         jsonLd={organizationJsonLd}
       />
       <Hero events={events} status={status} onRetry={retry} />
+      <ActivityWindow />
       {!isPhone && (
         <div className="only-compact">
           <WindowCard title="my computer" titleBg="navy">
