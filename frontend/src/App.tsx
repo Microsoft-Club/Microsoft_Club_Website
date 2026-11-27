@@ -16,6 +16,7 @@ import DesktopIcons from './components/desktop/DesktopIcons';
 import Taskbar from './components/desktop/Taskbar';
 import BootIntro, { shouldPlayIntro } from './components/desktop/BootIntro';
 import Contact from './pages/Contact';
+import WorkWithUs from './pages/WorkWithUs';
 import PhoneAppBar from './components/phone/PhoneAppBar';
 import PhoneDock from './components/phone/PhoneDock';
 import { useIsPhone } from './hooks/useIsPhone';
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="/podcasts/:id" element={<PodcastDetail />} />
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/blogs/:idOrSlug" element={<BlogDetail />} />
+              <Route path="/work-with-us" element={<WorkWithUs />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route

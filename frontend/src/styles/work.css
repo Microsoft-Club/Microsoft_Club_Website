@@ -1,0 +1,19 @@
+.work-lede { margin: 0 0 22px; max-width: 62ch; font-size: 18px; color: var(--ink-soft); }
+.work-ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0 0 28px; padding: 0; list-style: none; }
+.work-ways li { padding: 14px 16px; background: var(--paper); border: var(--line); border-radius: 6px; box-shadow: var(--shadow-sm); }
+.work-ways h2 { margin: 0 0 8px; font: 800 18px/1.2 var(--display); }
+.work-ways p { margin: 0; color: var(--ink-soft); }
+.work-channels-title { margin: 0 0 12px; font: 800 22px/1.2 var(--display); }
+.work-channels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.work-channels a {
+  display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: start;
+  height: 100%; padding: 14px; text-decoration: none; color: var(--ink);
+  background: var(--white); border: var(--line); border-radius: 6px; box-shadow: var(--shadow-sm);
+}
+.work-channels a:hover, .work-channels a:focus-visible { background: var(--paper-2); }
+.work-channels i { font-size: 20px; margin-top: 2px; }
+.work-channels strong { display: block; font: 800 16px/1.2 var(--display); }
+.work-channels small { display: block; color: var(--ink-soft); }
+@media (max-width: 700px) {
+  .work-ways, .work-channels { grid-template-columns: 1fr; }
+}

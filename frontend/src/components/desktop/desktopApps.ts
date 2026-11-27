@@ -24,6 +24,7 @@ export const desktopApps: DesktopApp[] = [
   { to: '/projects', label: 'Projects', file: 'projects', art: 'folder', icon: 'icon-rocket' },
   { to: '/podcasts', label: 'Podcasts', file: 'logikal.mp3', art: 'music', icon: 'icon-microphone' },
   { to: '/blogs', label: 'Blogs', file: 'blogs.txt', art: 'docs', icon: 'icon-note' },
+  { to: '/work-with-us', label: 'Work with us', file: 'partner.exe', art: 'clip', icon: 'icon-briefcase' },
 ];
 
 export const adminApp: DesktopApp = {
