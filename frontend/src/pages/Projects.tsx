@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import SearchFilter from '../components/SearchFilter';
 import WindowCard from '../components/WindowCard';
 import PixelButton from '../components/PixelButton';
 import Seo from '../components/Seo';
@@ -171,6 +172,7 @@ const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [expandedProjectIds, setExpandedProjectIds] = useState<Set<number>>(
     new Set()
   );
@@ -190,6 +192,15 @@ const Projects = () => {
 
     fetchProjects();
   }, []);
+
+  const query = searchTerm.trim().toLowerCase();
+  const filteredProjects = projects.filter((project) => {
+    if (!query) return true;
+    return [project.title, project.description, ...(project.techStack ?? []), ...(project.contributors ?? [])]
+      .join(' ')
+      .toLowerCase()
+      .includes(query);
+  });
 
   const toggleProjectDescription = (projectId: number) => {
     setExpandedProjectIds((prev) => {
@@ -211,11 +222,12 @@ const Projects = () => {
         path="/projects"
       />
       <h1 className="font-display text-sm md:text-base mb-2">Projects</h1>
+      <SearchFilter value={searchTerm} onChange={setSearchTerm} placeholder="Search projects" label="Search projects" />
       {loading && <p className="text-sm">Loading projects...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!loading && !error && (
         <div className="grid-layout">
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <WindowCard
               key={project.id}
               title={project.title}
@@ -282,8 +294,10 @@ const Projects = () => {
               </div>
             </WindowCard>
           ))}
-          {!projects.length && (
-            <p className="text-sm col-span-full">No projects found.</p>
+          {!filteredProjects.length && (
+            <p className="text-sm col-span-full">
+              {projects.length === 0 ? 'No projects found.' : 'No projects match your search.'}
+            </p>
           )}
         </div>
       )}
