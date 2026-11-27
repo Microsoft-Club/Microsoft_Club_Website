@@ -91,6 +91,35 @@ type HomeFeed = {
   podcast: Podcast | null;
 };
 
+const asList = <T,>(payload: unknown): T[] => (Array.isArray(payload) ? payload : []);
+
+const newest = <T,>(items: T[], dateOf: (item: T) => string | undefined): T | null =>
+  [...items].sort((a, b) => +new Date(dateOf(b) ?? 0) - +new Date(dateOf(a) ?? 0))[0] ?? null;
+
+/** Prefer GET /api/system. The live API is still main, so fall back to the public lists until that route is deployed. */
+const loadHomeFeed = async (signal: AbortSignal): Promise<HomeFeed> => {
+  try {
+    const res = await api.get<HomeFeed>('/api/system', { signal });
+    if (res.data && typeof res.data === 'object' && ('event' in res.data || 'blog' in res.data)) return res.data;
+  } catch (err) {
+    if (signal.aborted) throw err;
+  }
+
+  const [events, blogs, projects, podcasts] = await Promise.all([
+    api.get<Event[]>('/api/events', { signal }),
+    api.get<Blog[]>('/api/blogs', { signal }),
+    api.get<Array<Project & { createdAt?: string }>>('/api/projects', { signal }),
+    api.get<Podcast[]>('/api/podcasts', { signal }),
+  ]);
+
+  return {
+    event: newest(asList<Event>(events.data), (item) => item.date),
+    blog: newest(asList<Blog>(blogs.data), (item) => item.createdAt),
+    project: newest(asList<Project & { createdAt?: string }>(projects.data), (item) => item.createdAt),
+    podcast: newest(asList<Podcast>(podcasts.data), (item) => item.date),
+  };
+};
+
 const eventPath = (event: Event) => `/events/${event.slug || event.id}`;
 const blogPath = (blog: Blog) => `/blogs/${blog.slug || blog.id}`;
 
@@ -147,15 +176,14 @@ const ActivityWindow = () => {
   useEffect(() => {
     const controller = new AbortController();
     setStatus('loading');
-    api
-      .get<HomeFeed>('/api/system', { signal: controller.signal })
-      .then((res) => {
-        setFeed(res.data);
+    loadHomeFeed(controller.signal)
+      .then((next) => {
+        setFeed(next);
         setStatus('ready');
       })
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
-        console.error('Failed to load /api/system', err);
+        console.error('Failed to load home activity', err);
         setStatus('error');
       });
     return () => controller.abort();
